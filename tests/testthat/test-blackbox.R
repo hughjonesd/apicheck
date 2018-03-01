@@ -6,7 +6,6 @@ teardown(if (! is.null(old)) set_pastapi_lib_dir(old))
 
 test_that("Can call functions with or without package", {
   skip_on_cran()
-  skip_on_travis() # slow
 
   # expect_identical doesn't work for these functions, maybe different
   expect_equal(
