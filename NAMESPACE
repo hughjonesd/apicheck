@@ -3,6 +3,7 @@
 export(api_first_same)
 export(api_same_at)
 export(call_with_namespace)
+export(clear_package_cache)
 export(fn_exists_at)
 export(fn_first_exists)
 export(get_fn_at)

@@ -234,6 +234,30 @@ set_lib_dir <- function(lib_dir) {
   return(x$pastapi.lib_dir)
 }
 
+
+#' Delete all files from the package cache
+#'
+#' This attempts to delete \emph{everything} in the package cache, which is stored
+#' either in \code{getOption("pastapi.lib_dir")} as set by \code{link{set_lib_dir}}
+#' or, if that is unset, in a per-session temporary directory.
+#' @return TRUE if all files and directories could be removed, FALSE otherwise.
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' clear_package_cache()
+#' }
+clear_package_cache <- function() {
+  lib_dir <- getOption("pastapi.lib_dir", LIB_DIR)
+  ok <- TRUE
+  for (obj in list.files(lib_dir, all.files = TRUE, full.names = TRUE)) {
+    if (file.exists(obj)) ok <- ok && file.remove(obj)
+    if (dir.exists(obj))  ok <- ok && (unlink(obj, recursive = TRUE) != 0)
+  }
+
+  return(ok)
+}
+
 #' Loads a package namespace at a particular version and runs an arbitrary function
 #'
 #' @param package Package name.
