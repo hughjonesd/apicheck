@@ -10,7 +10,7 @@
 NULL
 
 
-#' About the package
+#' Basic details about the package
 #'
 #' This is a small package to check when functions were introduced in packages and/or APIs changed.
 #' It uses the \code{versions} package to install different versions of a package
@@ -216,11 +216,12 @@ get_version_at_date <- function (package, date) {
 #'
 #' This specifies where libraries will be downloaded to,
 #' and resets the cache of installed library locations.
-#' @param lib_dir Path to a directory.
+#' @param lib_dir Path to a directory, or \code{NULL} to unset.
 #'
 #' @return The old library location, invisibly. By default this is a subdirectory of \code{\link{tempdir}}.
 #' @details
-#' If \code{lib_dir} does not exist it will be created.
+#' If \code{lib_dir} does not exist it will be created. If you set it to \code{NULL}, a subdirectory
+#' of \code{tempdir()} will be used.
 #' @export
 #'
 #' @examples
@@ -228,10 +229,12 @@ get_version_at_date <- function (package, date) {
 #' set_lib_dir("~/.pastapi")
 #' }
 set_lib_dir <- function (lib_dir) {
-  if (! dir.exists(lib_dir)) dir.create(lib_dir, recursive = TRUE)
+  if (! is.null(lib_dir) && ! dir.exists(lib_dir)) dir.create(lib_dir, recursive = TRUE)
   x <- options('pastapi.lib_dir' = lib_dir)
+  x <- x$pastapi.lib_dir
+  if (is.null(x)) x <- LIB_DIR
 
-  return(invisible(x$pastapi.lib_dir))
+  return(invisible(x))
 }
 
 
@@ -287,7 +290,6 @@ clear_package_cache <- function() {
 #' The package is downloaded and installed if necessary, and its namespace is loaded. Then the
 #' \code{test(ns)} is called with the namespace object, and its value is returned. On exit, the
 #' namespace is unloaded.
-#' @family utility functions
 #' @export
 #'
 #' @examples

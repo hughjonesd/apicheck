@@ -10,7 +10,7 @@ set_lib_dir(lib_dir)
 get_lib_dir()
 }
 \arguments{
-\item{lib_dir}{Path to a directory.}
+\item{lib_dir}{Path to a directory, or \code{NULL} to unset.}
 }
 \value{
 The old library location, invisibly. By default this is a subdirectory of \code{\link{tempdir}}.
@@ -22,7 +22,8 @@ This specifies where libraries will be downloaded to,
 and resets the cache of installed library locations.
 }
 \details{
-If \code{lib_dir} does not exist it will be created.
+If \code{lib_dir} does not exist it will be created. If you set it to \code{NULL}, a subdirectory
+of \code{tempdir()} will be used.
 }
 \examples{
 \dontrun{
@@ -31,6 +32,5 @@ set_lib_dir("~/.pastapi")
 get_lib_dir()
 }
 \seealso{
-Other utility functions: \code{\link{call_with_namespace}},
-  \code{\link{clear_package_cache}}
+Other utility functions: \code{\link{clear_package_cache}}
 }

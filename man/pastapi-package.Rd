@@ -2,7 +2,7 @@
 % Please edit documentation in R/pastapi.R
 \name{pastapi-package}
 \alias{pastapi-package}
-\title{About the package}
+\title{Basic details about the package}
 \description{
 This is a small package to check when functions were introduced in packages and/or APIs changed.
 It uses the \code{versions} package to install different versions of a package

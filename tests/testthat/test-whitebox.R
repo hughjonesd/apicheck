@@ -1,6 +1,17 @@
 
 context("Whitebox tests for internal functions")
 
+
+setup({
+  old <- set_lib_dir(NULL)
+})
+
+
+teardown({
+  set_lib_dir(old)
+})
+
+
 test_that("parse_fn works", {
   expect_identical(pastapi:::parse_fn("foo::bar"), c("foo", "bar"))
 })
@@ -55,4 +66,12 @@ test_that("cached_install and call_with_namespace work", {
   expect_error(pastapi:::call_with_namespace("longurl", "0.1.1", test), regexp = NA)
   # already downloaded:
   expect_error(pastapi:::call_with_namespace("longurl", "0.3.0", test), regexp = NA)
+})
+
+
+
+test_that("clear_package_cache works", {
+  get_fn_at("fortune", "fortunes", "1.5-3")
+  clear_package_cache()
+  expect_false(dir.exists(file.path(get_lib_dir(), "fortunes-1.5-3")))
 })

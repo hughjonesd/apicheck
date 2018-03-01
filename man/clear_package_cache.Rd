@@ -25,6 +25,5 @@ clear_package_cache()
 }
 }
 \seealso{
-Other utility functions: \code{\link{call_with_namespace}},
-  \code{\link{set_lib_dir}}
+Other utility functions: \code{\link{set_lib_dir}}
 }
