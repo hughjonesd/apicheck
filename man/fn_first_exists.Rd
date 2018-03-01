@@ -35,7 +35,7 @@ whether a function exists at a specific previous version.
 \dontrun{
 fn_first_exists('read.dta', 'foreign')
 }
-\\notrun{
+\dontrun{
 fn_exists_at("read.arff", "foreign", version = "0.8-19")
 }
 }

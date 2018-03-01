@@ -153,7 +153,7 @@ api_same_at <- function (fn, package, version = get_version_at_date(package, dat
 #' @export
 #'
 #' @examples
-#' \notrun{
+#' \dontrun{
 #' fn_exists_at("read.arff", "foreign", version = "0.8-19")
 #' }
 fn_exists_at <- function (
