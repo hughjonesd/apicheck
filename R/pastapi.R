@@ -18,7 +18,7 @@ NULL
 #' from \href{https://mran.microsoft.com/}{MRAN}.
 #'
 #' Packages are cached within a session. To cache packages across sessions, set
-#' \code{options('apihistory.lib_dir')} to the file path of a persistent directory.
+#' \code{options('pastapi.lib_dir')} to the file path of a persistent directory.
 #'
 #' Be aware that functions can take a long time to return as different versions of a package are
 #' installed.
@@ -26,7 +26,7 @@ NULL
 #' Also, be aware that namespace loading and unloading can be unreliable. If this happens to you, try
 #' restarting your session.
 #'
-#' @name apihistory-package
+#' @name pastapi-package
 NULL
 
 
@@ -200,7 +200,7 @@ load_version_namespace  <- function (package, version, test) {
 
 
 cached_install <- memoise::memoise(function (package, version) {
-  lib_dir <- getOption('apihistory.lib_dir', tempfile(pattern = "apihistory", tmpdir = normalizePath(tempdir())))
+  lib_dir <- getOption('pastapi.lib_dir', tempfile(pattern = "pastapi", tmpdir = normalizePath(tempdir())))
   package_dir <- file.path(lib_dir, paste(package, version, sep = "-"))
   dir.create(package_dir, recursive = TRUE)
 

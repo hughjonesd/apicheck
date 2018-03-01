@@ -1,5 +1,5 @@
-Package: apihistory
-Title: Check the History of R Packages Using 'MRAN'
+Package: pastapi
+Title: Explore the Past API of Functions in CRAN Packages
 Version: 0.0.0.9000
 Authors@R: person("David", "Hugh-Jones", email = "davidhughjones@gmail.com", role = c("aut", "cre"))
 Description: Check when functions were introduced and/or APIs changed in packages, using the 'MRAN' service.
@@ -8,5 +8,5 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.0.1
-Imports: versions, devtools, zeallot
+Imports: versions, zeallot
 Suggests: testthat

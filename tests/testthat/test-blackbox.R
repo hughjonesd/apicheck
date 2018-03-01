@@ -1,8 +1,8 @@
 context("Blackbox tests of API")
 
 old <- NULL
-setup(old <- options("apihistory.lib_dir"))
-teardown(if (! is.null(old)) options(apihistory.lib_dir = old))
+setup(old <- options("pastapi.lib_dir"))
+teardown(if (! is.null(old)) options(pastapi.lib_dir = old))
 
 test_that("Can call functions with or without package", {
   # expect_identical doesn't work for these functions, maybe different
@@ -52,12 +52,12 @@ test_that("api_first_unchanged works for functions, generics and S3 methods", {
   expect_identical(api_first_unchanged("huxreg", "huxtable", current_fn = hr, quick = FALSE), "1.2.0")
 })
 
-test_that("Can set apihistory.lib_dir and functions work", {
+test_that("Can set pastapi.lib_dir and functions work", {
   skip_on_os("windows")
 
   tempdir <- tempfile(pattern = "testing", tmpdir = normalizePath(tempdir()))
   dir.create(tempdir)
-  options(apihistory.lib_dir = tempdir)
+  options(pastapi.lib_dir = tempdir)
   id <- parallel::mcparallel(get_fn_at("expand_urls", "longurl", "0.3.0"))
   parallel::mccollect(id)
   expect_true(dir.exists(file.path(tempdir, "longurl-0.3.0", "longurl")))
