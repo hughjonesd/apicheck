@@ -17,7 +17,7 @@ NULL
 #' from \href{https://mran.microsoft.com/}{MRAN}.
 #'
 #' Packages are cached within a session. To cache packages across sessions, use
-#' \code{\link{set_pastapi_lib_dir}} to point to a persistent directory.
+#' \code{\link{set_lib_dir}} to point to a persistent directory.
 #'
 #' Be aware that functions can take a long time to return, as different versions of a package are
 #' installed and/or loaded.
@@ -225,14 +225,13 @@ get_version_at_date <- function (package, date) {
 #'
 #' @examples
 #' \dontrun{
-#' set_pastapi_lib_dir("~/.pastapi")
+#' set_lib_dir("~/.pastapi")
 #' }
-set_pastapi_lib_dir <- function(lib_dir) {
-  LIB_DIR <<- lib_dir
+set_lib_dir <- function(lib_dir) {
   if (! dir.exists(lib_dir)) dir.create(lib_dir, recursive = TRUE)
-  options('pastapi.lib_dir' = lib_dir)
+  x <- options('pastapi.lib_dir' = lib_dir)
 
-  return(x)
+  return(x$pastapi.lib_dir)
 }
 
 #' Loads a package namespace at a particular version and runs an arbitrary function

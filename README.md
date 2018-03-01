@@ -26,7 +26,7 @@ fn_first_exists("quick_xlsx", "huxtable")
 #> [1] "3.0.0"
 ```
 
-From the same place:
+From the same place: 
 
 -   New `tidy_args` argument to huxreg allows per-model customization of the call to `tidy`.
 

@@ -2,11 +2,10 @@ context("Blackbox tests of API")
 
 old <- NULL
 setup(old <- getOption("pastapi.lib_dir"))
-teardown(set_pastapi_lib_dir(old))
+teardown(set_lib_dir(old))
 
 test_that("Can call functions with different calling conventions", {
   skip_on_cran()
-
 
   # expect_identical doesn't work for these functions, maybe different
   expect_equal(
@@ -76,7 +75,7 @@ test_that("Can set pastapi.lib_dir and functions work", {
 
   tempdir <- tempfile(pattern = "testing", tmpdir = normalizePath(tempdir()))
   dir.create(tempdir)
-  set_pastapi_lib_dir(tempdir)
+  set_lib_dir(tempdir)
   expect_error(get_fn_at("expand_urls", "longurl", "0.3.0"), regexp = NA)
   expect_true(dir.exists(file.path(tempdir, "longurl-0.3.0", "longurl")))
 })

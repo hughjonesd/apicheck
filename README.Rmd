@@ -33,7 +33,8 @@ From [huxtable](https://github.com/hughjonesd/huxtable)'s NEWS file, version 3.0
 * New `quick_xlsx` function.
 
 ```{r options, include = FALSE}
-options(pastapi.lib_dir = "~/.pastapi")
+library(pastapi)
+set_lib_dir("~/.pastapi")
 ```
 
 ```{r example}

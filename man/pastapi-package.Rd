@@ -10,10 +10,10 @@ from \href{https://mran.microsoft.com/}{MRAN}.
 }
 \details{
 Packages are cached within a session. To cache packages across sessions, use
-\code{\link{set_pastapi_lib_dir}} to point to a persistent directory.
+\code{\link{set_lib_dir}} to point to a persistent directory.
 
 Be aware that functions can take a long time to return, as different versions of a package are
-installed.
+installed and/or loaded.
 
 Also, be aware that namespace loading and unloading can be unreliable. If this happens to you, try
 restarting your session.
