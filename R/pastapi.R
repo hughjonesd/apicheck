@@ -265,23 +265,23 @@ call_with_namespace  <- function (package, version, test) {
 }
 
 
-cached_install <- memoise::memoise(
-  function (package, version) {
-    lib_dir <- getOption('pastapi.lib_dir', tempfile(pattern = "pastapi", tmpdir = normalizePath(tempdir())))
-    if (is.null(getOption('pastapi.lib_dir'))) options(pastapi.lib_dir = lib_dir)
-    package_dir <- file.path(lib_dir, paste(package, version, sep = "-"))
+cached_install <- function (package, version) {
+  lib_dir <- getOption('pastapi.lib_dir', tempfile(pattern = "pastapi", tmpdir = normalizePath(tempdir())))
+  if (is.null(getOption('pastapi.lib_dir'))) options(pastapi.lib_dir = lib_dir)
+  package_dir <- file.path(lib_dir, paste(package, version, sep = "-"))
 
-    if (! dir.exists(package_dir)) {
-      dir.create(package_dir, recursive = TRUE)
-      # just shut up already:
-      suppressWarnings(
-        versions::install.versions(package, versions = version, lib = package_dir, verbose = FALSE, quiet = TRUE)
-      )
-    }
-
-    return(package_dir)
+  if (! dir.exists(package_dir)) {
+    dir.create(package_dir, recursive = TRUE)
+    tryCatch(
+      versions::install.versions(package, versions = version, lib = package_dir, verbose = FALSE, quiet = TRUE),
+      warning = function (w) if (grepl("non-zero exit", w$message)) {
+        stop("Failed to install version ", version, ", aborting")
+      })
   }
-)
+
+  return(package_dir)
+}
+
 
 
 binary_search_versions <- function(vns, test) {
