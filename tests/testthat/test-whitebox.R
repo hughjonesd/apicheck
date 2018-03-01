@@ -28,7 +28,7 @@ test_that("binary_search_versions works", {
 })
 
 
-test_that("cached_install and load_version_namespace work", {
+test_that("cached_install and call_with_namespace work", {
   skip_on_cran()
   skip_on_travis() # slow
 
@@ -41,7 +41,7 @@ test_that("cached_install and load_version_namespace work", {
 
   test <- function (namespace) "OK"
   # new download:
-  expect_error(pastapi:::load_version_namespace("longurl", "0.1.1", test), regexp = NA)
+  expect_error(pastapi:::call_with_namespace("longurl", "0.1.1", test), regexp = NA)
   # already downloaded:
-  expect_error(pastapi:::load_version_namespace("longurl", "0.3.0", test), regexp = NA)
+  expect_error(pastapi:::call_with_namespace("longurl", "0.3.0", test), regexp = NA)
 })

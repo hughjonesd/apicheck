@@ -141,7 +141,7 @@ api_same_at <- function (fn, package, version = get_version_at_date(package, dat
     identical(formals(current_fn), formals(g))
   }
 
-  load_version_namespace(package, version, test)
+  call_with_namespace(package, version, test)
 }
 
 
@@ -164,7 +164,7 @@ fn_exists_at <- function (
       ) {
   if (missing(package)) c(package, fn) %<-% parse_fn(fn)
   test <- function (namespace) fn %in% names(namespace)
-  load_version_namespace(package, version, test)
+  call_with_namespace(package, version, test)
 }
 
 
@@ -187,7 +187,7 @@ get_fn_at <- function (
       ) {
   if (missing(package)) c(package, fn) %<-% parse_fn(fn)
   test <- function (namespace) get(fn, namespace)
-  load_version_namespace(package, version, test)
+  call_with_namespace(package, version, test)
 }
 
 
@@ -217,7 +217,7 @@ get_version_at_date <- function (package, date) {
 #' and resets the cache of installed library locations.
 #' @param lib_dir Path to a directory.
 #'
-#' @return The old library location. By default this is a subdirectory of \code{\link{tempdir()}}.
+#' @return The old library location. By default this is a subdirectory of \code{\link{tempdir}}.
 #' @details
 #' If \code{lib_dir} does not exist it will be created.
 #' @export
@@ -235,10 +235,24 @@ set_pastapi_lib_dir <- function(lib_dir) {
   return(x)
 }
 
-
-# loads a package's namespace at a particular version (if necessary installing it)
-# then runs the function test with the namespace as an argument, and returns the result
-load_version_namespace  <- function (package, version, test) {
+#' Loads a package namespace at a particular version and runs an arbitrary function
+#'
+#' @param package Package name.
+#' @param version Version as a character string.
+#' @param test A one-argument function. See Details.
+#' @return The value returned by \code{test}.
+#' @details
+#' The package is downloaded and installed if necessary, and its namespace is loaded. Then the
+#' \code{test(ns)} is called with the namespace object, and its value is returned. On exit, the
+#' namespace is unloaded.
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' can_it_expand_urls <- function (namespace) "expand_urls" %in% names(namespace)
+#' call_with_namespace("longurl", "0.3.0", test = can_it_expand_urls)
+#' }
+call_with_namespace  <- function (package, version, test) {
   if (isNamespaceLoaded(package)) {
     warning(package, " is already loaded. Attempting to unload.")
     unloadNamespace(package)

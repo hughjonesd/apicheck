@@ -10,7 +10,7 @@ set_pastapi_lib_dir(lib_dir)
 \item{lib_dir}{Path to a directory.}
 }
 \value{
-The old library location. By default this is a subdirectory of \code{\link{tempdir()}}.
+The old library location. By default this is a subdirectory of \code{\link{tempdir}}.
 }
 \description{
 This specifies where libraries will be downloaded to,
