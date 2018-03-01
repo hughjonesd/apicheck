@@ -200,6 +200,7 @@ load_version_namespace  <- function (package, version, test) {
 
 cached_install <- memoise::memoise(function (package, version) {
   lib_dir <- getOption('pastapi.lib_dir', tempfile(pattern = "pastapi", tmpdir = normalizePath(tempdir())))
+  if (is.null(options('pastapi.lib_dir'))) options(pastapi.lib_dir = lib_dir)
   package_dir <- file.path(lib_dir, paste(package, version, sep = "-"))
   if (! dir.exists(package_dir)) dir.create(package_dir, recursive = TRUE)
 
