@@ -2,7 +2,7 @@
 % Please edit documentation in R/pastapi.R
 \name{get_fn_at}
 \alias{get_fn_at}
-\title{Retrieve a function as defined in a particular version of a package}
+\title{Retrieve a function from a particular package version}
 \usage{
 get_fn_at(fn, package, version = get_version_at_date(package, date),
   date = NULL)
@@ -10,7 +10,7 @@ get_fn_at(fn, package, version = get_version_at_date(package, date),
 \arguments{
 \item{fn}{Function name as a character string.}
 
-\item{package}{Package. Alternatively you can specify the function name as e.g. \code{"package::function"}.}
+\item{package}{Package. Alternatively, specify the function name as e.g. \code{"package::function"}.}
 
 \item{version}{Version as a character string. If omitted, use the version available at \code{date}.}
 
@@ -20,7 +20,7 @@ get_fn_at(fn, package, version = get_version_at_date(package, date),
 The function itself.
 }
 \description{
-Retrieve a function as defined in a particular version of a package
+Retrieve a function from a particular package version
 }
 \examples{
 \dontrun{

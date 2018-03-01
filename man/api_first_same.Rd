@@ -13,7 +13,7 @@ api_same_at(fn, package, version = get_version_at_date(package, date),
 \arguments{
 \item{fn}{Function name as a character string.}
 
-\item{package}{Package. Alternatively you can specify the function name as e.g. \code{"package::function"}.}
+\item{package}{Package. Alternatively, specify the function name as e.g. \code{"package::function"}.}
 
 \item{quick}{If \code{TRUE}, do a binary search that assumes API is never same, then different.}
 

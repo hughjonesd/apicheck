@@ -42,7 +42,7 @@ NULL
 NULL
 
 #' @param fn Function name as a character string.
-#' @param package Package. Alternatively you can specify the function name as e.g. \code{"package::function"}.
+#' @param package Package. Alternatively, specify the function name as e.g. \code{"package::function"}.
 #' @param version Version as a character string. If omitted, use the version available at \code{date}.
 #' @param date Date, as a character string that can be read by \code{\link{as.Date}} e.g. "2016-01-01".
 #' @name basic_params_doc
@@ -168,7 +168,7 @@ fn_exists_at <- function (
 }
 
 
-#' Retrieve a function as defined in a particular version of a package
+#' Retrieve a function from a particular package version
 #'
 #' @inheritParams basic_params_doc
 #'
