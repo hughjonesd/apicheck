@@ -20,11 +20,10 @@ NULL
 #' \code{\link{set_pastapi_lib_dir}} to point to a persistent directory.
 #'
 #' Be aware that functions can take a long time to return, as different versions of a package are
-#' installed.
+#' installed and/or loaded.
 #'
 #' Also, be aware that namespace loading and unloading can be unreliable. If this happens to you, try
 #' restarting your session.
-#'
 #' @name pastapi-package
 NULL
 
