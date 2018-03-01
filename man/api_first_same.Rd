@@ -2,9 +2,13 @@
 % Please edit documentation in R/pastapi.R
 \name{api_first_same}
 \alias{api_first_same}
-\title{Return the first version where the function had the same API.}
+\alias{api_same_at}
+\title{Compare function APIs across package versions}
 \usage{
 api_first_same(fn, package, quick = TRUE, current_fn = NULL)
+
+api_same_at(fn, package, version = get_version_at_date(package, date),
+  date = NULL, current_fn = NULL)
 }
 \arguments{
 \item{fn}{Function name as a character string.}
@@ -14,18 +18,32 @@ api_first_same(fn, package, quick = TRUE, current_fn = NULL)
 \item{quick}{If \code{TRUE}, do a binary search that assumes API is never same, then different.}
 
 \item{current_fn}{Current function for comparison. By default, \code{fn} in the current version of
-the package. If provided, this must be an actual function, not a character string. You can use
-\code{\link{get_fn_at}} to provide a suitable version.}
+the package (which is assumed to be available in a standard library location). If provided, this
+must be an actual function, not a character string. You can use
+\code{\link{get_fn_at}} for this.}
+
+\item{version}{Version as a character string. If omitted, use the version available at \code{date}.}
+
+\item{date}{Date, as a character string that can be read by \code{\link{as.Date}} e.g. "2016-01-01".}
 }
 \value{
-A version string.
+\code{api_first_same} returns a version string.
+
+\code{api_same_at} returns \code{TRUE} or \code{FALSE}.
 }
 \description{
-Return the first version where the function had the same API.
+\code{api_first_same} reports the first package version where the API of a function was the same as now (or
+the same as \code{current_fn}). \code{api_same_at} reports whether a specific previous version had the same
+API as now.
 }
 \details{
-A function's API is defined by its arguments as reported by \code{\link{formals}}.
+If \code{fn} does not exist at \code{version}, \code{api_same_at} returns \code{FALSE} with a warning.
 }
 \examples{
-api_first_same("to_latex", "huxtable")
+\dontrun{
+api_first_same("read.dta", "foreign")
+}
+\dontrun{
+api_same_at("huxreg", "huxtable", "2.0.0")
+}
 }

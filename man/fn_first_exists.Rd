@@ -2,9 +2,13 @@
 % Please edit documentation in R/pastapi.R
 \name{fn_first_exists}
 \alias{fn_first_exists}
-\title{Find the first version when a function existed}
+\alias{fn_exists_at}
+\title{Compare function existence across package versions}
 \usage{
 fn_first_exists(fn, package, quick = TRUE)
+
+fn_exists_at(fn, package, version = get_version_at_date(package, date),
+  date = NULL)
 }
 \arguments{
 \item{fn}{Function name.}
@@ -13,13 +17,25 @@ fn_first_exists(fn, package, quick = TRUE)
 
 \item{quick}{If TRUE, perform a binary search. This assumes that once added, a
 function does not go away.}
+
+\item{version}{Version as a character string. If omitted, use the version available at \code{date}.}
+
+\item{date}{Date, as a character string that can be read by \code{\link{as.Date}} e.g. "2016-01-01".}
 }
 \value{
-A version string.
+\code{fn_first_exists} returns a version string.
+
+\code{fn_exists_at} returns \code{TRUE} or \code{FALSE}.
 }
 \description{
-Find the first version when a function existed
+\code{fn_first_exists} reports the first package version where a function exists. \code{fn_exists_at} reports
+whether a function exists at a specific previous version.
 }
 \examples{
-fn_first_exists('as_Workbook', 'huxtable')
+\dontrun{
+fn_first_exists('read.dta', 'foreign')
+}
+\\notrun{
+fn_exists_at("read.arff", "foreign", version = "0.8-19")
+}
 }

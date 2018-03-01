@@ -32,10 +32,14 @@ NULL
 #' @param current_fn Current function for comparison. By default, \code{fn} in the current version of
 #'   the package (which is assumed to be available in a standard library location). If provided, this
 #'   must be an actual function, not a character string. You can use
-#'   \code{\link{get_fn_at}} to provide a suitable version.
+#'   \code{\link{get_fn_at}} for this.
 #' @name current_fn_doc
 NULL
 
+#' @details
+#' "Same API" is defined by the function arguments, as reported by \code{\link{formals}}, being the same.
+#' @name same_api_doc
+NULL
 
 #' @param fn Function name as a character string.
 #' @param package Package. Alternatively you can specify the function name as e.g. \code{"package::function"}.
@@ -45,14 +49,18 @@ NULL
 NULL
 
 
-#' Return the first version where the function had the same API.
+#' Compare function APIs across package versions
+#'
+#' \code{api_first_same} reports the first package version where the API of a function was the same as now (or
+#' the same as \code{current_fn}). \code{api_same_at} reports whether a specific previous version had the same
+#' API as now.
 #'
 #' @inheritParams basic_params_doc
 #' @param quick If \code{TRUE}, do a binary search that assumes API is never same, then different.
 #' @inheritParams current_fn_doc
-#' @details
-#' A function's API is defined by its arguments as reported by \code{\link{formals}}.
-#' @return A version string.
+#' @inherit same_api_doc details
+#'
+#' @return \code{api_first_same} returns a version string.
 #'
 #' @export
 #'
@@ -60,7 +68,8 @@ NULL
 #' \dontrun{
 #' api_first_same("read.dta", "foreign")
 #' }
-api_first_same <- function (fn, package, quick = TRUE, current_fn = NULL) {
+api_first_same <- function (fn, package, quick = TRUE,
+      current_fn = NULL) {
   if (missing(package)) c(package, fn) %<-% parse_fn(fn)
 
   force(current_fn)
@@ -74,14 +83,17 @@ api_first_same <- function (fn, package, quick = TRUE, current_fn = NULL) {
 }
 
 
-#' Find the first version when a function existed
+#' Compare function existence across package versions
+#'
+#' \code{fn_first_exists} reports the first package version where a function exists. \code{fn_exists_at} reports
+#' whether a function exists at a specific previous version.
 #'
 #' @param fn Function name.
 #' @param package Package name.
 #' @param quick If TRUE, perform a binary search. This assumes that once added, a
 #'  function does not go away.
 #'
-#' @return A version string.
+#' @return \code{fn_first_exists} returns a version string.
 #' @export
 #'
 #' @examples
@@ -99,14 +111,13 @@ fn_first_exists <- function (fn, package, quick = TRUE) {
 }
 
 
-#' Is a function's API unchanged?
-#'
 #' @inheritParams basic_params_doc
 #' @inheritParams current_fn_doc
 #' @details
-#' If \code{fn} does not exist at \code{version}, this returns \code{FALSE} with a warning.
-#' A function's API is defined by its arguments as reported by \code{\link{formals}}.
-#' @return \code{TRUE} or \code{FALSE}.
+#' If \code{fn} does not exist at \code{version}, \code{api_same_at} returns \code{FALSE} with a warning.
+#' @inherit same_api_doc details
+#' @return \code{api_same_at} returns \code{TRUE} or \code{FALSE}.
+#' @rdname api_first_same
 #' @export
 #'
 #' @examples
@@ -134,18 +145,23 @@ api_same_at <- function (fn, package, version = get_version_at_date(package, dat
 }
 
 
-#' Does a function exist at a given version or date?
-#'
+
 #' @inheritParams basic_params_doc
 #'
-#' @return TRUE or FALSE.
+#' @return \code{fn_exists_at} returns \code{TRUE} or \code{FALSE}.
+#' @rdname fn_first_exists
 #' @export
 #'
 #' @examples
 #' \notrun{
 #' fn_exists_at("read.arff", "foreign", version = "0.8-19")
 #' }
-fn_exists_at <- function (fn, package, version = get_version_at_date(package, date), date = NULL) {
+fn_exists_at <- function (
+        fn,
+        package,
+        version = get_version_at_date(package, date),
+        date = NULL
+      ) {
   if (missing(package)) c(package, fn) %<-% parse_fn(fn)
   test <- function (namespace) fn %in% names(namespace)
   load_version_namespace(package, version, test)
@@ -163,7 +179,12 @@ fn_exists_at <- function (fn, package, version = get_version_at_date(package, da
 #' \dontrun{
 #' get_fn_at("huxreg", "huxtable", "2.0.0")
 #' }
-get_fn_at <- function (fn, package, version = get_version_at_date(package, date), date = NULL) {
+get_fn_at <- function (
+        fn,
+        package,
+        version = get_version_at_date(package, date),
+        date = NULL
+      ) {
   if (missing(package)) c(package, fn) %<-% parse_fn(fn)
   test <- function (namespace) get(fn, namespace)
   load_version_namespace(package, version, test)
@@ -204,21 +225,23 @@ load_version_namespace  <- function (package, version, test) {
 }
 
 
-cached_install <- memoise::memoise(function (package, version) {
-  lib_dir <- getOption('pastapi.lib_dir', tempfile(pattern = "pastapi", tmpdir = normalizePath(tempdir())))
-  if (is.null(options('pastapi.lib_dir'))) options(pastapi.lib_dir = lib_dir)
-  package_dir <- file.path(lib_dir, paste(package, version, sep = "-"))
+cached_install <- memoise::memoise(
+  function (package, version) {
+    lib_dir <- getOption('pastapi.lib_dir', tempfile(pattern = "pastapi", tmpdir = normalizePath(tempdir())))
+    if (is.null(options('pastapi.lib_dir'))) options(pastapi.lib_dir = lib_dir)
+    package_dir <- file.path(lib_dir, paste(package, version, sep = "-"))
 
-  if (! dir.exists(package_dir)) {
-    dir.create(package_dir, recursive = TRUE)
-    # just shut up already:
-    suppressWarnings(
-      versions::install.versions(package, versions = version, lib = package_dir, verbose = FALSE, quiet = TRUE)
-    )
+    if (! dir.exists(package_dir)) {
+      dir.create(package_dir, recursive = TRUE)
+      # just shut up already:
+      suppressWarnings(
+        versions::install.versions(package, versions = version, lib = package_dir, verbose = FALSE, quiet = TRUE)
+      )
+    }
+
+    return(package_dir)
   }
-
-  return(package_dir)
-})
+)
 
 
 binary_search_versions <- function(vns, test) {
@@ -242,14 +265,16 @@ binary_search_versions <- function(vns, test) {
 }
 
 
-clean_versions <- memoise::memoise(function (package) {
-  vns <- versions::available.versions(package)[[package]]
-  vns <- vns[vns$available == TRUE,]
-  vns$date <- as.Date(vns$date)
-  vns <- vns[order(vns$date, decreasing = TRUE),]
+clean_versions <- memoise::memoise(
+  function (package) {
+    vns <- versions::available.versions(package)[[package]]
+    vns <- vns[vns$available == TRUE,]
+    vns$date <- as.Date(vns$date)
+    vns <- vns[order(vns$date, decreasing = TRUE),]
 
-  return(vns)
-})
+    return(vns)
+  }
+)
 
 
 parse_fn <- function (fn) {
