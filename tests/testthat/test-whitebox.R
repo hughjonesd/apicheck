@@ -30,6 +30,7 @@ test_that("binary_search_versions works", {
 
 test_that("cached_install and load_version_namespace work", {
   skip_on_cran()
+  skip_on_travis() # slow
 
   # expect possible warnings etc. but no errors
   expect_error(d1 <- pastapi:::cached_install("longurl", "0.3.0"), regexp = NA)

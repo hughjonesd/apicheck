@@ -6,6 +6,7 @@ teardown(if (! is.null(old)) set_pastapi_lib_dir(old))
 
 test_that("Can call functions with or without package", {
   skip_on_cran()
+  skip_on_travis() # slow
 
   # expect_identical doesn't work for these functions, maybe different
   expect_equal(
@@ -70,6 +71,7 @@ test_that("api_first_same works for functions, generics and S3 methods", {
 test_that("Can set pastapi.lib_dir and functions work", {
   skip_on_os("windows")
   skip_on_cran()
+  skip_on_travis() # slow
 
   tempdir <- tempfile(pattern = "testing", tmpdir = normalizePath(tempdir()))
   dir.create(tempdir)
