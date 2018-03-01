@@ -30,3 +30,7 @@ can_it_expand_urls <- function (namespace) "expand_urls" \%in\% names(namespace)
 call_with_namespace("longurl", "0.3.0", test = can_it_expand_urls)
 }
 }
+\seealso{
+Other utility functions: \code{\link{clear_package_cache}},
+  \code{\link{set_lib_dir}}
+}

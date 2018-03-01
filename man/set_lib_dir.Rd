@@ -2,15 +2,20 @@
 % Please edit documentation in R/pastapi.R
 \name{set_lib_dir}
 \alias{set_lib_dir}
+\alias{get_lib_dir}
 \title{Specify library location}
 \usage{
 set_lib_dir(lib_dir)
+
+get_lib_dir()
 }
 \arguments{
 \item{lib_dir}{Path to a directory.}
 }
 \value{
-The old library location. By default this is a subdirectory of \code{\link{tempdir}}.
+The old library location, invisibly. By default this is a subdirectory of \code{\link{tempdir}}.
+
+\code{get_lib_dir} returns the library location.
 }
 \description{
 This specifies where libraries will be downloaded to,
@@ -23,4 +28,9 @@ If \code{lib_dir} does not exist it will be created.
 \dontrun{
 set_lib_dir("~/.pastapi")
 }
+get_lib_dir()
+}
+\seealso{
+Other utility functions: \code{\link{call_with_namespace}},
+  \code{\link{clear_package_cache}}
 }

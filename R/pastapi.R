@@ -227,7 +227,7 @@ get_version_at_date <- function (package, date) {
 #' \dontrun{
 #' set_lib_dir("~/.pastapi")
 #' }
-set_lib_dir <- function(lib_dir) {
+set_lib_dir <- function (lib_dir) {
   if (! dir.exists(lib_dir)) dir.create(lib_dir, recursive = TRUE)
   x <- options('pastapi.lib_dir' = lib_dir)
 
@@ -235,12 +235,31 @@ set_lib_dir <- function(lib_dir) {
 }
 
 
+
+#' @return \code{get_lib_dir} returns the library location.
+#' @rdname set_lib_dir
+#' @family utility functions
+#' @export
+#' @examples
+#' get_lib_dir()
+get_lib_dir <- function () {
+  getOption('pastapi.lib_dir', LIB_DIR)
+}
+
+
 #' Delete all files from the package cache
 #'
-#' This attempts to delete \emph{everything} in the package cache, which is stored
-#' either in \code{getOption("pastapi.lib_dir")} as set by \code{link{set_lib_dir}}
-#' or, if that is unset, in a per-session temporary directory.
+#' This attempts to delete \emph{everything} in the package cache.
+#'
+#' @details
+#' The package cache is under the directory specified by \code{getOption("pastapi.lib_dir")},
+#' or, if that is unset, in a per-session temporary directory. You should use \code{\link{set_lib_dir}}
+#' to change this rather than setting the option directly. Within this directory, subdirectories
+#' are named like \code{package-version}, e.g. \code{longurl-0.3.0}. Within these subdirectories are
+#' the actual installed libraries.
+#'
 #' @return TRUE if all files and directories could be removed, FALSE otherwise.
+#' @family utility functions
 #' @export
 #'
 #' @examples
@@ -268,6 +287,7 @@ clear_package_cache <- function() {
 #' The package is downloaded and installed if necessary, and its namespace is loaded. Then the
 #' \code{test(ns)} is called with the namespace object, and its value is returned. On exit, the
 #' namespace is unloaded.
+#' @family utility functions
 #' @export
 #'
 #' @examples
