@@ -200,7 +200,9 @@ get_fn_at <- function (
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' get_version_at_date("huxtable", "2017-01-01")
+#' }
 get_version_at_date <- function (package, date) {
   vns <- clean_versions(package)
   latest <- vns$version[vns$date <= date & vns$available][1]
