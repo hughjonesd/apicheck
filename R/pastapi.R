@@ -218,7 +218,7 @@ get_version_at_date <- function (package, date) {
 #' and resets the cache of installed library locations.
 #' @param lib_dir Path to a directory.
 #'
-#' @return The old library location. By default this is a subdirectory of \code{\link{tempdir}}.
+#' @return The old library location, invisibly. By default this is a subdirectory of \code{\link{tempdir}}.
 #' @details
 #' If \code{lib_dir} does not exist it will be created.
 #' @export
@@ -231,7 +231,7 @@ set_lib_dir <- function(lib_dir) {
   if (! dir.exists(lib_dir)) dir.create(lib_dir, recursive = TRUE)
   x <- options('pastapi.lib_dir' = lib_dir)
 
-  return(x$pastapi.lib_dir)
+  return(invisible(x$pastapi.lib_dir))
 }
 
 
