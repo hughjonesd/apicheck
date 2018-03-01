@@ -18,5 +18,7 @@ A version string.
 Return the current version of a package at a given date
 }
 \examples{
+\dontrun{
 get_version_at_date("huxtable", "2017-01-01")
+}
 }
