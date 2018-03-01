@@ -226,7 +226,7 @@ get_version_at_date <- function (package, date) {
 #' set_pastapi_lib_dir("~/.pastapi")
 #' }
 set_pastapi_lib_dir <- function(lib_dir) {
-  x <- options('pastapi.lib_dir')
+  x <- getOption('pastapi.lib_dir')
   if (! dir.exists(lib_dir)) dir.create(lib_dir, recursive = TRUE)
   options('pastapi.lib_dir' = lib_dir)
   memoise::forget(cached_install)
