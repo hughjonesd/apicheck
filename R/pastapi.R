@@ -211,6 +211,31 @@ get_version_at_date <- function (package, date) {
 }
 
 
+#' Specify library location
+#'
+#' This specifies where libraries will be downloaded to,
+#' and resets the cache of installed library locations.
+#' @param lib_dir Path to a directory.
+#'
+#' @return The old library location. By default this is a subdirectory of \code{\link{tempdir()}}.
+#' @details
+#' If \code{lib_dir} does not exist it will be created.
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' set_pastapi_lib_dir("~/.pastapi")
+#' }
+set_pastapi_lib_dir <- function(lib_dir) {
+  x <- options('pastapi.lib_dir')
+  if (! dir.exists(lib_dir)) dir.create(lib_dir, recursive = TRUE)
+  options('pastapi.lib_dir' = lib_dir)
+  memoise::forget(cached_install)
+
+  return(x)
+}
+
+
 # loads a package's namespace at a particular version (if necessary installing it)
 # then runs the function test with the namespace as an argument, and returns the result
 load_version_namespace  <- function (package, version, test) {

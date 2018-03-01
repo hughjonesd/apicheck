@@ -2,7 +2,7 @@ context("Blackbox tests of API")
 
 old <- NULL
 setup(old <- options("pastapi.lib_dir"))
-teardown(if (! is.null(old)) options(pastapi.lib_dir = old))
+teardown(if (! is.null(old)) set_pastapi_lib_dir(old))
 
 test_that("Can call functions with or without package", {
   skip_on_cran()
@@ -69,7 +69,7 @@ test_that("Can set pastapi.lib_dir and functions work", {
 
   tempdir <- tempfile(pattern = "testing", tmpdir = normalizePath(tempdir()))
   dir.create(tempdir)
-  options(pastapi.lib_dir = tempdir)
+  set_pastapi_lib_dir(tempdir)
   id <- parallel::mcparallel(get_fn_at("expand_urls", "longurl", "0.3.0"))
   parallel::mccollect(id)
   expect_true(dir.exists(file.path(tempdir, "longurl-0.3.0", "longurl")))
