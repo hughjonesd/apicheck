@@ -1,8 +1,8 @@
 context("Blackbox tests of API")
 
 old <- NULL
-setup(old <- options("pastapi.lib_dir"))
-teardown(if (! is.null(old)) set_pastapi_lib_dir(old))
+setup(old <- getOption("pastapi.lib_dir"))
+teardown(set_pastapi_lib_dir(old))
 
 test_that("Can call functions with different calling conventions", {
   skip_on_cran()
@@ -16,7 +16,7 @@ test_that("Can call functions with different calling conventions", {
 })
 
 
-test_that("fn_exists_at works for functions, generics and S3 methods", {
+test_that("fn_exists_at works for functions, generics and methods", {
   skip_on_cran()
   skip_on_travis() # slow
 
@@ -26,6 +26,7 @@ test_that("fn_exists_at works for functions, generics and S3 methods", {
   expect_false(fn_exists_at("as_Workbook.huxtable", "huxtable", "2.0.2"))
   expect_true(fn_exists_at("insert_row", "huxtable", "0.3.1"))
   expect_false(fn_exists_at("insert_row", "huxtable", "0.3.0"))
+  expect_true(api_same_at("plot.SpatialGridDataFrame", "sp", "1.2-3"))
 })
 
 

@@ -48,6 +48,8 @@ NULL
 NULL
 
 
+LIB_DIR <- getOption('pastapi.lib_dir', tempfile(pattern = "pastapi", tmpdir = normalizePath(tempdir())))
+
 #' Compare function APIs across package versions
 #'
 #' \code{api_first_same} reports the first package version where the API of a function was the same as now (or
@@ -226,10 +228,9 @@ get_version_at_date <- function (package, date) {
 #' set_pastapi_lib_dir("~/.pastapi")
 #' }
 set_pastapi_lib_dir <- function(lib_dir) {
-  x <- getOption('pastapi.lib_dir')
+  LIB_DIR <<- lib_dir
   if (! dir.exists(lib_dir)) dir.create(lib_dir, recursive = TRUE)
   options('pastapi.lib_dir' = lib_dir)
-  memoise::forget(cached_install)
 
   return(x)
 }
@@ -265,9 +266,9 @@ call_with_namespace  <- function (package, version, test) {
 }
 
 
+
 cached_install <- function (package, version) {
-  lib_dir <- getOption('pastapi.lib_dir', tempfile(pattern = "pastapi", tmpdir = normalizePath(tempdir())))
-  if (is.null(getOption('pastapi.lib_dir'))) options(pastapi.lib_dir = lib_dir)
+  lib_dir <- getOption("pastapi.lib_dir", LIB_DIR)
   package_dir <- file.path(lib_dir, paste(package, version, sep = "-"))
 
   if (! dir.exists(package_dir)) {
