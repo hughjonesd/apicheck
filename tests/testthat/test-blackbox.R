@@ -25,7 +25,6 @@ test_that("fn_exists_at works for functions, generics and methods", {
   expect_false(fn_exists_at("as_Workbook.huxtable", "huxtable", "2.0.2"))
   expect_true(fn_exists_at("insert_row", "huxtable", "0.3.1"))
   expect_false(fn_exists_at("insert_row", "huxtable", "0.3.0"))
-  expect_true(api_same_at("plot.SpatialGridDataFrame", "sp", "1.2-3"))
 })
 
 
