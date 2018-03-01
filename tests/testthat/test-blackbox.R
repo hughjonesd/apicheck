@@ -5,6 +5,8 @@ setup(old <- options("pastapi.lib_dir"))
 teardown(if (! is.null(old)) options(pastapi.lib_dir = old))
 
 test_that("Can call functions with or without package", {
+  skip_on_cran()
+
   # expect_identical doesn't work for these functions, maybe different
   expect_equal(
           get_fn_at("as_Workbook", "huxtable", "3.0.0"),
@@ -14,6 +16,8 @@ test_that("Can call functions with or without package", {
 
 
 test_that("fn_exists_at works for functions, generics and S3 methods", {
+  skip_on_cran()
+
   expect_true(fn_exists_at("as_Workbook", "huxtable", "3.0.0"))
   expect_false(fn_exists_at("as_Workbook", "huxtable", "2.0.2"))
   expect_true(fn_exists_at("as_Workbook.huxtable", "huxtable", "3.0.0"))
@@ -24,6 +28,8 @@ test_that("fn_exists_at works for functions, generics and S3 methods", {
 
 
 test_that("fn_first_exists works for functions, generics and S3 methods", {
+  skip_on_cran()
+
   expect_equal(fn_first_exists("as_Workbook", "huxtable"), "3.0.0")
   expect_equal(fn_first_exists("as_Workbook.huxtable", "huxtable"), "3.0.0")
   expect_equal(fn_first_exists("insert_row", "huxtable"), "0.3.1")
@@ -31,6 +37,8 @@ test_that("fn_first_exists works for functions, generics and S3 methods", {
 
 
 test_that("api_same_at works for functions, generics and S3 methods", {
+  skip_on_cran()
+
   f <- get_fn_at("insert_row", "huxtable", "3.0.0")
   expect_true(api_same_at("insert_row", "huxtable", "2.0.2", current_fn = f))
   # should warn because insert_row didn't exist back then:
@@ -46,6 +54,8 @@ test_that("api_same_at works for functions, generics and S3 methods", {
 
 
 test_that("api_first_same works for functions, generics and S3 methods", {
+  skip_on_cran()
+
   f <- get_fn_at("insert_row", "huxtable", "3.0.0")
   expect_identical(api_first_same("insert_row", "huxtable", current_fn = f), "0.3.1")
   hr <- get_fn_at("huxreg", "huxtable", "2.0.2")
@@ -55,6 +65,7 @@ test_that("api_first_same works for functions, generics and S3 methods", {
 
 test_that("Can set pastapi.lib_dir and functions work", {
   skip_on_os("windows")
+  skip_on_cran()
 
   tempdir <- tempfile(pattern = "testing", tmpdir = normalizePath(tempdir()))
   dir.create(tempdir)
