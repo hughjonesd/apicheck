@@ -238,6 +238,7 @@ binary_search_versions <- function(vns, test) {
 
 clean_versions <- memoise::memoise(function (package) {
   vns <- versions::available.versions(package)[[package]]
+  vns <- vns[vns$available == TRUE,]
   vns$date <- as.Date(vns$date)
   vns <- vns[order(vns$date, decreasing = TRUE),]
 
