@@ -19,16 +19,35 @@ knitr::opts_chunk$set(
 # pastapi
 
 `pastapi`, pronounced "Pasta Pi", is a small R package to explore the past API of functions in CRAN packages.
+It is designed to help you work out minimum version requirements for packages mentioned in your DESCRIPTION file.
+
+`pastapi` works by downloading package versions from MRAN and temporarily installing them. So, results can 
+be slow!
 
 ## Example
 
-From huxtable's NEWS file, version 3.0.0:
+From [huxtable](https://github.com/hughjonesd/huxtable)'s NEWS file, version 3.0.0:
 
-* New quick_xlsx function.
+* New `quick_xlsx` function.
 
-```{r example, eval = FALSE}
+```{r options, include = FALSE}
+options(pastapi.lib_dir = "~/.pastapi")
+```
+
+```{r example}
 library(pastapi)
 fn_exists_at("quick_xlsx", "huxtable", "3.0.0")
 fn_exists_at("quick_xlsx", "huxtable", "2.0.2")
 fn_first_exists("quick_xlsx", "huxtable")
+```
+
+From the same place:
+
+* New `tidy_args` argument to huxreg allows per-model customization of the call to `tidy`.
+
+```{r example2}
+
+api_same_at("huxreg", "huxtable", "3.0.0")
+api_same_at("huxreg", "huxtable", "2.0.2")
+api_first_same("quick_xlsx", "huxtable")
 ```

@@ -4,7 +4,6 @@
 # use install.dates
 # deal with S4 methods; and test for that.
 # github setup
-# consider name... apidig? apihist? versionhist?
 
 
 #' @importFrom zeallot %<-%
@@ -57,14 +56,14 @@ NULL
 #' @export
 #'
 #' @examples
-#' api_first_unchanged("to_latex", "huxtable")
-api_first_unchanged <- function (fn, package, quick = TRUE, current_fn = NULL) {
+#' api_first_same("to_latex", "huxtable")
+api_first_same <- function (fn, package, quick = TRUE, current_fn = NULL) {
   if (missing(package)) c(package, fn) %<-% parse_fn(fn)
 
   force(current_fn)
   vns <- clean_versions(package)
   vns <- vns[seq(nrow(vns), 1),]
-  test <- function (version) suppressWarnings(api_unchanged_at(fn, package = package, version = version,
+  test <- function (version) suppressWarnings(api_same_at(fn, package = package, version = version,
         current_fn = current_fn))
   result <- if (quick) binary_search_versions(vns, test) else Find(test, vns$version)
 
@@ -125,9 +124,9 @@ fn_exists_at <- function (fn, package, version = get_version_at_date(package, da
 #'
 #' @examples
 #' \dontrun{
-#' api_unchanged_at("huxreg", "huxtable", "2.0.0")
+#' api_same_at("huxreg", "huxtable", "2.0.0")
 #' }
-api_unchanged_at <- function (fn, package, version = get_version_at_date(package, date), date = NULL,
+api_same_at <- function (fn, package, version = get_version_at_date(package, date), date = NULL,
       current_fn = NULL) {
   if (missing(package)) c(package, fn) %<-% parse_fn(fn)
   if (missing(current_fn) || is.null(current_fn)) {
@@ -202,7 +201,7 @@ load_version_namespace  <- function (package, version, test) {
 cached_install <- memoise::memoise(function (package, version) {
   lib_dir <- getOption('pastapi.lib_dir', tempfile(pattern = "pastapi", tmpdir = normalizePath(tempdir())))
   package_dir <- file.path(lib_dir, paste(package, version, sep = "-"))
-  dir.create(package_dir, recursive = TRUE)
+  if (! dir.exists(package_dir)) dir.create(package_dir, recursive = TRUE)
 
   if (dir.exists(file.path(package_dir, package))) {
     attempt_to_load <- try({
