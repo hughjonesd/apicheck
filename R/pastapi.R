@@ -30,7 +30,8 @@ NULL
 
 
 #' @param current_fn Current function for comparison. By default, \code{fn} in the current version of
-#'   the package. If provided, this must be an actual function, not a character string. You can use
+#'   the package (which is assumed to be available in a standard library location). If provided, this
+#'   must be an actual function, not a character string. You can use
 #'   \code{\link{get_fn_at}} to provide a suitable version.
 #' @name current_fn_doc
 NULL
@@ -56,7 +57,9 @@ NULL
 #' @export
 #'
 #' @examples
-#' api_first_same("to_latex", "huxtable")
+#' \dontrun{
+#' api_first_same("read.dta", "foreign")
+#' }
 api_first_same <- function (fn, package, quick = TRUE, current_fn = NULL) {
   if (missing(package)) c(package, fn) %<-% parse_fn(fn)
 
@@ -82,7 +85,9 @@ api_first_same <- function (fn, package, quick = TRUE, current_fn = NULL) {
 #' @export
 #'
 #' @examples
-#' fn_first_exists('as_Workbook', 'huxtable')
+#' \dontrun{
+#' fn_first_exists('read.dta', 'foreign')
+#' }
 fn_first_exists <- function (fn, package, quick = TRUE) {
   if (missing(package)) c(package, fn) %<-% parse_fn(fn)
   vns <- clean_versions(package)
@@ -91,24 +96,6 @@ fn_first_exists <- function (fn, package, quick = TRUE) {
   result <- if (quick) binary_search_versions(vns, test) else Find(test, vns$version)
 
   return(result)
-}
-
-
-#' Does a function exist at a given version or date?
-#'
-#' @inheritParams basic_params_doc
-#'
-#' @return TRUE or FALSE.
-#' @export
-#'
-#' @examples
-#' \notrun{
-#' fn_exists_at('as_Workbook', 'huxtable', version = '3.0.0')
-#' }
-fn_exists_at <- function (fn, package, version = get_version_at_date(package, date), date = NULL) {
-  if (missing(package)) c(package, fn) %<-% parse_fn(fn)
-  test <- function (namespace) fn %in% names(namespace)
-  load_version_namespace(package, version, test)
 }
 
 
@@ -127,7 +114,7 @@ fn_exists_at <- function (fn, package, version = get_version_at_date(package, da
 #' api_same_at("huxreg", "huxtable", "2.0.0")
 #' }
 api_same_at <- function (fn, package, version = get_version_at_date(package, date), date = NULL,
-      current_fn = NULL) {
+  current_fn = NULL) {
   if (missing(package)) c(package, fn) %<-% parse_fn(fn)
   if (missing(current_fn) || is.null(current_fn)) {
     cur_namespace <- loadNamespace(package, partial = TRUE)
@@ -136,15 +123,34 @@ api_same_at <- function (fn, package, version = get_version_at_date(package, dat
   }
   test <- function (namespace) {
     g <- tryCatch(
-            get(fn, namespace),
-            error = function (e) {warning(e$message); return(NULL)}
-          )
+      get(fn, namespace),
+      error = function (e) {warning(e$message); return(NULL)}
+    )
     if (is.null(g)) return(FALSE)
     identical(formals(current_fn), formals(g))
   }
 
   load_version_namespace(package, version, test)
 }
+
+
+#' Does a function exist at a given version or date?
+#'
+#' @inheritParams basic_params_doc
+#'
+#' @return TRUE or FALSE.
+#' @export
+#'
+#' @examples
+#' \notrun{
+#' fn_exists_at("read.arff", "foreign", version = "0.8-19")
+#' }
+fn_exists_at <- function (fn, package, version = get_version_at_date(package, date), date = NULL) {
+  if (missing(package)) c(package, fn) %<-% parse_fn(fn)
+  test <- function (namespace) fn %in% names(namespace)
+  load_version_namespace(package, version, test)
+}
+
 
 #' Retrieve a function as defined in a particular version of a package
 #'
@@ -173,7 +179,7 @@ get_fn_at <- function (fn, package, version = get_version_at_date(package, date)
 #' @export
 #'
 #' @examples
-#' get_version_at_date('huxtable', '2017-01-01')
+#' get_version_at_date("huxtable", "2017-01-01")
 get_version_at_date <- function (package, date) {
   vns <- clean_versions(package)
   latest <- vns$version[vns$date <= date & vns$available][1]
