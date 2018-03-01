@@ -17,6 +17,7 @@ test_that("Can call functions with or without package", {
 
 test_that("fn_exists_at works for functions, generics and S3 methods", {
   skip_on_cran()
+  skip_on_travis() # slow
 
   expect_true(fn_exists_at("as_Workbook", "huxtable", "3.0.0"))
   expect_false(fn_exists_at("as_Workbook", "huxtable", "2.0.2"))
@@ -29,6 +30,7 @@ test_that("fn_exists_at works for functions, generics and S3 methods", {
 
 test_that("fn_first_exists works for functions, generics and S3 methods", {
   skip_on_cran()
+  skip_on_travis() # slow
 
   expect_equal(fn_first_exists("as_Workbook", "huxtable"), "3.0.0")
   expect_equal(fn_first_exists("as_Workbook.huxtable", "huxtable"), "3.0.0")
@@ -38,6 +40,7 @@ test_that("fn_first_exists works for functions, generics and S3 methods", {
 
 test_that("api_same_at works for functions, generics and S3 methods", {
   skip_on_cran()
+  skip_on_travis() # slow
 
   f <- get_fn_at("insert_row", "huxtable", "3.0.0")
   expect_true(api_same_at("insert_row", "huxtable", "2.0.2", current_fn = f))
@@ -55,6 +58,7 @@ test_that("api_same_at works for functions, generics and S3 methods", {
 
 test_that("api_first_same works for functions, generics and S3 methods", {
   skip_on_cran()
+  skip_on_travis() # slow
 
   f <- get_fn_at("insert_row", "huxtable", "3.0.0")
   expect_identical(api_first_same("insert_row", "huxtable", current_fn = f), "0.3.1")
