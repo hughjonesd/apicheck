@@ -4,13 +4,14 @@ old <- NULL
 setup(old <- options("pastapi.lib_dir"))
 teardown(if (! is.null(old)) set_pastapi_lib_dir(old))
 
-test_that("Can call functions with or without package", {
+test_that("Can call functions with different calling conventions", {
   skip_on_cran()
+
 
   # expect_identical doesn't work for these functions, maybe different
   expect_equal(
-          get_fn_at("as_Workbook", "huxtable", "3.0.0"),
-          get_fn_at("huxtable::as_Workbook", version = "3.0.0")
+          get_fn_at("expand_urls", "longurl", "0.3.0"),
+          get_fn_at("longurl::expand_urls", version = "0.3.0")
         )
 })
 
