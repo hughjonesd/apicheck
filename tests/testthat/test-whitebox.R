@@ -1,9 +1,10 @@
 
 context("Whitebox tests for internal functions")
 
+old <- NULL
 
 setup({
-  old <- set_lib_dir(NULL)
+  old <<- set_lib_dir(NULL)
 })
 
 

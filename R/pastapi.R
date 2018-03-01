@@ -1,9 +1,8 @@
 
 
 # TODO
-# use install.dates
 # deal with S4 methods; and test for that.
-# github setup
+
 
 
 #' @importFrom zeallot %<-%
