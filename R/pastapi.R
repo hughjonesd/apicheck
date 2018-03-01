@@ -202,19 +202,14 @@ cached_install <- memoise::memoise(function (package, version) {
   lib_dir <- getOption('pastapi.lib_dir', tempfile(pattern = "pastapi", tmpdir = normalizePath(tempdir())))
   if (is.null(options('pastapi.lib_dir'))) options(pastapi.lib_dir = lib_dir)
   package_dir <- file.path(lib_dir, paste(package, version, sep = "-"))
-  if (! dir.exists(package_dir)) dir.create(package_dir, recursive = TRUE)
 
-  if (dir.exists(file.path(package_dir, package))) {
-    attempt_to_load <- try({
-      loadNamespace(package, lib.loc = package_dir, partial = TRUE)
-    }, silent = TRUE)
-    unloadNamespace(package)
-    if (class(attempt_to_load) != "try-error") return(package_dir)
+  if (! dir.exists(package_dir)) {
+    dir.create(package_dir, recursive = TRUE)
+    # just shut up already:
+    suppressWarnings(
+      versions::install.versions(package, versions = version, lib = package_dir, verbose = FALSE, quiet = TRUE)
+    )
   }
-  # just shut up already:
-  suppressMessages(suppressWarnings(
-          versions::install.versions(package, versions = version, lib = package_dir, verbose = FALSE, quiet = TRUE)
-        ))
 
   return(package_dir)
 })
