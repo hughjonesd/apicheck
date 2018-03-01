@@ -17,6 +17,17 @@ test_that("clean_versions works", {
 })
 
 
+test_that("Failure to install a file does not leave a directory on disk", {
+  tempdir <- tempfile(pattern = "testing", tmpdir = normalizePath(tempdir()))
+  dir.create(tempdir)
+  set_lib_dir(tempdir)
+  with_mock(`versions::install.versions` = function (...) stop("Some crazy failure"), {
+    expect_error(get_fn_at("expand_urls", "longurl", "0.3.0"), "Some crazy failure")
+    expect_false(dir.exists(file.path(tempdir, "longurl")))
+  })
+})
+
+
 test_that("binary_search_versions works", {
   vns <- data.frame(versions = 1:10)
   mytest <- function (x) x >= 5

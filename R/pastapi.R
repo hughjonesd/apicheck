@@ -281,8 +281,15 @@ call_with_namespace  <- function (package, version, test) {
     unloadNamespace(package)
   }
   package_dir <- cached_install(package, version)
+  namespace <- tryCatch(
+    loadNamespace(package, lib.loc = package_dir, partial = TRUE),
+    error = function (e) {
+      loudly_unlink(package_dir)
+      stop("Failed to load the '", package, "' namespace from '", package_dir, "'.\n",
+            "Maybe something went silently wrong during installation.")
+    }
+  )
 
-  namespace <- loadNamespace(package, lib.loc = package_dir, partial = TRUE)
   on.exit(unloadNamespace(package))
 
   test(namespace)
@@ -291,15 +298,25 @@ call_with_namespace  <- function (package, version, test) {
 
 
 cached_install <- function (package, version) {
+  force(version)
   lib_dir <- getOption("pastapi.lib_dir", LIB_DIR)
   package_dir <- file.path(lib_dir, paste(package, version, sep = "-"))
 
   if (! dir.exists(package_dir)) {
-    dir.create(package_dir, recursive = TRUE)
+    if (! dir.create(package_dir, recursive = TRUE)) stop("Could not create ", package_dir)
     tryCatch(
-      versions::install.versions(package, versions = version, lib = package_dir, verbose = FALSE, quiet = TRUE),
-      warning = function (w) if (grepl("non-zero exit", w$message)) {
-        stop("Failed to install version ", version, ", aborting")
+      versions::install.versions(package, versions = version, lib = package_dir, verbose = TRUE),
+      warning = function (w) {
+        if (grepl("non-zero exit", w$message)) {
+          loudly_unlink(package_dir)
+          stop("Failed to install version ", version, ", aborting")
+        } else {
+          warning(w$message)
+        }
+      },
+      error = function (e) {
+        loudly_unlink(package_dir)
+        stop(e$message)
       })
   }
 
@@ -339,6 +356,15 @@ clean_versions <- memoise::memoise(
     return(vns)
   }
 )
+
+
+loudly_unlink <- function (dir) {
+  if (dir.exists(dir) && ! unlink(dir, recursive = TRUE) == 0) stop(
+        "Could not unlink package dir ", dir, " after failed installation. ",
+        "Please delete the directory yourself or run clear_package_cache() to delete all directories")
+
+  invisible(NULL)
+}
 
 
 parse_fn <- function (fn) {
