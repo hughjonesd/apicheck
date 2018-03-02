@@ -348,30 +348,43 @@ call_with_namespace  <- function (package, version, test) {
     warning(package, " is already loaded. Attempting to unload.")
     unloadNamespace(package)
   }
-  package_dir <- cached_install(package, version)
-  namespace <- tryCatch(
-    loadNamespace(package, lib.loc = package_dir, partial = TRUE),
-    error = function (e) {
-      loudly_unlink(package_dir)
-      stop("Failed to load the '", package, "' namespace from '", package_dir, "'.\n",
-            "Maybe something went silently wrong during installation.")
-    }
-  )
-
+  namespace <- load_version_namespace(package, version)
   on.exit(unloadNamespace(package))
-
   test(namespace)
 }
 
 
 
-cached_install <- function (package, version) {
+#' Load the namespace from a version of a package
+#'
+#' @param package Package name.
+#' @param version Version as a character string.
+#' @param cache   If FALSE, always try to reinstall the package.
+#'
+#' @details
+#' If the package is not found in the package cache, it will be downloaded and
+#' installed there.
+#'
+#' @return The namespace object.
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' load_version_namespace("clipr", "0.4.0")
+#' }
+load_version_namespace <- function (package, version, cache = TRUE) {
   force(version)
   lib_dir <- get_lib_dir()
   package_dir <- file.path(lib_dir, paste(package, version, sep = "-"))
 
-  if (! dir.exists(package_dir)) {
-    if (! dir.create(package_dir, recursive = TRUE)) stop("Could not create ", package_dir)
+  if (! cache && dir.exists(package_dir)) {
+    if (! identical(unlink(package_dir, recursive = TRUE), 0L)) stop(
+          "Could not delete old package directory '", package_dir, "'")
+  }
+  if (! cache || ! dir.exists(package_dir)) {
+    dir.create(package_dir, recursive = TRUE)
+    if (! dir.exists(package_dir)) stop("Could not create ", package_dir)
     tryCatch(
       versions::install.versions(package, versions = version, lib = package_dir, verbose = TRUE),
       warning = function (w) {
@@ -388,7 +401,16 @@ cached_install <- function (package, version) {
       })
   }
 
-  return(package_dir)
+  namespace <- tryCatch(
+    loadNamespace(package, lib.loc = package_dir, partial = TRUE),
+    error = function (e) {
+      loudly_unlink(package_dir)
+      stop("Failed to load the '", package, "' namespace from '", package_dir, "'.\n",
+        "Maybe something went silently wrong during installation.")
+    }
+  )
+
+  return(namespace)
 }
 
 

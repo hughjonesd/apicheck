@@ -11,6 +11,31 @@ teardown({
   set_lib_dir(old)
 })
 
+
+
+test_that("load_version_namespace and call_with_namespace", {
+  skip_on_cran()
+  skip_on_travis() # slow
+  # can't skip_if_mran_down() because it uses this very function, so instead:
+
+  # expect possible warnings etc. but no errors
+  # res is NULL if there is an error
+  res <- expect_error(d1 <- load_version_namespace("clipr", "0.4.0"), regexp = NA)
+  if (is.null(res)) skip("load_version_namespace failed, no point trying the others")
+  expect_error(d2 <- load_version_namespace("clipr", "0.4.0"), regexp = NA)
+  expect_error(d3 <- load_version_namespace("clipr", "0.3.3"), regexp = NA)
+  expect_identical(d1, d2)
+  expect_false(identical(d1, d3))
+
+  test <- function (namespace) "OK"
+  # already downloaded
+  expect_error(x <- call_with_namespace("clipr", "0.4.0", test), regexp = NA)
+  expect_identical(x, "OK")
+  expect_error(y <- call_with_namespace("clipr", "0.3.2", test), regexp = NA)
+  expect_identical(y, "OK")
+})
+
+
 test_that("Can call functions with different calling conventions", {
   skip_on_cran()
 
@@ -64,7 +89,7 @@ test_that("Can set lib_dir", {
   tempdir <- tempfile(pattern = "testing", tmpdir = normalizePath(tempdir()))
   dir.create(tempdir)
   set_lib_dir(tempdir)
-  prepare <- try(pastapi:::cached_install("clipr", "0.4.0"))
-  if (class(prepare) == "try-error") skip("Couldn't download assertthat for testing")
-  expect_true(dir.exists(file.path(tempdir, "clipr-0.4.0", "assertthat")))
+  prepare <- try(load_version_namespace("clipr", "0.4.0"))
+  if (class(prepare) == "try-error") skip("Couldn't download package for testing")
+  expect_true(dir.exists(file.path(tempdir, "clipr-0.4.0", "clipr")))
 })
