@@ -316,7 +316,7 @@ clear_package_cache <- function() {
   lib_dir <- get_lib_dir()
   ok <- TRUE
   for (obj in list.files(lib_dir, full.names = TRUE)) {
-    if (dir.exists(obj))  ok <- ok && (unlink(obj, recursive = TRUE) != 0)
+    if (dir.exists(obj))  ok <- ok && identical(unlink(obj, recursive = TRUE), 0L)
     if (file.exists(obj)) ok <- ok && file.remove(obj)
   }
 
@@ -427,7 +427,7 @@ mran_versions <- memoise::memoise(
 
 
 loudly_unlink <- function (dir) {
-  if (dir.exists(dir) && ! unlink(dir, recursive = TRUE) == 0) stop(
+  if (dir.exists(dir) && ! identical(unlink(dir, recursive = TRUE), 0L)) stop(
         "Could not unlink package dir ", dir, " after failed installation. ",
         "Please delete the directory yourself or run clear_package_cache() to delete all directories")
 
