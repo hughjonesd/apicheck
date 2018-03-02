@@ -15,7 +15,7 @@ test_that("Can call functions with different calling conventions", {
 })
 
 
-test_that("fn_exists_at works for functions, generics and methods", {
+test_that("fn_exists_at works for functions, generics and S3 methods", {
   skip_on_cran()
   skip_on_travis() # slow
 
@@ -25,6 +25,8 @@ test_that("fn_exists_at works for functions, generics and methods", {
   expect_false(fn_exists_at("as_Workbook.huxtable", "huxtable", "2.0.2"))
   expect_true(fn_exists_at("insert_row", "huxtable", "0.3.1"))
   expect_false(fn_exists_at("insert_row", "huxtable", "0.3.0"))
+  expect_true(fn_exists_at("tag_delete", "git2r", "0.16.0"))
+  expect_false(fn_exists_at("tag_delete", "git2r", "0.15.0"))
 })
 
 
@@ -35,6 +37,7 @@ test_that("fn_first_exists works for functions, generics and S3 methods", {
   expect_equal(fn_first_exists("as_Workbook", "huxtable"), "3.0.0")
   expect_equal(fn_first_exists("as_Workbook.huxtable", "huxtable"), "3.0.0")
   expect_equal(fn_first_exists("insert_row", "huxtable"), "0.3.1")
+  expect_equal(fn_first_exists("tag_delete", "git2r"), "0.16.0")
 })
 
 
@@ -52,7 +55,10 @@ test_that("api_same_at works for functions, generics and S3 methods", {
   expect_false(api_same_at("to_screen.huxtable", "huxtable", "0.2.0", current_fn = to_s))
   to_s <- get_fn_at("to_screen", "huxtable", "3.0.0")
   expect_true(api_same_at("to_screen", "huxtable", "1.0.0", current_fn = to_s))
-  # hard to find a case when a generic changes its API
+  st <- get_fn_at("status", "git2r", "0.21.0")
+  expect_true(api_same_at("status", "git2r", "0.16.0", current_fn = st))
+  # all_untracked argument added in 0.16.0:
+  expect_false(api_same_at("status", "git2r", "0.15.0", current_fn = st))
 })
 
 
@@ -64,6 +70,8 @@ test_that("api_first_same works for functions, generics and S3 methods", {
   expect_identical(api_first_same("insert_row", "huxtable", current_fn = f), "0.3.1")
   hr <- get_fn_at("huxreg", "huxtable", "2.0.2")
   expect_identical(api_first_same("huxreg", "huxtable", current_fn = hr, quick = FALSE), "1.2.0")
+  st <- get_fn_at("status", "git2r", "0.21.0")
+  expect_identical(api_first_same("status", "git2r", current_fn = st), "0.16.0")
 })
 
 
