@@ -22,16 +22,21 @@ test_that("Can call functions with different calling conventions", {
 })
 
 
-test_that("fn_exists_at and fn_first_exists", {
+test_that("fn_exists_at", {
   skip_on_cran()
 
   expect_true(fn_exists_at("as_Workbook", "huxtable", "3.0.0"))
   expect_false(fn_exists_at("as_Workbook", "huxtable", "2.0.2"))
+})
+
+test_that("fn_first_exists", {
+  skip_on_cran()
+  skip_on_travis()
+
   expect_equal(fn_first_exists("as_Workbook", "huxtable"), "3.0.0")
 })
 
-
-test_that("api_same_at works for functions, generics and S3 methods", {
+test_that("api_same_at", {
   skip_on_cran()
 
   hr3 <- get_fn_at("huxreg", "huxtable", "3.0.0")
@@ -41,6 +46,11 @@ test_that("api_same_at works for functions, generics and S3 methods", {
   # should warn because insert_row didn't exist back then:
   expect_warning(x <- api_same_at("quick_xlsx", "huxtable", "2.0.2", current_fn = qx))
   expect_false(x)
+})
+
+test_that("api_first_same", {
+  skip_on_cran()
+  skip_on_travis()
 
   expect_identical(api_first_same("quick_xlsx", "huxtable", current_fn = qx), "3.0.0") # new function
   expect_identical(api_first_same("huxreg", "huxtable", current_fn = hr3), "3.0.0")    # API change
