@@ -14,6 +14,13 @@ teardown({
   set_lib_dir(old)
 })
 
+for (i in 1:10) {
+test_that("are we really skipping stuff on appveyor", {
+  skip_on_cran()
+
+})
+}
+
 
 test_that("parse_fn works", {
   expect_identical(pastapi:::parse_fn("foo::bar"), c("foo", "bar"))
