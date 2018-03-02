@@ -216,19 +216,22 @@ get_version_at_date <- function (package, date) {
 #' This specifies where libraries will be downloaded to,
 #' and resets the cache of installed library locations.
 #' @param lib_dir Path to a directory, or \code{NULL} to unset.
+#' @param create  Logical. Try to create the directory if it doesn't exist.
 #'
 #' @return The old library location, invisibly. By default this is a subdirectory of \code{\link{tempdir}}.
 #' @details
-#' If \code{lib_dir} does not exist it will be created. If you set it to \code{NULL}, a subdirectory
-#' of \code{tempdir()} will be used.
+#' If \code{lib_dir} is set to \code{NULL}, a subdirectory of \code{tempdir()} will be used.
 #' @export
 #'
 #' @examples
 #' \dontrun{
 #' set_lib_dir("~/.pastapi")
 #' }
-set_lib_dir <- function (lib_dir) {
-  if (! is.null(lib_dir) && ! dir.exists(lib_dir)) dir.create(lib_dir, recursive = TRUE)
+set_lib_dir <- function (lib_dir, create = FALSE) {
+  notthere <- ! is.null(lib_dir) && ! dir.exists(lib_dir)
+  if (notthere && create) notthere <- ! dir.create(lib_dir, recursive = TRUE)
+  if (notthere) stop("Directory '", lib_dir, "' does not exist", if (create) " and could not be created")
+
   x <- options('pastapi.lib_dir' = lib_dir)
   x <- x$pastapi.lib_dir
   if (is.null(x)) x <- LIB_DIR
@@ -269,7 +272,7 @@ get_lib_dir <- function () {
 #' clear_package_cache()
 #' }
 clear_package_cache <- function() {
-  lib_dir <- getOption("pastapi.lib_dir", LIB_DIR)
+  lib_dir <- get_lib_dir()
   ok <- TRUE
   for (obj in list.files(lib_dir, all.files = TRUE, full.names = TRUE)) {
     if (file.exists(obj)) ok <- ok && file.remove(obj)
@@ -320,7 +323,7 @@ call_with_namespace  <- function (package, version, test) {
 
 cached_install <- function (package, version) {
   force(version)
-  lib_dir <- getOption("pastapi.lib_dir", LIB_DIR)
+  lib_dir <- get_lib_dir()
   package_dir <- file.path(lib_dir, paste(package, version, sep = "-"))
 
   if (! dir.exists(package_dir)) {

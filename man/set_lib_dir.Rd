@@ -5,12 +5,14 @@
 \alias{get_lib_dir}
 \title{Specify library location}
 \usage{
-set_lib_dir(lib_dir)
+set_lib_dir(lib_dir, create = FALSE)
 
 get_lib_dir()
 }
 \arguments{
 \item{lib_dir}{Path to a directory, or \code{NULL} to unset.}
+
+\item{create}{Logical. Try to create the directory if it doesn't exist.}
 }
 \value{
 The old library location, invisibly. By default this is a subdirectory of \code{\link{tempdir}}.
@@ -22,8 +24,7 @@ This specifies where libraries will be downloaded to,
 and resets the cache of installed library locations.
 }
 \details{
-If \code{lib_dir} does not exist it will be created. If you set it to \code{NULL}, a subdirectory
-of \code{tempdir()} will be used.
+If \code{lib_dir} is set to \code{NULL}, a subdirectory of \code{tempdir()} will be used.
 }
 \examples{
 \dontrun{
