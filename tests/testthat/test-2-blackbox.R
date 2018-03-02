@@ -25,7 +25,7 @@ test_that("load_version_namespace and call_with_namespace", {
   expect_error(d2 <- load_version_namespace("clipr", "0.4.0"), regexp = NA)
   expect_error(d3 <- load_version_namespace("clipr", "0.2.0"), regexp = NA)
   expect_equal(d1, d2) # but not identical for some reason
-  expect_false(isTrue(all.equal(d1, d3)))
+  expect_false(isTRUE(all.equal(d1, d3)))
   unloadNamespace("clipr")
 
   test <- function (namespace) {
