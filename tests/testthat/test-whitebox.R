@@ -18,10 +18,10 @@ test_that("parse_fn works", {
 })
 
 
-test_that("clean_versions works", {
-  expect_silent(vns <- pastapi:::clean_versions("longurl"))
+test_that("mran_versions works", {
+  expect_silent(vns <- pastapi:::mran_versions("longurl"))
   # check caching:
-  expect_silent(vns2 <- pastapi:::clean_versions("longurl"))
+  expect_silent(vns2 <- pastapi:::mran_versions("longurl"))
   expect_identical(vns, vns2)
   expect_identical(names(vns), c("version", "date", "available"))
   expect_true(all(vns$available))

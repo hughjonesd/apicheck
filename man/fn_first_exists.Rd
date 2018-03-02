@@ -11,9 +11,9 @@ fn_exists_at(fn, package, version = get_version_at_date(package, date),
   date = NULL)
 }
 \arguments{
-\item{fn}{Function name.}
+\item{fn}{Function name as a character string.}
 
-\item{package}{Package name.}
+\item{package}{Package. Alternatively, specify the function name as e.g. \code{"package::function"}.}
 
 \item{quick}{If TRUE, perform a binary search. This assumes that once added, a
 function does not go away.}
@@ -30,6 +30,9 @@ function does not go away.}
 \description{
 \code{fn_first_exists} reports the first package version where a function exists. \code{fn_exists_at} reports
 whether a function exists at a specific previous version.
+}
+\details{
+This function downloads and installs multiple versions from MRAN, so it is likely to be slow.
 }
 \examples{
 \dontrun{

@@ -39,13 +39,20 @@ NULL
 #' @name same_api_doc
 NULL
 
+#' @details
+#' This function downloads and installs multiple versions from MRAN, so it is likely to be slow.
+#' @name slow_warning_doc
+NULL
+
 #' @param fn Function name as a character string.
 #' @param package Package. Alternatively, specify the function name as e.g. \code{"package::function"}.
-#' @param version Version as a character string. If omitted, use the version available at \code{date}.
-#' @param date Date, as a character string that can be read by \code{\link{as.Date}} e.g. "2016-01-01".
 #' @name basic_params_doc
 NULL
 
+#' @param version Version as a character string. If omitted, use the version available at \code{date}.
+#' @param date Date, as a character string that can be read by \code{\link{as.Date}} e.g. "2016-01-01".
+#' @name version_params_doc
+NULL
 
 LIB_DIR <- getOption('pastapi.lib_dir', tempfile(pattern = "pastapi", tmpdir = normalizePath(tempdir())))
 
@@ -55,10 +62,13 @@ LIB_DIR <- getOption('pastapi.lib_dir', tempfile(pattern = "pastapi", tmpdir = n
 #' the same as \code{current_fn}). \code{api_same_at} reports whether a specific previous version had the same
 #' API as now.
 #'
-#' @inheritParams basic_params_doc
+#' @inherit basic_params_doc params
+#' @inherit version_params_doc params
 #' @param quick If \code{TRUE}, do a binary search that assumes API is never same, then different.
-#' @inheritParams current_fn_doc
+#' @inherit current_fn_doc params
+#'
 #' @inherit same_api_doc details
+#' @inherit slow_warning_doc details
 #'
 #' @return \code{api_first_same} returns a version string.
 #'
@@ -73,7 +83,7 @@ api_first_same <- function (fn, package, quick = TRUE,
   if (missing(package)) c(package, fn) %<-% parse_fn(fn)
 
   force(current_fn)
-  vns <- clean_versions(package)
+  vns <- mran_versions(package)
   vns <- vns[seq(nrow(vns), 1),]
   test <- function (version) suppressWarnings(api_same_at(fn, package = package, version = version,
         current_fn = current_fn))
@@ -88,12 +98,14 @@ api_first_same <- function (fn, package, quick = TRUE,
 #' \code{fn_first_exists} reports the first package version where a function exists. \code{fn_exists_at} reports
 #' whether a function exists at a specific previous version.
 #'
-#' @param fn Function name.
-#' @param package Package name.
+#' @inherit basic_params_doc params
 #' @param quick If TRUE, perform a binary search. This assumes that once added, a
 #'  function does not go away.
 #'
+#' @inherit slow_warning_doc details
+#'
 #' @return \code{fn_first_exists} returns a version string.
+#'
 #' @export
 #'
 #' @examples
@@ -102,7 +114,7 @@ api_first_same <- function (fn, package, quick = TRUE,
 #' }
 fn_first_exists <- function (fn, package, quick = TRUE) {
   if (missing(package)) c(package, fn) %<-% parse_fn(fn)
-  vns <- clean_versions(package)
+  vns <- mran_versions(package)
   vns <- vns[seq(nrow(vns), 1),]
   test <- function (version) fn_exists_at(fn, package = package, version = version)
   result <- if (quick) binary_search_versions(vns, test) else Find(test, vns$version)
@@ -111,13 +123,18 @@ fn_first_exists <- function (fn, package, quick = TRUE) {
 }
 
 
-#' @inheritParams basic_params_doc
-#' @inheritParams current_fn_doc
+#' @inherit basic_params_doc params
+#' @inherit version_params_doc params
+#' @inherit current_fn_doc params
+#'
 #' @details
 #' If \code{fn} does not exist at \code{version}, \code{api_same_at} returns \code{FALSE} with a warning.
 #' @inherit same_api_doc details
+#'
 #' @return \code{api_same_at} returns \code{TRUE} or \code{FALSE}.
+#'
 #' @rdname api_first_same
+#'
 #' @export
 #'
 #' @examples
@@ -146,10 +163,13 @@ api_same_at <- function (fn, package, version = get_version_at_date(package, dat
 
 
 
-#' @inheritParams basic_params_doc
+#' @inherit basic_params_doc params
+#' @inherit version_params_doc params
 #'
 #' @return \code{fn_exists_at} returns \code{TRUE} or \code{FALSE}.
+#'
 #' @rdname fn_first_exists
+#'
 #' @export
 #'
 #' @examples
@@ -170,9 +190,11 @@ fn_exists_at <- function (
 
 #' Retrieve a function from a particular package version
 #'
-#' @inheritParams basic_params_doc
+#' @inherit basic_params_doc params
+#' @inherit version_params_doc params
 #'
 #' @return The function itself.
+#'
 #' @export
 #'
 #' @examples
@@ -197,6 +219,7 @@ get_fn_at <- function (
 #' @param date A date.
 #'
 #' @return A version string.
+#'
 #' @export
 #'
 #' @examples
@@ -204,7 +227,7 @@ get_fn_at <- function (
 #' get_version_at_date("huxtable", "2017-01-01")
 #' }
 get_version_at_date <- function (package, date) {
-  vns <- clean_versions(package)
+  vns <- mran_versions(package)
   latest <- vns$version[vns$date <= date & vns$available][1]
 
   return(latest)
@@ -219,9 +242,11 @@ get_version_at_date <- function (package, date) {
 #' @param lib_dir Path to a directory, or \code{NULL} to unset.
 #' @param create  Logical. Try to create the directory if it doesn't exist.
 #'
-#' @return The old library location, invisibly. By default this is a subdirectory of \code{\link{tempdir}}.
 #' @details
 #' If \code{lib_dir} is set to \code{NULL}, a subdirectory of \code{tempdir()} will be used.
+#'
+#' @return The old library location, invisibly. By default this is a subdirectory of \code{\link{tempdir}}.
+#'
 #' @export
 #'
 #' @examples
@@ -243,9 +268,13 @@ set_lib_dir <- function (lib_dir, create = FALSE) {
 
 
 #' @return \code{get_lib_dir} returns the library location.
+#'
 #' @rdname set_lib_dir
+#'
 #' @family utility functions
+#'
 #' @export
+#'
 #' @examples
 #' get_lib_dir()
 get_lib_dir <- function () {
@@ -265,7 +294,9 @@ get_lib_dir <- function () {
 #' the actual installed libraries.
 #'
 #' @return TRUE if all files and directories could be removed, FALSE otherwise.
+#'
 #' @family utility functions
+#'
 #' @export
 #'
 #' @examples
@@ -288,11 +319,14 @@ clear_package_cache <- function() {
 #' @param package Package name.
 #' @param version Version as a character string.
 #' @param test A one-argument function. See Details.
-#' @return The value returned by \code{test}.
+#'
 #' @details
 #' The package is downloaded and installed if necessary, and its namespace is loaded. Then the
 #' \code{test(ns)} is called with the namespace object, and its value is returned. On exit, the
 #' namespace is unloaded.
+#'
+#' @return The value returned by \code{test}.
+#'
 #' @export
 #'
 #' @examples
@@ -371,7 +405,7 @@ binary_search_versions <- function(vns, test) {
 }
 
 
-clean_versions <- memoise::memoise(
+mran_versions <- memoise::memoise(
   function (package) {
     vns <- versions::available.versions(package)[[package]]
     vns <- vns[vns$available == TRUE,]
