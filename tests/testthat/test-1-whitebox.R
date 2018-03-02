@@ -20,17 +20,6 @@ test_that("parse_fn works", {
 })
 
 
-test_that("mran_versions works", {
-  expect_silent(vns <- pastapi:::mran_versions("longurl"))
-  # check caching:
-  expect_silent(vns2 <- pastapi:::mran_versions("longurl"))
-  expect_identical(vns, vns2)
-  expect_identical(names(vns), c("version", "date", "available"))
-  expect_true(all(vns$available))
-  expect_identical(vns, vns[order(vns$date, decreasing = TRUE), ])
-})
-
-
 test_that("Failure to install a file does not leave a directory on disk", {
   tempdir <- tempfile(pattern = "testing", tmpdir = normalizePath(tempdir()))
   dir.create(tempdir)
@@ -53,31 +42,42 @@ test_that("binary_search_versions works", {
 })
 
 
+test_that("mran_versions works", {
+  expect_silent(vns <- pastapi:::mran_versions("longurl"))
+  # check caching:
+  expect_silent(vns2 <- pastapi:::mran_versions("longurl"))
+  expect_identical(vns, vns2)
+  expect_identical(names(vns), c("version", "date", "available"))
+  expect_true(all(vns$available))
+  expect_identical(vns, vns[order(vns$date, decreasing = TRUE), ])
+})
+
+
 test_that("cached_install and call_with_namespace work", {
   skip_on_cran()
   skip_on_travis() # slow
+  # can't skip_if_mran_down() because it uses this very function...
 
   # expect possible warnings etc. but no errors
-  expect_error(d1 <- pastapi:::cached_install("longurl", "0.3.0"), regexp = NA)
-  expect_error(d2 <- pastapi:::cached_install("longurl", "0.3.0"), regexp = NA)
-  expect_error(d3 <- pastapi:::cached_install("longurl", "0.2.0"), regexp = NA)
+  expect_error(d1 <- pastapi:::cached_install("assertthat", "0.2.0"), regexp = NA)
+  expect_error(d2 <- pastapi:::cached_install("assertthat", "0.2.0"), regexp = NA)
+  expect_error(d3 <- pastapi:::cached_install("assertthat", "0.1"), regexp = NA)
   expect_identical(d1, d2)
   expect_false(identical(d1, d3))
 
   test <- function (namespace) "OK"
-  # new download:
-  expect_error(call_with_namespace("longurl", "0.1.1", test), regexp = NA)
-  # already downloaded:
-  expect_error(call_with_namespace("longurl", "0.3.0", test), regexp = NA)
+  # already downloaded
+  expect_error(x <- call_with_namespace("assertthat", "0.2.0", test), regexp = NA)
+  expect_identical(x, "OK")
+  expect_error(y <- call_with_namespace("clipr", "0.4.0", test), regexp = NA)
+  expect_identical(y, "OK")
 })
 
 
 
 test_that("clear_package_cache works", {
-  skip_on_cran()
-  skip_on_travis()
-
-  pastapi:::cached_install("longurl", "0.3.0")
+  ld <- get_lib_dir()
+  cat("blah", file = file.path(ld, "notarealpackage-0.2.0"))
   clear_package_cache()
-  expect_false(dir.exists(file.path(get_lib_dir(), "longurl-0.3.0")))
+  expect_length(list.files(ld, all.files = TRUE), 0)
 })

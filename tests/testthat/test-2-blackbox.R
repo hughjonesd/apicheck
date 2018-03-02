@@ -29,12 +29,6 @@ test_that("fn_exists_at", {
   expect_false(fn_exists_at("as_Workbook", "huxtable", "2.0.2"))
 })
 
-test_that("fn_first_exists", {
-  skip_on_cran()
-  skip_on_travis()
-
-  expect_equal(fn_first_exists("as_Workbook", "huxtable"), "3.0.0")
-})
 
 test_that("api_same_at", {
   skip_on_cran()
@@ -48,21 +42,29 @@ test_that("api_same_at", {
   expect_false(x)
 })
 
-test_that("api_first_same", {
+
+test_that("fn_first_exists and api_first_same", {
   skip_on_cran()
   skip_on_travis()
+  skip_if_mran_down()
 
+  expect_equal(fn_first_exists("as_Workbook", "huxtable"), "3.0.0")
+  qx <- get_fn_at("quick_xlsx", "huxtable", "3.0.0")
   expect_identical(api_first_same("quick_xlsx", "huxtable", current_fn = qx), "3.0.0") # new function
   expect_identical(api_first_same("huxreg", "huxtable", current_fn = hr3), "3.0.0")    # API change
+
 })
+
 
 
 test_that("Can set lib_dir", {
   skip_on_cran()
+  skip_on_travis()
 
   tempdir <- tempfile(pattern = "testing", tmpdir = normalizePath(tempdir()))
   dir.create(tempdir)
   set_lib_dir(tempdir)
-  expect_error(get_fn_at("expand_urls", "longurl", "0.3.0"), regexp = NA)
-  expect_true(dir.exists(file.path(tempdir, "longurl-0.3.0", "longurl")))
+  prepare <- try(pastapi:::cached_install("assertthat", "0.2.0"))
+  if (class(prepare) == "try-error") skip("Couldn't download assertthat for testing")
+  expect_true(dir.exists(file.path(tempdir, "assertthat-0.2.0", "assertthat")))
 })
