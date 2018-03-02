@@ -81,5 +81,5 @@ test_that("clear_package_cache works", {
   ld <- get_lib_dir()
   cat("blah", file = file.path(ld, "notarealpackage-0.2.0"))
   clear_package_cache()
-  expect_length(list.files(ld, all.files = TRUE), 0)
+  expect_length(list.files(ld), 0)
 })
