@@ -55,7 +55,7 @@ NULL
 NULL
 
 LIB_DIR <- NULL
-.onLoad <- function (x, y) {
+.onLoad <- function (lib, pkg) {
   tf <- tempfile(pattern = "pastapi", tmpdir = normalizePath(tempdir()))
   dir.create(tf)
   LIB_DIR <<- getOption('pastapi.lib_dir', tf)
