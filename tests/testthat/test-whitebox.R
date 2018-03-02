@@ -72,6 +72,9 @@ test_that("cached_install and call_with_namespace work", {
 
 
 test_that("clear_package_cache works", {
+  skip_on_cran()
+  skip_on_travis()
+
   get_fn_at("fortune", "fortunes", "1.5-3")
   clear_package_cache()
   expect_false(dir.exists(file.path(get_lib_dir(), "fortunes-1.5-3")))

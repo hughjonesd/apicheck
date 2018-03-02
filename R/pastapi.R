@@ -215,6 +215,7 @@ get_version_at_date <- function (package, date) {
 #'
 #' This specifies where libraries will be downloaded to,
 #' and resets the cache of installed library locations.
+#'
 #' @param lib_dir Path to a directory, or \code{NULL} to unset.
 #' @param create  Logical. Try to create the directory if it doesn't exist.
 #'
