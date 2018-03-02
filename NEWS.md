@@ -1,6 +1,7 @@
 # pastapi 0.1.0.9000
 
 * Simpler testing
+* `load_version_namespace` exported
 
 # pastapi 0.1.0
 

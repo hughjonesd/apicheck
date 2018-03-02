@@ -365,6 +365,9 @@ call_with_namespace  <- function (package, version, test) {
 #' If the package is not found in the package cache, it will be downloaded and
 #' installed there.
 #'
+#' Unlike \code{\link{call_with_namespace}}, this does not unload the namespace.
+#' But note also that the namespace is not attached.
+#'
 #' @return The namespace object.
 #'
 #' @export
@@ -405,7 +408,7 @@ load_version_namespace <- function (package, version, cache = TRUE) {
     loadNamespace(package, lib.loc = package_dir, partial = TRUE),
     error = function (e) {
       loudly_unlink(package_dir)
-      stop("Failed to load the '", package, "' namespace from '", package_dir, "'.\n",
+      stop("Failed to load the '", package, "' namespace.\n",
         "Maybe something went silently wrong during installation.")
     }
   )
