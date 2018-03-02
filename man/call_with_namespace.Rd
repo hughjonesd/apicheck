@@ -22,7 +22,7 @@ Loads a package namespace at a particular version and runs an arbitrary function
 \details{
 The package is downloaded and installed if necessary, and its namespace is loaded. Then the
 \code{test(ns)} is called with the namespace object, and its value is returned. On exit, the
-namespace is unloaded.
+namespace is unloaded, hopefully leaving your environment clean.
 }
 \examples{
 \dontrun{

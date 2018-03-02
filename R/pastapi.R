@@ -332,7 +332,7 @@ clear_package_cache <- function() {
 #' @details
 #' The package is downloaded and installed if necessary, and its namespace is loaded. Then the
 #' \code{test(ns)} is called with the namespace object, and its value is returned. On exit, the
-#' namespace is unloaded.
+#' namespace is unloaded, hopefully leaving your environment clean.
 #'
 #' @return The value returned by \code{test}.
 #'
@@ -344,15 +344,10 @@ clear_package_cache <- function() {
 #' call_with_namespace("longurl", "0.3.0", test = can_it_expand_urls)
 #' }
 call_with_namespace  <- function (package, version, test) {
-  if (isNamespaceLoaded(package)) {
-    warning(package, " is already loaded. Attempting to unload.")
-    unloadNamespace(package)
-  }
   namespace <- load_version_namespace(package, version)
   on.exit(unloadNamespace(package))
   test(namespace)
 }
-
 
 
 #' Load the namespace from a version of a package
@@ -365,8 +360,10 @@ call_with_namespace  <- function (package, version, test) {
 #' If the package is not found in the package cache, it will be downloaded and
 #' installed there.
 #'
-#' Unlike \code{\link{call_with_namespace}}, this does not unload the namespace.
-#' But note also that the namespace is not attached.
+#' If the package is already loaded, this will attempt to unload it with a warning.
+#' Be aware that this may not work!
+#'
+#' Note that the namespace is not attached.
 #'
 #' @return The namespace object.
 #'
@@ -377,6 +374,11 @@ call_with_namespace  <- function (package, version, test) {
 #' load_version_namespace("clipr", "0.4.0")
 #' }
 load_version_namespace <- function (package, version, cache = TRUE) {
+  if (isNamespaceLoaded(package)) {
+    warning(package, " namespace is already loaded. Attempting to unload.")
+    unloadNamespace(package)
+  }
+
   force(version)
   lib_dir <- get_lib_dir()
   package_dir <- file.path(lib_dir, paste(package, version, sep = "-"))
@@ -403,6 +405,7 @@ load_version_namespace <- function (package, version, cache = TRUE) {
         stop(e$message)
       })
   }
+
 
   namespace <- tryCatch(
     loadNamespace(package, lib.loc = package_dir, partial = TRUE),

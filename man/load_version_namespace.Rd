@@ -23,8 +23,10 @@ Load the namespace from a version of a package
 If the package is not found in the package cache, it will be downloaded and
 installed there.
 
-Unlike \code{\link{call_with_namespace}}, this does not unload the namespace.
-But note also that the namespace is not attached.
+If the package is already loaded, this will attempt to unload it with a warning.
+Be aware that this may not work!
+
+Note that the namespace is not attached.
 }
 \examples{
 \dontrun{
