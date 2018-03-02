@@ -23,26 +23,31 @@ test_that("load_version_namespace and call_with_namespace", {
   res <- expect_error(d1 <- load_version_namespace("clipr", "0.4.0"), regexp = NA)
   if (is.null(res)) skip("load_version_namespace failed, no point trying the others")
   expect_error(d2 <- load_version_namespace("clipr", "0.4.0"), regexp = NA)
-  expect_error(d3 <- load_version_namespace("clipr", "0.3.3"), regexp = NA)
-  expect_identical(d1, d2)
-  expect_false(identical(d1, d3))
+  expect_error(d3 <- load_version_namespace("clipr", "0.2.0"), regexp = NA)
+  expect_equal(d1, d2) # but not identical for some reason
+  expect_false(isTrue(all.equal(d1, d3)))
+  unloadNamespace("clipr")
 
-  test <- function (namespace) "OK"
+  test <- function (namespace) {
+    stopifnot(is.environment(namespace))
+    stop("Ran test ok")
+  }
   # already downloaded
-  expect_error(x <- call_with_namespace("clipr", "0.4.0", test), regexp = NA)
-  expect_identical(x, "OK")
-  expect_error(y <- call_with_namespace("clipr", "0.3.2", test), regexp = NA)
-  expect_identical(y, "OK")
+  expect_error(call_with_namespace("clipr", "0.4.0", test), regexp = "Ran test ok")
+  expect_false(isNamespaceLoaded("clipr"))
+  # not downloaded
+  expect_error(call_with_namespace("clipr", "0.3.2", test), regexp = "Ran test ok")
+  expect_false(isNamespaceLoaded("clipr"))
 })
 
 
 test_that("Can call functions with different calling conventions", {
   skip_on_cran()
 
-  # expect_identical doesn't work for these functions, maybe different
+  # expect_identical doesn't work for functions
   expect_equal(
-          get_fn_at("huxtable::insert_row", version = "3.0.0"),
-          get_fn_at("insert_row", "huxtable", version = "3.0.0")
+          get_fn_at("clipr::write_clip", version = "0.4.0"),
+          get_fn_at("write_clip", "clipr", version = "0.4.0")
         )
 })
 
@@ -50,20 +55,20 @@ test_that("Can call functions with different calling conventions", {
 test_that("fn_exists_at", {
   skip_on_cran()
 
-  expect_true(fn_exists_at("as_Workbook", "huxtable", "3.0.0"))
-  expect_false(fn_exists_at("as_Workbook", "huxtable", "2.0.2"))
+  expect_true(fn_exists_at("clipr::dr_clipr", version = "0.4.0"))
+  expect_false(fn_exists_at("clipr::dr_clipr", version = "0.2.0"))
 })
 
 
 test_that("api_same_at", {
   skip_on_cran()
 
-  hr3 <- get_fn_at("huxreg", "huxtable", "3.0.0")
-  hr202 <- get_fn_at("huxreg", "huxtable", "2.0.2")
-  expect_false(api_same_at("huxreg", "huxtable", "2.0.2", current_fn = hr3)) # gained an argument
-  qx <- get_fn_at("quick_xlsx", "huxtable", "3.0.0")
-  # should warn because insert_row didn't exist back then:
-  expect_warning(x <- api_same_at("quick_xlsx", "huxtable", "2.0.2", current_fn = qx))
+  wc4 <- get_fn_at("clipr::write_clip", version = "0.4.0")
+  wc011 <- get_fn_at("clipr::write_clip", version = "0.1.1")
+  expect_false(api_same_at("clipr::write_clip", version = "0.1.1", current_fn = wc4)) # gained an argument
+  dr_c <- get_fn_at("clipr::dr_clipr", version = "0.4.0")
+  # should warn because dr_clipr didn't exist back then:
+  expect_warning(x <- api_same_at("clipr::dr_clipr",  version = "0.1.1", current_fn = dr_c))
   expect_false(x)
 })
 
@@ -73,11 +78,11 @@ test_that("fn_first_exists and api_first_same", {
   skip_on_travis()
   skip_if_mran_down()
 
-  expect_equal(fn_first_exists("as_Workbook", "huxtable"), "3.0.0")
-  qx <- get_fn_at("quick_xlsx", "huxtable", "3.0.0")
-  expect_identical(api_first_same("quick_xlsx", "huxtable", current_fn = qx), "3.0.0") # new function
-  expect_identical(api_first_same("huxreg", "huxtable", current_fn = hr3), "3.0.0")    # API change
-
+  expect_equal(fn_first_exists("clipr::dr_clipr"), "0.4.0")
+  dr_c <- get_fn_at("clipr::dr_clipr", version = "0.4.0")
+  wc   <- get_fn_at("clipr::write_clip", version = "0.4.0")
+  expect_identical(api_first_same("clipr::dr_clipr", current_fn = dr_c), "0.4.0") # new function
+  expect_identical(api_first_same("clipr::write_clip", current_fn = wc), "0.2.0")    # API change
 })
 
 

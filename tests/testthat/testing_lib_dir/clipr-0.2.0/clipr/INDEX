@@ -1,0 +1,3 @@
+clear_clip              Clear clipboard
+read_clip               Read clipboard
+write_clip              Write clipboard
