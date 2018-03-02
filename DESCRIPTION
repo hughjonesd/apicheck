@@ -1,6 +1,6 @@
 Package: pastapi
 Title: Explore the Past API of Functions in CRAN Packages
-Version: 0.0.0.9000
+Version: 0.1.0
 Authors@R: person("David", "Hugh-Jones", email = "davidhughjones@gmail.com", role = c("aut", "cre"))
 Description: Check when functions were introduced and/or APIs changed in packages, using the 'MRAN' service.
 License: MIT + file LICENSE
