@@ -54,7 +54,16 @@ NULL
 #' @name version_params_doc
 NULL
 
-LIB_DIR <- getOption('pastapi.lib_dir', tempfile(pattern = "pastapi", tmpdir = normalizePath(tempdir())))
+LIB_DIR <- NULL
+.onLoad <- function (x, y) {
+  tf <- tempfile(pattern = "pastapi", tmpdir = normalizePath(tempdir()))
+  dir.create(tf)
+  LIB_DIR <<- getOption('pastapi.lib_dir', tf)
+  if (LIB_DIR == tf && ! dir.exists(tf)) {
+    warning("Could not create temporary directory for package caching",
+          "Package download won't work. To workaround, use `set_lib_dir()` manually.")
+  }
+}
 
 #' Compare function APIs across package versions
 #'
