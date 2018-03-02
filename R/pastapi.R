@@ -306,7 +306,7 @@ get_lib_dir <- function () {
 clear_package_cache <- function() {
   lib_dir <- get_lib_dir()
   ok <- TRUE
-  for (obj in list.files(lib_dir, all.files = TRUE, full.names = TRUE)) {
+  for (obj in list.files(lib_dir, full.names = TRUE)) {
     if (dir.exists(obj))  ok <- ok && (unlink(obj, recursive = TRUE) != 0)
     if (file.exists(obj)) ok <- ok && file.remove(obj)
   }
