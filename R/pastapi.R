@@ -3,6 +3,7 @@
 # TODO
 # deal with S4 methods; and test for that.
 # allow CRAN and devtools::install_version; or patch versions to work with CRAN
+# ... arguments to pass to install.versions?
 
 
 #' @importFrom zeallot %<-%
