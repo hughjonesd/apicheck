@@ -56,20 +56,22 @@ test_that("mran_versions works", {
 test_that("cached_install and call_with_namespace work", {
   skip_on_cran()
   skip_on_travis() # slow
-  # can't skip_if_mran_down() because it uses this very function...
+  # can't skip_if_mran_down() because it uses this very function, so instead:
 
   # expect possible warnings etc. but no errors
-  expect_error(d1 <- pastapi:::cached_install("assertthat", "0.2.0"), regexp = NA)
-  expect_error(d2 <- pastapi:::cached_install("assertthat", "0.2.0"), regexp = NA)
-  expect_error(d3 <- pastapi:::cached_install("assertthat", "0.1"), regexp = NA)
+  # res is NULL if there is an error
+  res <- expect_error(d1 <- pastapi:::cached_install("clipr", "0.4.0"), regexp = NA)
+  if (is.null(res)) skip("cached_install failed, no point trying the others")
+  expect_error(d2 <- pastapi:::cached_install("clipr", "0.4.0"), regexp = NA)
+  expect_error(d3 <- pastapi:::cached_install("clipr", "0.3.3"), regexp = NA)
   expect_identical(d1, d2)
   expect_false(identical(d1, d3))
 
   test <- function (namespace) "OK"
   # already downloaded
-  expect_error(x <- call_with_namespace("assertthat", "0.2.0", test), regexp = NA)
+  expect_error(x <- call_with_namespace("clipr", "0.3.3", test), regexp = NA)
   expect_identical(x, "OK")
-  expect_error(y <- call_with_namespace("clipr", "0.4.0", test), regexp = NA)
+  expect_error(y <- call_with_namespace("clipr", "0.3.2", test), regexp = NA)
   expect_identical(y, "OK")
 })
 
