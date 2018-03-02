@@ -1,0 +1,4 @@
+clear_clip	clear_clip
+read_clip	read_clip
+read_clip_tbl	read_clip_tbl
+write_clip	write_clip
