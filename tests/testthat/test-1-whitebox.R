@@ -1,10 +1,10 @@
 
-context("Whitebox tests for internal functions")
+context("Whitebox tests")
 
 old <- NULL
 
 setup({
-  old <<- set_lib_dir(NULL)
+  old <<- getOption("pastapi.lib_dir") # don't use get_lib_dir as it never returns NULL
 })
 
 
@@ -64,9 +64,9 @@ test_that("cached_install and call_with_namespace work", {
 
   test <- function (namespace) "OK"
   # new download:
-  expect_error(pastapi:::call_with_namespace("longurl", "0.1.1", test), regexp = NA)
+  expect_error(call_with_namespace("longurl", "0.1.1", test), regexp = NA)
   # already downloaded:
-  expect_error(pastapi:::call_with_namespace("longurl", "0.3.0", test), regexp = NA)
+  expect_error(call_with_namespace("longurl", "0.3.0", test), regexp = NA)
 })
 
 
@@ -75,7 +75,7 @@ test_that("clear_package_cache works", {
   skip_on_cran()
   skip_on_travis()
 
-  get_fn_at("fortune", "fortunes", "1.5-3")
+  pastapi:::cached_install("longurl", "0.3.0")
   clear_package_cache()
-  expect_false(dir.exists(file.path(get_lib_dir(), "fortunes-1.5-3")))
+  expect_false(dir.exists(file.path(get_lib_dir(), "longurl-0.3.0")))
 })

@@ -1,0 +1,67 @@
+[.huxtable              Subset a huxtable
+add_colnames            Add column or row names
+add_footnote            Add a row with a footnote
+align                   Alignment
+as_FlexTable            Convert a huxtable for Word/Powerpoint
+background_color        Background color
+bold                    Cell text style
+caption                 Caption
+caption_pos             Caption position
+cbind.huxtable          Combine rows or columns
+col_width               Column widths
+colspan                 Column span
+escape_contents         Escape cell contents
+every                   Return every n row or column numbers
+filter                  Pointless documentation
+final                   Return the last n rows or columns
+font                    Font
+font_size               Font size
+get_default_properties
+                        Get default huxtable properties
+guess_knitr_output_format
+                        Guess knitr output format
+height                  Table height
+hux_logo                Huxtable logo
+huxreg                  Create a huxtable to display model output
+huxtable                Create a huxtable
+huxtable-package        Huxtable: simply create LaTeX and HTML tables
+insert_column           Insert a row or column
+is_a_number             Does an object look like a number?
+label                   Table label
+latex_float             Float position for LaTeX
+left_border             Borders
+left_border_color       Border colors
+left_padding            Cell padding
+mutate.huxtable         Dplyr verbs for huxtable
+na_string               NA string
+number_format           Number format
+pad_decimal             Decimal padding
+position                Table position
+print.huxtable          Default print method for huxtables
+print_html              Create HTML representing a huxtable
+print_latex             Create LaTeX representing a huxtable
+print_md                Create Markdown representing a huxtable
+print_screen            Print a huxtable on screen
+quick-output            Quickly create a PDF, HTML or Word document
+                        showing matrices, data frames, et cetera.
+report_latex_dependencies
+                        Report LaTeX dependencies
+rotation                Text rotation
+row_height              Row heights
+rowspan                 Row span
+rowspecs                Row and column specifications
+sanitize                Sanitize table elements
+set_all_border_colors   Set all border colors
+set_all_borders         Set all borders
+set_cell_properties     Set multiple cell properties
+set_default_properties
+                        Set default huxtable properties
+set_outer_borders       Set outer borders round a rectangle of cells
+t.huxtable              Transpose a huxtable
+tabular_environment     Tabular environment
+text_color              Text color
+themes                  Theme a huxtable
+valign                  Vertical alignment
+where                   Return array indices where expression is true
+width                   Table width
+wrap                    Text wrapping
