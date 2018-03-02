@@ -12,7 +12,6 @@ teardown({
 })
 
 
-
 test_that("load_version_namespace and call_with_namespace", {
   skip_on_cran()
   skip_on_travis() # slow
@@ -84,7 +83,6 @@ test_that("fn_first_exists and api_first_same", {
   expect_identical(api_first_same("clipr::dr_clipr", current_fn = dr_c), "0.4.0") # new function
   expect_identical(api_first_same("clipr::write_clip", current_fn = wc), "0.2.0")    # API change
 })
-
 
 
 test_that("Can set lib_dir", {
