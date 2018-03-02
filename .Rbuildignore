@@ -5,3 +5,4 @@
 ^LICENSE\.md$
 ^appveyor\.yml$
 ^codecov\.yml$
+^tests/testthat/test_lib_dir/.*$
