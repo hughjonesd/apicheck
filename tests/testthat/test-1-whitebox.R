@@ -5,6 +5,8 @@ old <- NULL
 
 setup({
   old <<- getOption("pastapi.lib_dir") # don't use get_lib_dir as it never returns NULL
+  # we want a new directory for these tests, otherwise last one will delete your pre-cached files
+  set_lib_dir(NULL)
 })
 
 
