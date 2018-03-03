@@ -101,7 +101,11 @@ api_same_at <- function (fn, package, version = get_version_at_date(package, dat
   current_fn = NULL) {
   if (missing(package)) c(package, fn) %<-% parse_fn(fn)
   if (missing(current_fn) || is.null(current_fn)) {
-    cur_namespace <- loadNamespace(package, partial = TRUE)
+    cur_namespace <- try(loadNamespace(package, partial = TRUE), silent = TRUE)
+    if (class(cur_namespace) == "try-error") stop("Couldn't load current version of package.\n",
+          "Do you have it installed? If not run `install.packages('", package, "')`.\n",
+          "Or, use `current_fn = get_fn_at(fn, package, version)` to compare to a version\n",
+          " without doing a full install.")
     current_fn <- get(fn, cur_namespace)
     unloadNamespace(package)
   }
