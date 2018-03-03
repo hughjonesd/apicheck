@@ -20,37 +20,37 @@ knitr::opts_chunk$set(
 
 # pastapi
 
-`pastapi`, pronounced "Pasta Pi", is a small R package to explore the past API of functions in CRAN packages.
+`pastapi`, pronounced "Pasta Pi", is a small R package to explore the historical API of functions in CRAN packages.
 It is designed to help you work out minimum version requirements for packages mentioned in your DESCRIPTION file.
 
-`pastapi` works by downloading package versions from MRAN and temporarily installing them. So, results can 
-be slow!
+`pastapi` works by downloading package versions from MRAN and temporarily installing them in a special directory. Results take time.
 
 ## Example
 
-From [huxtable](https://github.com/hughjonesd/huxtable)'s NEWS file, version 3.0.0:
+From [clipr](https://github.com/mdlincoln/clipr/)'s NEWS file:
 
-* New `quick_xlsx` function.
+* clipr 0.4.0:
+** Introduces `dr_clipr()` ...
 
 ```{r options, include = FALSE}
 library(pastapi)
-set_lib_dir("~/.pastapi")
+set_lib_dir(".pastapi")
+options(repos = "https://cloud.r-project.org")
 ```
 
 ```{r example}
 library(pastapi)
-fn_exists_at("quick_xlsx", "huxtable", "3.0.0")
-fn_exists_at("quick_xlsx", "huxtable", "2.0.2")
-fn_first_exists("quick_xlsx", "huxtable")
+fn_exists_at("clipr::dr_clipr", version =  "0.4.0")
+fn_exists_at("clipr::dr_clipr", version =  "0.3.3")
+when_fn_exists("clipr::dr_clipr")
 ```
 
-From the same place:
-
-* New `tidy_args` argument to huxreg allows per-model customization of the call to `tidy`.
+* clipr 0.2.0:
+** Several changes to `write_clip` ...
 
 ```{r example2}
 
-api_same_at("huxreg", "huxtable", "3.0.0")
-api_same_at("huxreg", "huxtable", "2.0.2")
-api_first_same("quick_xlsx", "huxtable")
+api_same_at("clipr::write_clip", version = "0.2.0")
+api_same_at("clipr::write_clip", version = "0.1.1")
+when_api_same("clipr::write_clip")
 ```
