@@ -20,7 +20,7 @@ NULL
 
 #' Compare function existence and APIs across package versions
 #'
-#' \code{api_first_same} reports the first package version where the API of a function was the same as now (or
+#' \code{when_api_same} reports package versions where the API of a function was the same as now (or
 #' the same as \code{current_fn}).
 #'
 #' @inherit basic_params_doc params
@@ -35,9 +35,9 @@ NULL
 #'
 #' @examples
 #' \dontrun{
-#' api_first_same("read.dta", "foreign")
+#' when_api_same("read.dta", "foreign")
 #' }
-api_first_same <- function (
+when_api_same <- function (
         fn,
         package,
         current_fn = NULL,
@@ -62,21 +62,21 @@ api_first_same <- function (
 }
 
 
-#' \code{fn_first_exists} reports the first package version where a function exists.
+#' \code{when_fn_exists} reports the first package version where a function exists.
 #'
 #' @inherit basic_params_doc params
 #'
 #' @inherit slow_warning_doc details
 #' @inherit search_doc params details return
 #'
-#' @rdname api_first_same
+#' @rdname when_api_same
 #' @export
 #'
 #' @examples
 #' \dontrun{
-#' fn_first_exists('read.dta', 'foreign')
+#' when_fn_exists('read.dta', 'foreign')
 #' }
-fn_first_exists <- function (
+when_fn_exists <- function (
         fn,
         package,
         search = c("binary", "forward", "backward", "all", "parallel"),

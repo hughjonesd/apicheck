@@ -7,3 +7,4 @@
 ^codecov\.yml$
 ^tests/testthat/test_lib_dir/.*$
 .DS_Store
+^\.pastapi/.*$

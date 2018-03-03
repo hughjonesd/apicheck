@@ -24,6 +24,10 @@ NULL
 #'
 #' Also, be aware that namespace loading and unloading can be unreliable. If this happens to you, try
 #' restarting your session.
+#'
+#' @section Warning:
+#' Do not try to use \code{pastapi} on itself. This will lead to fiery elephants in the sky.
+#'
 #' @name pastapi-package
 NULL
 
@@ -254,8 +258,12 @@ load_version_namespace <- function (package, version, cache = TRUE) {
   if (! cache || ! dir.exists(package_dir)) {
     dir.create(package_dir, recursive = TRUE)
     if (! dir.exists(package_dir)) stop("Could not create ", package_dir)
-    tryCatch(
-      versions::install.versions(package, versions = version, lib = package_dir, verbose = TRUE),
+    old_libpaths <- .libPaths()
+    .libPaths(c(package_dir, old_libpaths))
+    on.exit(.libPaths(old_libpaths))
+    tryCatch({
+      versions::install.versions(package, versions = version, lib = package_dir, verbose = TRUE)
+    },
       warning = function (w) {
         if (grepl("non-zero exit", w$message)) {
           loudly_unlink(package_dir)
@@ -266,7 +274,7 @@ load_version_namespace <- function (package, version, cache = TRUE) {
       },
       error = function (e) {
         loudly_unlink(package_dir)
-        stop(e$message)
+        stop(e$message, call. = FALSE)
       })
   }
 
@@ -274,8 +282,8 @@ load_version_namespace <- function (package, version, cache = TRUE) {
     loadNamespace(package, lib.loc = package_dir, partial = TRUE),
     error = function (e) {
       loudly_unlink(package_dir)
-      stop("Failed to load the '", package, "' namespace.\n",
-        "Maybe something went silently wrong during installation.")
+      stop("Failed to load the namespace of '", package, "' version '", version ,"'.\n",
+        "Maybe something went silently wrong during installation.", call. = FALSE)
     }
   )
 
