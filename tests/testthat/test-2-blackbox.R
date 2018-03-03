@@ -2,6 +2,7 @@ context("Blackbox tests")
 
 old <- NULL
 
+
 setup({
   if (Sys.info()["sysname"] != "Windows") {
   old <<- getOption("pastapi.lib_dir") # don't use get_lib_dir as it never returns NULL
@@ -9,10 +10,22 @@ setup({
   }
 })
 
+
 teardown({
   if (Sys.info()$sysname != "Windows") {
     set_lib_dir(old)
   }
+})
+
+
+test_that("mran_versions works", {
+  expect_silent(vns <- mran_versions("longurl"))
+  # check caching:
+  expect_silent(vns2 <- mran_versions("longurl"))
+  expect_identical(vns, vns2)
+  expect_identical(names(vns), c("version", "date", "available"))
+  expect_true(all(vns$available))
+  expect_identical(vns, vns[order(vns$date), ])
 })
 
 

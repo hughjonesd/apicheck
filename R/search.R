@@ -17,11 +17,10 @@
 NULL
 
 
-#' Compare function APIs across package versions
+#' Compare function existence and APIs across package versions
 #'
 #' \code{api_first_same} reports the first package version where the API of a function was the same as now (or
-#' the same as \code{current_fn}). \code{api_same_at} reports whether a specific previous version had the same
-#' API as now.
+#' the same as \code{current_fn}).
 #'
 #' @inherit basic_params_doc params
 #' @inherit version_params_doc params
@@ -56,17 +55,14 @@ api_first_same <- function (fn, package, current_fn = NULL, search = c("binary",
 }
 
 
-
-#' Compare function existence across package versions
-#'
-#' \code{fn_first_exists} reports the first package version where a function exists. \code{fn_exists_at} reports
-#' whether a function exists at a specific previous version.
+#' \code{fn_first_exists} reports the first package version where a function exists.
 #'
 #' @inherit basic_params_doc params
 #'
 #' @inherit slow_warning_doc details
 #' @inherit search_doc params details return
 #'
+#' @rdname api_first_same
 #' @export
 #'
 #' @examples

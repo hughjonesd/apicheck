@@ -23,8 +23,8 @@ Load the namespace from a version of a package
 If the package is not found in the package cache, it will be downloaded and
 installed there.
 
-If the package is already loaded, this will attempt to unload it with a warning.
-Be aware that this may not work!
+If the package is already loaded, \code{load_version_namespace} will first attempt
+to unload it with a warning. This may not always work!
 
 Note that the namespace is not attached.
 }

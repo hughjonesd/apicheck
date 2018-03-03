@@ -65,6 +65,10 @@ NULL
 NULL
 
 
+#' Test if a function's API is unchanged at a given version
+#'
+#' \code{api_same_at} reports whether a function had the same API at a previous version or date.
+#'
 #' @inherit basic_params_doc params
 #' @inherit version_params_doc params
 #' @inherit current_fn_doc params
@@ -73,15 +77,16 @@ NULL
 #' If \code{fn} does not exist at \code{version}, \code{api_same_at} returns \code{FALSE} with a warning.
 #' @inherit same_api_doc details
 #'
-#' @return \code{api_same_at} returns \code{TRUE} or \code{FALSE}.
+#' @return \code{TRUE} or \code{FALSE}.
 #'
-#' @rdname api_first_same
 #'
 #' @export
 #'
 #' @examples
 #' \dontrun{
-#' api_same_at("huxreg", "huxtable", "2.0.0")
+#' api_same_at("clipr::write_clip", version = "0.1.1")
+#' # equivalently
+#' api_same_at("write_clip", "clipr", "0.1.1")
 #' }
 api_same_at <- function (fn, package, version = get_version_at_date(package, date), date = NULL,
   current_fn = NULL) {
@@ -105,18 +110,22 @@ api_same_at <- function (fn, package, version = get_version_at_date(package, dat
 
 
 
+#' Test if a function exists at a given version
+#'
+#' \code{fn_exists_at} reports whether a function exists at a specific previous version or date.
+#'
 #' @inherit basic_params_doc params
 #' @inherit version_params_doc params
 #'
-#' @return \code{fn_exists_at} returns \code{TRUE} or \code{FALSE}.
-#'
-#' @rdname fn_first_exists
+#' @return \code{TRUE} or \code{FALSE}.
 #'
 #' @export
 #'
 #' @examples
 #' \dontrun{
-#' fn_exists_at("read.arff", "foreign", version = "0.8-19")
+#' fn_exists_at("clipr::dr_clipr", version = "0.3.1")
+#' # or
+#' fn_exists_at("dr_clipr", "clipr", "0.3.1")
 #' }
 fn_exists_at <- function (
         fn,
@@ -141,7 +150,7 @@ fn_exists_at <- function (
 #'
 #' @examples
 #' \dontrun{
-#' get_fn_at("huxreg", "huxtable", "2.0.0")
+#' get_fn_at("write_clip", "clipr", "0.1.1")
 #' }
 get_fn_at <- function (
         fn,
@@ -215,8 +224,8 @@ call_with_namespace  <- function (package, version, test) {
 #' If the package is not found in the package cache, it will be downloaded and
 #' installed there.
 #'
-#' If the package is already loaded, this will attempt to unload it with a warning.
-#' Be aware that this may not work!
+#' If the package is already loaded, \code{load_version_namespace} will first attempt
+#' to unload it with a warning. This may not always work!
 #'
 #' Note that the namespace is not attached.
 #'
@@ -273,7 +282,21 @@ load_version_namespace <- function (package, version, cache = TRUE) {
   return(namespace)
 }
 
-# returns ordered versions from early to late
+#' Report versions available on MRAN
+#'
+#' This is a simple wrapper round \code{\link[versions]{available.versions}}. It
+#' returns only packages on MRAN and is ordered by date. Results are cached so as to
+#' relieve pressure on the MRAN server.
+#'
+#' @param package A single package name as a character string.
+#'
+#' @return A data frame with columns "version", "date" and "available" (always \code{TRUE}).
+#'
+#' @export
+#'
+#' @examples
+#' mran_versions("clipr")
+#'
 mran_versions <- memoise::memoise(
   function (package) {
     vns <- versions::available.versions(package)[[package]]
