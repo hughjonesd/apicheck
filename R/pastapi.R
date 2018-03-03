@@ -273,10 +273,10 @@ load_version_namespace <- function (package, version, cache = TRUE) {
               "To use CRAN for pastapi, devtools and withr must be installed.\n",
               "Try `install.packages(c('devtools', 'withr'))`")
         withr::with_libpaths(package_dir,
-          devtools::install_version(package, version, lib = package_dir, type = "source")
+          devtools::install_version(package, version, lib = package_dir, type = "source", quiet = TRUE)
         )
       } else {
-        versions::install.versions(package, versions = version, lib = package_dir, verbose = TRUE)
+        versions::install.versions(package, versions = version, lib = package_dir, quiet = TRUE)
       }
     },
       warning = function (w) {
