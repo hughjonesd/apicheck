@@ -31,14 +31,69 @@ test_that("Failure to install a file does not leave a directory on disk", {
 })
 
 
-test_that("binary_search_versions works", {
-  vns <- data.frame(versions = 1:10)
-  mytest <- function (x) x >= 5
-  expect_equal(pastapi:::binary_search_versions(vns, mytest), 5)
-  mytest <- function (x) x >= 0
-  expect_equal(pastapi:::binary_search_versions(vns, mytest), 1)
-  mytest <- function (x) x >= 20
-  expect_null(pastapi:::binary_search_versions(vns, mytest))
+test_that("na_binary_search works", {
+  run_bs <- function (x) {
+    f <- function (n) x[n]
+    pastapi:::na_binary_search(1L, length(!!x), f)
+  }
+
+  # TRUE can be "assumed FALSE" -1, if L of a FALSE; but never known FALSE -2;
+  # FALSE can be "assumed TRUE" 1, if R of a TRUE; but never known TRUE 2;
+  # NA can be -1, 0 or 1 but never 2 or -2
+  check_result <- function (input) {
+    output <- run_bs(input)
+    expect_length(output, length(input))
+    expect_type(output, "integer")
+    expect_true(all(output %in% seq(-2L, 2L)))
+    nas <- is.na(input)
+    expect_true(all(output[nas] %in% seq(-1L, 1L)))
+    output <- output[! nas]
+    input <- input[! nas]
+    if (length(output) == 0) return()
+    expect_true(all(!! output[input] > -2L))
+    expect_true(all(!! output[! input] < 2L))
+    # check assumed TRUE/FALSE are to right/left of a known TRUE/FALSE value:
+    assumed_true <- which( output == 1L)
+    assumed_false <- which(output == -1L)
+    # if the args to which are zero-length, then throw an error,
+    # as there are no known TRUE/FALSE values:
+    expect_true(all(assumed_true > min(which(input), length(input) + 1)))
+    expect_true(all(assumed_false < max(which(! input), 0)))
+  }
+
+  check_result(TRUE)
+  check_result(FALSE)
+  check_result(NA)
+  for (ln in 2:10) {
+    for (i in 1:30) {
+      x <- sample(c(TRUE, FALSE, NA), ln, replace = TRUE)
+      check_result(x)
+    }
+  }
+})
+
+
+test_that("search_versions works", {
+  with_mock(`pastapi:::mran_versions` = function (package) data.frame(version = 1:3), {
+
+    test_vars <- function (search, ...) {
+      x <- as.logical(list(...))
+      test <- function (y) x[y]
+      pastapi:::search_versions("blah", test, search)
+    }
+
+    expect_equal(test_vars("forward", TRUE, FALSE, TRUE), c(2L, 1L, 1L))
+    expect_equal(test_vars("forward", TRUE, NA, TRUE), c(2L, 1L, 1L))
+    expect_equal(test_vars("forward", FALSE, NA, TRUE), c(-2L, 0L, 2L))
+
+    expect_equal(test_vars("backward", TRUE, FALSE, TRUE), c(-1L, -2L, 2L))
+    expect_equal(test_vars("backward", TRUE, FALSE, TRUE), c(-1L, -2L, 2L))
+    expect_equal(test_vars("backward", TRUE, NA, FALSE), c(-1L, -1L, -2L))
+
+    expect_equal(test_vars("all", TRUE, FALSE, TRUE), c(2L, -2L, 2L))
+    expect_equal(test_vars("all", TRUE, NA, TRUE), c(2L, 0L, 2L))
+    expect_equal(test_vars("all", FALSE, NA, TRUE), c(-2L, 0L, 2L))
+  })
 })
 
 
@@ -49,7 +104,7 @@ test_that("mran_versions works", {
   expect_identical(vns, vns2)
   expect_identical(names(vns), c("version", "date", "available"))
   expect_true(all(vns$available))
-  expect_identical(vns, vns[order(vns$date, decreasing = TRUE), ])
+  expect_identical(vns, vns[order(vns$date), ])
 })
 
 

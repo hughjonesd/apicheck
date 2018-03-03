@@ -3,7 +3,7 @@
 # TODO
 # deal with S4 methods; and test for that.
 # allow CRAN and devtools::install_version; or patch versions to work with CRAN
-# ... arguments to pass to install.versions?
+# fix documentation - probably put search functions together
 
 
 #' @importFrom zeallot %<-%
@@ -35,27 +35,39 @@ NULL
 #' @name current_fn_doc
 NULL
 
+
 #' @details
 #' "Same API" is defined by the function arguments, as reported by \code{\link{formals}}, being the same.
 #' @name same_api_doc
 NULL
+
 
 #' @details
 #' This function downloads and installs multiple versions from MRAN, so it is likely to be slow.
 #' @name slow_warning_doc
 NULL
 
+
 #' @param fn Function name as a character string.
 #' @param package Package. Alternatively, specify the function name as e.g. \code{"package::function"}.
 #' @name basic_params_doc
 NULL
+
 
 #' @param version Version as a character string. If omitted, use the version available at \code{date}.
 #' @param date Date, as a character string that can be read by \code{\link{as.Date}} e.g. "2016-01-01".
 #' @name version_params_doc
 NULL
 
+
+#' @param date Date, as a character string that can be read by \code{\link{as.Date}} e.g. "2016-01-01".
+#' @name version_params_doc
+NULL
+
+
 LIB_DIR <- NULL
+
+
 .onLoad <- function (lib, pkg) {
   tf <- tempfile(pattern = "pastapi", tmpdir = normalizePath(tempdir()))
   dir.create(tf)
@@ -64,72 +76,6 @@ LIB_DIR <- NULL
     warning("Could not create temporary directory for package caching",
           "Package download won't work. To workaround, use `set_lib_dir()` manually.")
   }
-}
-
-#' Compare function APIs across package versions
-#'
-#' \code{api_first_same} reports the first package version where the API of a function was the same as now (or
-#' the same as \code{current_fn}). \code{api_same_at} reports whether a specific previous version had the same
-#' API as now.
-#'
-#' @inherit basic_params_doc params
-#' @inherit version_params_doc params
-#' @param quick If \code{TRUE}, do a binary search that assumes API is never same, then different.
-#' @inherit current_fn_doc params
-#'
-#' @inherit same_api_doc details
-#' @inherit slow_warning_doc details
-#'
-#' @return \code{api_first_same} returns a version string.
-#'
-#' @export
-#'
-#' @examples
-#' \dontrun{
-#' api_first_same("read.dta", "foreign")
-#' }
-api_first_same <- function (fn, package, quick = TRUE,
-      current_fn = NULL) {
-  if (missing(package)) c(package, fn) %<-% parse_fn(fn)
-
-  force(current_fn)
-  vns <- mran_versions(package)
-  vns <- vns[seq(nrow(vns), 1),]
-  test <- function (version) suppressWarnings(api_same_at(fn, package = package, version = version,
-        current_fn = current_fn))
-  result <- if (quick) binary_search_versions(vns, test) else Find(test, vns$version)
-
-  return(result)
-}
-
-
-#' Compare function existence across package versions
-#'
-#' \code{fn_first_exists} reports the first package version where a function exists. \code{fn_exists_at} reports
-#' whether a function exists at a specific previous version.
-#'
-#' @inherit basic_params_doc params
-#' @param quick If TRUE, perform a binary search. This assumes that once added, a
-#'  function does not go away.
-#'
-#' @inherit slow_warning_doc details
-#'
-#' @return \code{fn_first_exists} returns a version string.
-#'
-#' @export
-#'
-#' @examples
-#' \dontrun{
-#' fn_first_exists('read.dta', 'foreign')
-#' }
-fn_first_exists <- function (fn, package, quick = TRUE) {
-  if (missing(package)) c(package, fn) %<-% parse_fn(fn)
-  vns <- mran_versions(package)
-  vns <- vns[seq(nrow(vns), 1),]
-  test <- function (version) fn_exists_at(fn, package = package, version = version)
-  result <- if (quick) binary_search_versions(vns, test) else Find(test, vns$version)
-
-  return(result)
 }
 
 
@@ -238,7 +184,8 @@ get_fn_at <- function (
 #' }
 get_version_at_date <- function (package, date) {
   vns <- mran_versions(package)
-  latest <- vns$version[vns$date <= date & vns$available][1]
+  vns <- vns$version[vns$date <= date & vns$available]
+  latest <- vns[length(vns)]
 
   return(latest)
 }
@@ -254,6 +201,7 @@ get_version_at_date <- function (package, date) {
 #'
 #' @details
 #' If \code{lib_dir} is set to \code{NULL}, a subdirectory of \code{tempdir()} will be used.
+#' \code{lib_dir} will be normalized via \code{\link{normalizePath}}.
 #'
 #' @return The old library location, invisibly. By default this is a subdirectory of \code{\link{tempdir}}.
 #'
@@ -268,13 +216,13 @@ set_lib_dir <- function (lib_dir, create = FALSE) {
   if (notthere && create) notthere <- ! dir.create(lib_dir, recursive = TRUE)
   if (notthere) stop("Directory '", lib_dir, "' does not exist", if (create) " and could not be created")
 
+  if (! is.null(lib_dir)) lib_dir <- normalizePath(lib_dir)
   x <- options('pastapi.lib_dir' = lib_dir)
   x <- x$pastapi.lib_dir
   if (is.null(x)) x <- LIB_DIR
 
   return(invisible(x))
 }
-
 
 
 #' @return \code{get_lib_dir} returns the library location.
@@ -407,7 +355,6 @@ load_version_namespace <- function (package, version, cache = TRUE) {
       })
   }
 
-
   namespace <- tryCatch(
     loadNamespace(package, lib.loc = package_dir, partial = TRUE),
     error = function (e) {
@@ -420,35 +367,13 @@ load_version_namespace <- function (package, version, cache = TRUE) {
   return(namespace)
 }
 
-
-
-binary_search_versions <- function(vns, test) {
-  versions <- vns$version
-  i <- 1L
-  j <- length(versions)
-  if (test(versions[i])) return(versions[i])
-  if (! test(versions[j])) return(NULL)
-  # maintain that false for i, true for j
-  while (TRUE) {
-    midpoint <- as.integer(floor((i + j) / 2))
-    res <- test(versions[midpoint])
-    if (res) {
-      if (midpoint <= i + 1) return(versions[midpoint])
-      j <- midpoint
-    } else {
-      if (midpoint >= j - 1) return(versions[j])
-      i <- midpoint
-    }
-  }
-}
-
-
+# returns ordered versions from early to late
 mran_versions <- memoise::memoise(
   function (package) {
     vns <- versions::available.versions(package)[[package]]
     vns <- vns[vns$available == TRUE,]
     vns$date <- as.Date(vns$date)
-    vns <- vns[order(vns$date, decreasing = TRUE),]
+    vns <- vns[order(vns$date),]
 
     return(vns)
   }

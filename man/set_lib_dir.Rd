@@ -25,6 +25,7 @@ and resets the cache of installed library locations.
 }
 \details{
 If \code{lib_dir} is set to \code{NULL}, a subdirectory of \code{tempdir()} will be used.
+\code{lib_dir} will be normalized via \code{\link{normalizePath}}.
 }
 \examples{
 \dontrun{

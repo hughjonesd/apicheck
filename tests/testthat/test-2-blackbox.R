@@ -77,11 +77,33 @@ test_that("fn_first_exists and api_first_same", {
   skip_on_travis()
   skip_if_mran_down()
 
-  expect_equal(fn_first_exists("clipr::dr_clipr"), "0.4.0")
+  expect_equal(fn_first_exists("clipr::dr_clipr", report = "brief"), "0.4.0")
   dr_c <- get_fn_at("clipr::dr_clipr", version = "0.4.0")
   wc   <- get_fn_at("clipr::write_clip", version = "0.4.0")
-  expect_identical(api_first_same("clipr::dr_clipr", current_fn = dr_c), "0.4.0") # new function
-  expect_identical(api_first_same("clipr::write_clip", current_fn = wc), "0.2.0")    # API change
+
+  strategies <- c("binary", "forward", "backward", "all")
+  for (search in strategies) {
+    expect_identical(api_first_same("clipr::dr_clipr", current_fn = dr_c, search = search, report = "brief"),
+          "0.4.0") # new function
+    expect_identical(api_first_same("clipr::write_clip", current_fn = wc, search = search, report = "brief"),
+          "0.2.0") # API change
+  }
+
+  results_wanted <- list(
+    forward = c("Unknown", rep("Known different", 7), "Known same"),
+    backward = c(rep("Assumed different", 7), "Known different", "Known same"),
+    binary = c(rep("Assumed different", 4), "Known different", "Assumed different", rep("Known different", 2),
+          "Known same"),
+    all = c("Unknown", rep("Known different", 7), "Known same")
+  )
+  for (search in strategies) {
+    expect_error(res <- api_first_same("clipr::write_clip", search = search, report = "full"), NA)
+    expect_s3_class(res, "data.frame")
+    expect_identical(names(res), c("version", "date", "available", "result"))
+    expect_identical(res$result, results_wanted[[search]])
+  }
+
+
 })
 
 
