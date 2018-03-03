@@ -2,7 +2,7 @@
 
 * Simpler testing
 * `load_version_namespace` and `mran_versions` exported
-* Different search algorithms for searching through versions
+* Different search algorithms for searching through versions, including parallel with parLapply
 * Many more whitebox tests
 
 # pastapi 0.1.0
