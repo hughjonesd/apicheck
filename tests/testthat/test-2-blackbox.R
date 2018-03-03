@@ -1,9 +1,11 @@
 context("Blackbox tests")
 
 old <- NULL
-
+old_CRAN <- NULL
 
 setup({
+  old_CRAN <- getOption('pastapi.use_CRAN')
+  options(pastapi.use_CRAN = TRUE)
   if (Sys.info()["sysname"] != "Windows") {
     old <<- getOption("pastapi.lib_dir") # don't use get_lib_dir as it never returns NULL
     set_lib_dir("testing_lib_dir")
@@ -12,9 +14,11 @@ setup({
 
 
 teardown({
+  options(pastapi.use_CRAN = old_CRAN)
   if (Sys.info()["sysname"] != "Windows") {
     set_lib_dir(old)
   }
+
 })
 
 
@@ -106,18 +110,20 @@ test_that("when_api_same", {
   }
 
   results_wanted <- list(
-    binary   = c("Assumed different", "Known different", "Known same", "Assumed same", "Known same",
+    binary   = c("Known different", "Known same", "Assumed same", "Known same",
                 rep("Assumed same", 4)),
-    forward  = c("Unknown", "Known different", "Known same", rep("Assumed same", 6)),
-    backward = c("Assumed different", "Known different", rep("Known same", 7)),
-    all      = c("Unknown", "Known different", rep("Known same", 7)),
-    parallel = c("Unknown", "Known different", rep("Known same", 7))
+    forward  = c("Known different", "Known same", rep("Assumed same", 6)),
+    backward = c("Known different", rep("Known same", 7)),
+    all      = c("Known different", rep("Known same", 7)),
+    parallel = c("Known different", rep("Known same", 7))
   )
   for (search in strategies) {
-    expect_error(res <- when_api_same("clipr::write_clip", current_fn = wc, search = search, report = "full"), NA)
-    expect_s3_class(res, "data.frame")
-    expect_identical(!! names(res), c("version", "date", "available", "result"))
-    expect_identical(!! res$result, !! results_wanted[[search]])
+    info <- paste("Search strategy was:", search)
+    expect_error(res <- when_api_same("clipr::write_clip", current_fn = wc, search = search, report = "full"), NA, info = info)
+    expect_s3_class(res, "data.frame") # no info arg :-(
+    expect_identical(names(res), c("version", "date", "available", "result"), info = info)
+    # see below re clipr 0.1.0
+    expect_identical(res$result[-1], results_wanted[[search]], info = info)
   }
 })
 
@@ -128,18 +134,21 @@ test_that("when_fn_exists", {
   expect_equal(when_fn_exists("clipr::dr_clipr", report = "brief"), "0.4.0")
 
   strategies <- c("binary", "forward", "backward", "all")
+  # we only test versions 0.1.1 and onwards because version 0.1.0 varies with use_CRAN
+  # being TRUE or FALSE
   results_wanted <- list(
-    binary   = c(rep("Assumed absent", 4), "Known absent", "Assumed absent", rep("Known absent", 2), "Known present"),
-    forward  = c("Unknown", rep("Known absent", 7), "Known present"),
-    backward = c(rep("Assumed absent", 7), "Known absent", "Known present"),
-    all      = c("Unknown", rep("Known absent", 7), "Known present"),
-    parallel = c("Unknown", rep("Known absent", 7), "Known present")
+    binary   = c(rep("Assumed absent", 3), "Known absent", "Assumed absent", rep("Known absent", 2), "Known present"),
+    forward  = c(rep("Known absent", 7), "Known present"),
+    backward = c(rep("Assumed absent", 6), "Known absent", "Known present"),
+    all      = c(rep("Known absent", 7), "Known present"),
+    parallel = c(rep("Known absent", 7), "Known present")
   )
   for (search in strategies) {
-    expect_error(res <- when_fn_exists("clipr::dr_clipr", search = search, report = "full"), NA)
+    info <- paste("Search strategy was:", search)
+    expect_error(res <- when_fn_exists("clipr::dr_clipr", search = search, report = "full"), NA, info = info)
     expect_s3_class(res, "data.frame")
-    expect_identical(!! names(res), c("version", "date", "available", "result"))
-    expect_identical(!! res$result, !! results_wanted[[search]])
+    expect_identical(names(res), c("version", "date", "available", "result"), info = info)
+    expect_identical(res$result[-1], results_wanted[[search]], info = info)
   }
 })
 

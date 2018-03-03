@@ -3,7 +3,8 @@
 # TODO
 # deal with S4 methods; and test for that.
 # allow CRAN and devtools::install_version; or patch versions to work with CRAN
-# fix documentation - probably put search functions together
+# tests: maybe rather than pre-installed (OS X) versions, have pre-installed source
+# files and then mock install.versions
 
 
 #' @importFrom zeallot %<-%
@@ -13,11 +14,15 @@ NULL
 #' Basic details about the package
 #'
 #' This is a small package to check when functions were introduced in packages and/or APIs changed.
-#' It uses the \code{versions} package to install different versions of a package
-#' from \href{https://mran.microsoft.com/}{MRAN}.
+#' It automatically installs different versions of a package in a separate directory and loads them
+#' without attaching them.
 #'
 #' Packages are cached within a session. To cache packages across sessions, use
 #' \code{\link{set_lib_dir}} to point to a persistent directory.
+#'
+#' By default, \code{pastapi} uses the \code{devtools}
+#' package to install source versions from CRAN. Alternatively, it can use the \code{versions} package to install different versions of a package
+#' from \href{https://mran.microsoft.com/}{MRAN}. To do this set \code{options(pastapi.use_CRAN = FALSE)}.
 #'
 #' Be aware that functions can take a long time to return, as different versions of a package are
 #' installed and/or loaded.
@@ -258,11 +263,17 @@ load_version_namespace <- function (package, version, cache = TRUE) {
   if (! cache || ! dir.exists(package_dir)) {
     dir.create(package_dir, recursive = TRUE)
     if (! dir.exists(package_dir)) stop("Could not create ", package_dir)
-    old_libpaths <- .libPaths()
-    .libPaths(c(package_dir, old_libpaths))
-    on.exit(.libPaths(old_libpaths))
     tryCatch({
-      versions::install.versions(package, versions = version, lib = package_dir, verbose = TRUE)
+      if (isTRUE(getOption('pastapi.use_CRAN', TRUE))) {
+        if (! requireNamespace('devtools', quietly = TRUE) || ! requireNamespace('withr', quietly = TRUE)) stop(
+              "To use CRAN for pastapi, devtools and withr must be installed.\n",
+              "Try `install.packages(c('devtools', 'withr'))`")
+        withr::with_libpaths(package_dir,
+          devtools::install_version(package, version, lib = package_dir, type = "source")
+        )
+      } else {
+        versions::install.versions(package, versions = version, lib = package_dir, verbose = TRUE)
+      }
     },
       warning = function (w) {
         if (grepl("non-zero exit", w$message)) {

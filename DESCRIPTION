@@ -13,5 +13,8 @@ Imports:
     zeallot,
     parallel
 Suggests:
+    covr,
+    devtools,
     testthat,
-    covr
+    withr
+    

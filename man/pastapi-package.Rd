@@ -5,12 +5,16 @@
 \title{Basic details about the package}
 \description{
 This is a small package to check when functions were introduced in packages and/or APIs changed.
-It uses the \code{versions} package to install different versions of a package
-from \href{https://mran.microsoft.com/}{MRAN}.
+It automatically installs different versions of a package in a separate directory and loads them
+without attaching them.
 }
 \details{
 Packages are cached within a session. To cache packages across sessions, use
 \code{\link{set_lib_dir}} to point to a persistent directory.
+
+By default, \code{pastapi} uses the \code{devtools}
+package to install source versions from CRAN. Alternatively, it can use the \code{versions} package to install different versions of a package
+from \href{https://mran.microsoft.com/}{MRAN}. To do this set \code{options(pastapi.use_CRAN = FALSE)}.
 
 Be aware that functions can take a long time to return, as different versions of a package are
 installed and/or loaded.
@@ -18,3 +22,8 @@ installed and/or loaded.
 Also, be aware that namespace loading and unloading can be unreliable. If this happens to you, try
 restarting your session.
 }
+\section{Warning}{
+
+Do not try to use \code{pastapi} on itself. This will lead to fiery elephants in the sky.
+}
+
