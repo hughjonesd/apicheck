@@ -15,9 +15,9 @@ get_lib_dir()
 \item{create}{Logical. Try to create the directory if it doesn't exist.}
 }
 \value{
-\code{set_lib_dir} returns the old library location, invisibly, or \code{NULL} if none was set in options.
+\code{set_lib_dir} invisibly returns the old library location, or \code{NULL} if none was set in options.
 
-\code{get_lib_dir} returns the library location.
+\code{get_lib_dir} returns the actual library location, whether or not an option has been set.
 }
 \description{
 This specifies where libraries will be downloaded to,

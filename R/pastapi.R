@@ -23,7 +23,7 @@ NULL
 #'
 #' By default, \code{pastapi} uses the \code{devtools}
 #' package to install source versions from CRAN. Alternatively, it can use the \code{versions} package to install different versions of a package
-#' from \href{https://mran.microsoft.com/}{MRAN}. To do this set \code{options(pastapi.use_CRAN = FALSE)}.
+#' from \href{https://mran.microsoft.com/}{MRAN}. To do this set \code{options(pastapi.use_cran = FALSE)}.
 #'
 #' Be aware that functions can take a long time to return, as different versions of a package are
 #' installed and/or loaded.
@@ -274,7 +274,7 @@ load_version_namespace <- function (package, version, cache = TRUE, ...) {
     dir.create(package_dir, recursive = TRUE)
     if (! dir.exists(package_dir)) stop("Could not create ", package_dir)
     tryCatch({
-      if (isTRUE(getOption('pastapi.use_CRAN', TRUE))) {
+      if (isTRUE(getOption('pastapi.use_cran', TRUE))) {
         if (! requireNamespace('devtools', quietly = TRUE) || ! requireNamespace('withr', quietly = TRUE)) stop(
               "To use CRAN for pastapi, devtools and withr must be installed.\n",
               "Try `install.packages(c('devtools', 'withr'))`")
@@ -315,7 +315,7 @@ load_version_namespace <- function (package, version, cache = TRUE, ...) {
 #'
 #' This is a simple wrapper round \code{\link[versions]{available.versions}}. It
 #' returns packages ordered by date. Results are cached so as to
-#' relieve pressure on the MRAN server. If \code{options("pastapi.use_CRAN") == FALSE},
+#' relieve pressure on the MRAN server. If \code{options("pastapi.use_cran") == FALSE},
 #' then only versions available on MRAN (i.e. after 2014-09-17) will be returned;
 #' otherwise older versions will be returned too.
 #'
@@ -331,7 +331,7 @@ load_version_namespace <- function (package, version, cache = TRUE, ...) {
 available_versions <- memoise::memoise(
   function (package) {
     vns <- versions::available.versions(package)[[package]]
-    if (! isTRUE(getOption("pastapi.use_CRAN", TRUE))) vns <- vns[vns$available == TRUE,]
+    if (! isTRUE(getOption("pastapi.use_cran", TRUE))) vns <- vns[vns$available == TRUE,]
     vns$available <- NULL
     vns$date <- as.Date(vns$date)
     vns <- vns[order(vns$date),]

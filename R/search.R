@@ -174,9 +174,9 @@ search_all <- function (versions, test, search) {
     if (is.na(ncores)) ncores <- 2
     cl <- parallel::makeCluster(ncores)
     parallel::clusterEvalQ(cl, library(pastapi))
-    use_CRAN <- getOption("pastapi.use_CRAN", TRUE)
+    use_cran <- getOption("pastapi.use_cran", TRUE)
     repos <- getOption("repos", "https://cloud.r-project.org")
-    parallel::clusterCall(cl, options, pastapi.use_CRAN = use_CRAN, repos = repos)
+    parallel::clusterCall(cl, options, pastapi.use_cran = use_cran, repos = repos)
     parallel::clusterExport(cl, "LIB_DIR", envir = environment())
     function (x, fun) parallel::parLapply(cl, x, fun)
   } else {

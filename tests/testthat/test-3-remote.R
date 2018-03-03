@@ -1,26 +1,32 @@
 
 context("Remote tests")
 
-install_on <- function (CRAN, package, version) {
-  old_opts <- options(pastapi.use_CRAN = CRAN)
+run_nicely <- function(cran, expr) {
+  old_opts <- options(pastapi.use_cran = cran)
   old_lib_dir <- set_lib_dir(NULL) # can't avoid possibly putting LIB_DIR into options...
   clear_package_cache()
   on.exit({
     options(old_opts)
     set_lib_dir(old_lib_dir)
   })
-  expect_error(call_with_namespace(!!package, !!version, function (x) NULL, quiet = TRUE), NA,
-        info = paste("use_CRAN was", CRAN))
+  eval(substitute(expr))
+}
+
+install_on <- function (cran, package, version) {
+  run_nicely(cran,
+    expect_error(call_with_namespace(!!package, !!version, function (x) NULL, quiet = TRUE), NA,
+          info = paste("use_cran was", cran))
+  )
 }
 
 
 install_early_late <- function (package) {
   v <- available_versions(package)$version
   current_v <- tail(v, 1)
-  install_on(CRAN = TRUE, package, current_v)
+  install_on(cran = TRUE, package, current_v)
   early_v <- v[length(v) - 1]
-  install_on(CRAN = TRUE, package, early_v)
-  install_on(CRAN = FALSE, package, early_v)
+  install_on(cran = TRUE, package, early_v)
+  install_on(cran = FALSE, package, early_v)
 }
 
 
@@ -48,3 +54,9 @@ test_that("Can install versions when package already installed and loaded", {
   install_early_late("clipr")
 })
 
+
+test_that("Multiple parallel remote installs", {
+  skip_on_cran()
+
+  run_nicely(when_fn_exists("clipr::dr_clipr", search = "parallel"))
+})

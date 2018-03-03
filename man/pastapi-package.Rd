@@ -14,7 +14,7 @@ Packages are cached within a session. To cache packages across sessions, use
 
 By default, \code{pastapi} uses the \code{devtools}
 package to install source versions from CRAN. Alternatively, it can use the \code{versions} package to install different versions of a package
-from \href{https://mran.microsoft.com/}{MRAN}. To do this set \code{options(pastapi.use_CRAN = FALSE)}.
+from \href{https://mran.microsoft.com/}{MRAN}. To do this set \code{options(pastapi.use_cran = FALSE)}.
 
 Be aware that functions can take a long time to return, as different versions of a package are
 installed and/or loaded.

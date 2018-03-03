@@ -4,7 +4,7 @@ old_lib_dir <- NULL
 old_opts <- NULL
 
 setup({
-  old_opts <<- options(pastapi.use_CRAN = TRUE, repos = "https://cloud.r-project.org")
+  old_opts <<- options(pastapi.use_cran = TRUE, repos = "https://cloud.r-project.org")
   old_lib_dir <<- set_lib_dir(if (Sys.info()["sysname"] != "Windows") "testing_lib_dir" else NULL)
 })
 
@@ -156,7 +156,7 @@ test_that("when_fn_exists", {
   expect_equal(when_fn_exists("clipr::dr_clipr", report = "brief"), "0.4.0")
 
   strategies <- c("binary", "forward", "backward", "all")
-  # we only test versions 0.1.1 and onwards because version 0.1.0 varies with use_CRAN
+  # we only test versions 0.1.1 and onwards because version 0.1.0 varies with use_cran
   # being TRUE or FALSE
   results_wanted <- list(
     binary   = c(rep("Assumed absent", 3), "Known absent", "Assumed absent", rep("Known absent", 2), "Known present"),
