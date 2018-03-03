@@ -1,7 +1,9 @@
 # pastapi 0.1.0.9000
 
 * Simpler testing
-* `load_version_namespace` exported
+* `load_version_namespace` and `mran_versions` exported
+* Different search algorithms for searching through versions
+* Many more whitebox tests
 
 # pastapi 0.1.0
 
