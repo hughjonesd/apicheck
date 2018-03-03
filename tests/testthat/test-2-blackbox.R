@@ -78,7 +78,7 @@ test_that("api_first_same", {
   dr_c <- get_fn_at("clipr::dr_clipr", version = "0.4.0")
   wc   <- get_fn_at("clipr::write_clip", version = "0.4.0")
 
-  expect_identical(suppressWarnings(api_first_same("clipr::dr_clipr", current_fn = dr_c, search = search,
+  expect_identical(suppressWarnings(api_first_same("clipr::dr_clipr", current_fn = dr_c,
         report = "brief")), "0.4.0") # new function, so we suppress warnings
 
   strategies <- c("binary", "forward", "backward", "all")
