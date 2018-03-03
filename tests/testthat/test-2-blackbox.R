@@ -1,22 +1,21 @@
 context("Blackbox tests")
 
-old <- NULL
-old_CRAN <- NULL
+old_lib_dir <- NULL
+old_opts <- NULL
 
 setup({
-  old_CRAN <- getOption('pastapi.use_CRAN')
-  options(pastapi.use_CRAN = TRUE)
+  old_opts <- options(pastapi.use_CRAN = TRUE, repos = "https://cloud.r-project.org")
   if (Sys.info()["sysname"] != "Windows") {
-    old <<- getOption("pastapi.lib_dir") # don't use get_lib_dir as it never returns NULL
+    old_lib_dir <<- getOption("pastapi.lib_dir") # don't use get_lib_dir as it never returns NULL
     set_lib_dir("testing_lib_dir")
   }
 })
 
 
 teardown({
-  options(pastapi.use_CRAN = old_CRAN)
+  options(old_opts)
   if (Sys.info()["sysname"] != "Windows") {
-    set_lib_dir(old)
+    set_lib_dir(old_lib_dir)
   }
 
 })
