@@ -21,14 +21,24 @@ teardown({
 })
 
 
-test_that("mran_versions works", {
-  expect_silent(vns <- mran_versions("longurl"))
+test_that("available_versions works", {
+  expect_silent(vns <- available_versions("longurl"))
   # check caching:
-  expect_silent(vns2 <- mran_versions("longurl"))
+  expect_silent(vns2 <- available_versions("longurl"))
   expect_identical(vns, vns2)
-  expect_identical(names(vns), c("version", "date", "available"))
-  expect_true(all(vns$available))
+  expect_identical(names(vns), c("version", "date"))
   expect_identical(vns, vns[order(vns$date), ])
+})
+
+
+test_that("arguments passed to install.packages", {
+  expect_error(load_version_namespace("fortunes", "1.5-1", repos = "BROKEN"))
+  expect_error(fn_exists_at("fortunes::fortune", version = "1.5-0", repos = "BROKEN"))
+  fn <- get_fn_at("fortunes::fortune", version = "1.5-3")
+  expect_error(api_same_at("fortunes::fortune", version = "1.5-2", current_fn = fn, repos = "BROKEN"))
+  # these guys throw warnings, trapping the errors
+  expect_warning(when_fn_exists("fortunes::fortune", repos = "BROKEN"))
+  expect_warning(when_api_same("rbcb::get_currency", current_fn = fn, repos = "BROKEN"))
 })
 
 
@@ -120,7 +130,7 @@ test_that("when_api_same", {
     info <- paste("Search strategy was:", search)
     expect_error(res <- when_api_same("clipr::write_clip", current_fn = wc, search = search, report = "full"), NA, info = info)
     expect_s3_class(res, "data.frame") # no info arg :-(
-    expect_identical(names(res), c("version", "date", "available", "result"), info = info)
+    expect_identical(names(res), c("version", "date", "result"), info = info)
     # see below re clipr 0.1.0
     expect_identical(res$result[-1], results_wanted[[search]], info = info)
   }
@@ -146,7 +156,7 @@ test_that("when_fn_exists", {
     info <- paste("Search strategy was:", search)
     expect_error(res <- when_fn_exists("clipr::dr_clipr", search = search, report = "full"), NA, info = info)
     expect_s3_class(res, "data.frame")
-    expect_identical(names(res), c("version", "date", "available", "result"), info = info)
+    expect_identical(names(res), c("version", "date", "result"), info = info)
     expect_identical(res$result[-1], results_wanted[[search]], info = info)
   }
 })

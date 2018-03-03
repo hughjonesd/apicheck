@@ -9,7 +9,7 @@ when_api_same(fn, package, current_fn = NULL, search = c("binary",
   "forward", "backward", "all", "parallel"), report = c("full", "brief"), ...)
 
 when_fn_exists(fn, package, search = c("binary", "forward", "backward", "all",
-  "parallel"), report = c("full", "brief"))
+  "parallel"), report = c("full", "brief"), ...)
 }
 \arguments{
 \item{fn}{Function name as a character string.}
@@ -25,8 +25,8 @@ must be an actual function, not a character string. You can use
 
 \item{report}{"brief" or "full". See Value.}
 
-\item{...}{Arguments passed to \code{\link[versions]{install.versions}},
-\code{\link[devtools]{install_version}} and thence to \code{link{install.packages}}.}
+\item{...}{Arguments passed to \code{\link[versions]{install.versions}} or
+\code{\link[devtools]{install_version}}, and thence to \code{\link{install.packages}}.}
 }
 \value{
 If \code{report} is "brief", the earliest "known good" version.
@@ -41,6 +41,13 @@ the same as \code{current_fn}).
 \details{
 "Same API" is defined by the function arguments, as reported by \code{\link{formals}}, being the same.
 }
+\section{Speed}{
+
+This function may download and install multiple versions from MRAN, so it is likely to be slow
+when first used (and even afterwards if library loading is slow). Using \code{search = "parallel"}
+may help, but not if the network is the bottleneck.
+}
+
 \examples{
 \dontrun{
 when_api_same("read.dta", "foreign")

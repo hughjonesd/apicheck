@@ -28,7 +28,7 @@ NULL
 #' @inherit current_fn_doc params
 #'
 #' @inherit same_api_doc details
-#' @inherit slow_warning_doc details
+#' @inheritSection slow_warning_doc Speed
 #' @inherit search_doc params details return
 #'
 #' @export
@@ -67,9 +67,7 @@ when_api_same <- function (
 #'
 #' @inherit basic_params_doc params
 #'
-#' @inherit slow_warning_doc details
-#' @inherit search_doc params details return
-#'
+#--NB-- don't inheritSection slow_warning_doc Speed, it will be shown twice
 #' @rdname when_api_same
 #' @export
 #'
@@ -78,16 +76,18 @@ when_api_same <- function (
 #' when_fn_exists('read.dta', 'foreign')
 #' }
 when_fn_exists <- function (
-        fn,
-        package,
-        search = c("binary", "forward", "backward", "all", "parallel"),
-        report = c("full", "brief"))
+          fn,
+          package,
+          search = c("binary", "forward", "backward", "all", "parallel"),
+          report = c("full", "brief"),
+          ...
+        )
       {
   search <- match.arg(search)
   report   <- match.arg(report)
   if (missing(package)) c(package, fn) %<-% parse_fn(fn)
 
-  test <- wrap_test(function (version) fn_exists_at(fn, package = package, version = version))
+  test <- wrap_test(function (version) fn_exists_at(fn, package = package, version = version, ...))
   res <- run_search(package, test, search)
 
   res <- clean_up_result(res, package, report,
@@ -109,7 +109,7 @@ wrap_test <- function (test_fn) {
 
 
 run_search <- function (package, test, search) {
-  versions <- mran_versions(package)$version
+  versions <- available_versions(package)$version
   res <- switch(search,
           binary   = binary_search_versions(versions, test),
           backward = ,
@@ -200,13 +200,13 @@ clean_up_result <- function (res, package, report, labels) {
 
 
 first_known_good <- function (package, res) {
-  vns <- mran_versions(package)
+  vns <- available_versions(package)
   return(vns$version[match(2L, res)])
 }
 
 
 versions_with_result <- function (package, res, labels) {
-  vns <- mran_versions(package)
+  vns <- available_versions(package)
   res <- factor(res, levels = seq(-2L, 2L), labels = labels)
   vns$result <- as.character(res)
 

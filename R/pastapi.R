@@ -1,10 +1,11 @@
 
 
 # TODO
+# debug parallel
 # deal with S4 methods; and test for that.
-# allow CRAN and devtools::install_version; or patch versions to work with CRAN
 # tests: maybe rather than pre-installed (OS X) versions, have pre-installed source
 # files and then mock install.versions
+
 
 
 #' @importFrom zeallot %<-%
@@ -51,16 +52,18 @@ NULL
 NULL
 
 
-#' @details
-#' This function downloads and installs multiple versions from MRAN, so it is likely to be slow.
+#' @section Speed:
+#' This function may download and install multiple versions from MRAN, so it is likely to be slow
+#' when first used (and even afterwards if library loading is slow). Using \code{search = "parallel"}
+#' may help, but not if the network is the bottleneck.
 #' @name slow_warning_doc
 NULL
 
 
 #' @param fn Function name as a character string.
 #' @param package Package. Alternatively, specify the function name as e.g. \code{"package::function"}.
-#' @param ... Arguments passed to \code{\link[versions]{install.versions}},
-#'   \code{\link[devtools]{install_version}} and thence to \code{link{install.packages}}.
+#' @param ... Arguments passed to \code{\link[versions]{install.versions}} or
+#'   \code{\link[devtools]{install_version}}, and thence to \code{\link{install.packages}}.
 #' @name basic_params_doc
 NULL
 
@@ -146,11 +149,12 @@ fn_exists_at <- function (
         fn,
         package,
         version = get_version_at_date(package, date),
-        date = NULL
+        date = NULL,
+        ...
       ) {
   if (missing(package)) c(package, fn) %<-% parse_fn(fn)
   test <- function (namespace) fn %in% names(namespace)
-  call_with_namespace(package, version, test)
+  call_with_namespace(package, version, test, ...)
 }
 
 
@@ -194,7 +198,7 @@ get_fn_at <- function (
 #' get_version_at_date("huxtable", "2017-01-01")
 #' }
 get_version_at_date <- function (package, date) {
-  vns <- mran_versions(package)
+  vns <- available_versions(package)
   vns <- vns$version[vns$date <= date & vns$available]
   latest <- vns[length(vns)]
 
@@ -207,7 +211,8 @@ get_version_at_date <- function (package, date) {
 #'
 #' @param package Package name.
 #' @param version Version as a character string.
-#' @param test A one-argument function. See Details.
+#' @param test    A one-argument function. See Details.
+#' @param ...     Arguments passed along to \code{\link{install.packages}}.
 #'
 #' @details
 #' The package is downloaded and installed if necessary, and its namespace is loaded. Then the
@@ -235,6 +240,7 @@ call_with_namespace  <- function (package, version, test, ...) {
 #' @param package Package name.
 #' @param version Version as a character string.
 #' @param cache   If \code{FALSE}, always try to reinstall the package.
+#' @param ...     Arguments passed along to \code{\link{install.packages}}.
 #'
 #' @details
 #' If the package is not found in the package cache, it will be downloaded and
@@ -308,25 +314,28 @@ load_version_namespace <- function (package, version, cache = TRUE, ...) {
   return(namespace)
 }
 
-#' Report versions available on MRAN
+#' Report available versions
 #'
 #' This is a simple wrapper round \code{\link[versions]{available.versions}}. It
-#' returns only packages on MRAN and is ordered by date. Results are cached so as to
-#' relieve pressure on the MRAN server.
+#' returns packages ordered by date. Results are cached so as to
+#' relieve pressure on the MRAN server. If \code{options("pastapi.use_CRAN") == FALSE},
+#' then only versions available on MRAN (i.e. after 2014-09-17) will be returned;
+#' otherwise older versions will be returned too.
 #'
 #' @param package A single package name as a character string.
 #'
-#' @return A data frame with columns "version", "date" and "available" (always \code{TRUE}).
+#' @return A data frame with columns "version" and "date".
 #'
 #' @export
 #'
 #' @examples
-#' mran_versions("clipr")
+#' available_versions("clipr")
 #'
-mran_versions <- memoise::memoise(
+available_versions <- memoise::memoise(
   function (package) {
     vns <- versions::available.versions(package)[[package]]
-    vns <- vns[vns$available == TRUE,]
+    if (! isTRUE(getOption("pastapi.use_CRAN", TRUE))) vns <- vns[vns$available == TRUE,]
+    vns$available <- NULL
     vns$date <- as.Date(vns$date)
     vns <- vns[order(vns$date),]
 

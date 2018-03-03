@@ -12,6 +12,8 @@ call_with_namespace(package, version, test, ...)
 \item{version}{Version as a character string.}
 
 \item{test}{A one-argument function. See Details.}
+
+\item{...}{Arguments passed along to \code{\link{install.packages}}.}
 }
 \value{
 The value returned by \code{test}.

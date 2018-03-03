@@ -5,7 +5,7 @@
 \title{Test if a function exists at a given version}
 \usage{
 fn_exists_at(fn, package, version = get_version_at_date(package, date),
-  date = NULL)
+  date = NULL, ...)
 }
 \arguments{
 \item{fn}{Function name as a character string.}
@@ -15,6 +15,9 @@ fn_exists_at(fn, package, version = get_version_at_date(package, date),
 \item{version}{Version as a character string. If omitted, use the version available at \code{date}.}
 
 \item{date}{Date, as a character string that can be read by \code{\link{as.Date}} e.g. "2016-01-01".}
+
+\item{...}{Arguments passed to \code{\link[versions]{install.versions}} or
+\code{\link[devtools]{install_version}}, and thence to \code{\link{install.packages}}.}
 }
 \value{
 \code{TRUE} or \code{FALSE}.
