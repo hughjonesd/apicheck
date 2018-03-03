@@ -2,16 +2,18 @@
 context("Whitebox tests")
 
 old <- NULL
-
+old_opts <- NULL
 
 setup({
   old <<- getOption("pastapi.lib_dir") # don't use get_lib_dir as it never returns NULL
+  old_opts <<- options(cl.cores = 2) # for travis
   # we want a new directory for these tests, otherwise last one will delete your pre-cached files
   set_lib_dir(NULL)
 })
 
 
 teardown({
+  options(old_opts)
   set_lib_dir(old)
 })
 
