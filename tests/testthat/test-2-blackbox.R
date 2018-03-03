@@ -12,7 +12,7 @@ setup({
 
 
 teardown({
-  if (Sys.info()$sysname != "Windows") {
+  if (Sys.info()["sysname"] != "Windows") {
     set_lib_dir(old)
   }
 })
