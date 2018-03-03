@@ -4,7 +4,7 @@
 \alias{call_with_namespace}
 \title{Loads a package namespace at a particular version and runs an arbitrary function}
 \usage{
-call_with_namespace(package, version, test)
+call_with_namespace(package, version, test, ...)
 }
 \arguments{
 \item{package}{Package name.}

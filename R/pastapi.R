@@ -59,6 +59,8 @@ NULL
 
 #' @param fn Function name as a character string.
 #' @param package Package. Alternatively, specify the function name as e.g. \code{"package::function"}.
+#' @param ... Arguments passed to \code{\link[versions]{install.versions}},
+#'   \code{\link[devtools]{install_version}} and thence to \code{link{install.packages}}.
 #' @name basic_params_doc
 NULL
 
@@ -98,7 +100,7 @@ NULL
 #' api_same_at("write_clip", "clipr", "0.1.1")
 #' }
 api_same_at <- function (fn, package, version = get_version_at_date(package, date), date = NULL,
-  current_fn = NULL) {
+  current_fn = NULL, ...) {
   if (missing(package)) c(package, fn) %<-% parse_fn(fn)
   if (missing(current_fn) || is.null(current_fn)) {
     cur_namespace <- try(loadNamespace(package, partial = TRUE), silent = TRUE)
@@ -118,7 +120,7 @@ api_same_at <- function (fn, package, version = get_version_at_date(package, dat
     identical(formals(current_fn), formals(g))
   }
 
-  call_with_namespace(package, version, test)
+  call_with_namespace(package, version, test, ...)
 }
 
 
@@ -169,11 +171,12 @@ get_fn_at <- function (
         fn,
         package,
         version = get_version_at_date(package, date),
-        date = NULL
+        date = NULL,
+        ...
       ) {
   if (missing(package)) c(package, fn) %<-% parse_fn(fn)
   test <- function (namespace) get(fn, namespace)
-  call_with_namespace(package, version, test)
+  call_with_namespace(package, version, test, ...)
 }
 
 
@@ -220,8 +223,8 @@ get_version_at_date <- function (package, date) {
 #' can_it_expand_urls <- function (namespace) "expand_urls" %in% names(namespace)
 #' call_with_namespace("longurl", "0.3.0", test = can_it_expand_urls)
 #' }
-call_with_namespace  <- function (package, version, test) {
-  namespace <- load_version_namespace(package, version)
+call_with_namespace  <- function (package, version, test, ...) {
+  namespace <- load_version_namespace(package, version, ...)
   on.exit(unloadNamespace(package))
   test(namespace)
 }
@@ -231,7 +234,7 @@ call_with_namespace  <- function (package, version, test) {
 #'
 #' @param package Package name.
 #' @param version Version as a character string.
-#' @param cache   If FALSE, always try to reinstall the package.
+#' @param cache   If \code{FALSE}, always try to reinstall the package.
 #'
 #' @details
 #' If the package is not found in the package cache, it will be downloaded and
@@ -250,7 +253,7 @@ call_with_namespace  <- function (package, version, test) {
 #' \dontrun{
 #' load_version_namespace("clipr", "0.4.0")
 #' }
-load_version_namespace <- function (package, version, cache = TRUE) {
+load_version_namespace <- function (package, version, cache = TRUE, ...) {
   if (isNamespaceLoaded(package)) {
     warning(package, " namespace is already loaded. Attempting to unload.")
     unloadNamespace(package)
@@ -273,10 +276,10 @@ load_version_namespace <- function (package, version, cache = TRUE) {
               "To use CRAN for pastapi, devtools and withr must be installed.\n",
               "Try `install.packages(c('devtools', 'withr'))`")
         withr::with_libpaths(package_dir,
-          devtools::install_version(package, version, lib = package_dir, type = "source", quiet = TRUE)
+          devtools::install_version(package, version, lib = package_dir, type = "source", ...)
         )
       } else {
-        versions::install.versions(package, versions = version, lib = package_dir, quiet = TRUE)
+        versions::install.versions(package, versions = version, lib = package_dir, ...)
       }
     },
       warning = function (w) {

@@ -42,8 +42,9 @@ when_api_same <- function (
         package,
         current_fn = NULL,
         search     = c("binary", "forward", "backward", "all", "parallel"),
-        report     = c("full", "brief"))
-      {
+        report     = c("full", "brief"),
+        ...
+      ) {
   search <- match.arg(search)
   report   <- match.arg(report)
   if (missing(package)) c(package, fn) %<-% parse_fn(fn)
@@ -51,7 +52,7 @@ when_api_same <- function (
 
   test <- wrap_test(
     function (version) suppressWarnings(api_same_at(fn, package = package, version = version,
-          current_fn = current_fn))
+          current_fn = current_fn, ...))
   )
   res <- run_search(package, test, search)
 
@@ -173,6 +174,7 @@ search_all <- function (versions, test, search) {
     if (is.na(ncores)) ncores <- 2
     cl <- parallel::makeCluster(ncores)
     parallel::clusterEvalQ(cl, library(pastapi))
+    parallel::clusterExport(cl, "LIB_DIR", envir = environment())
     function (x, fun) parallel::parLapply(cl, x, fun)
   } else {
     lapply

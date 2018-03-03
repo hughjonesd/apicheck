@@ -6,7 +6,7 @@
 \title{Compare function existence and APIs across package versions}
 \usage{
 when_api_same(fn, package, current_fn = NULL, search = c("binary",
-  "forward", "backward", "all", "parallel"), report = c("full", "brief"))
+  "forward", "backward", "all", "parallel"), report = c("full", "brief"), ...)
 
 when_fn_exists(fn, package, search = c("binary", "forward", "backward", "all",
   "parallel"), report = c("full", "brief"))
@@ -24,6 +24,9 @@ must be an actual function, not a character string. You can use
 \item{search}{"binary", "forward", "backward", "all" or "parallel". See Details.}
 
 \item{report}{"brief" or "full". See Value.}
+
+\item{...}{Arguments passed to \code{\link[versions]{install.versions}},
+\code{\link[devtools]{install_version}} and thence to \code{link{install.packages}}.}
 }
 \value{
 If \code{report} is "brief", the earliest "known good" version.
