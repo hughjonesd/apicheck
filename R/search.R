@@ -170,10 +170,13 @@ search_all <- function (versions, test, search) {
   lapply_fn <- if (search == "parallel") {
     if (! requireNamespace('parallel', quietly = TRUE)) stop("Could not load `parallel` namespace")
     ncores <- getOption("cl.cores")
-    if (is.na(ncores)) ncores <- min(parallel::detectCores() - 1, length(versions))
+    if (is.null(ncores)) ncores <- min(parallel::detectCores() - 1, length(versions))
     if (is.na(ncores)) ncores <- 2
     cl <- parallel::makeCluster(ncores)
     parallel::clusterEvalQ(cl, library(pastapi))
+    use_CRAN <- getOption("pastapi.use_CRAN", TRUE)
+    repos <- getOption("repos", "https://cloud.r-project.org")
+    parallel::clusterCall(cl, options, pastapi.use_CRAN = use_CRAN, repos = repos)
     parallel::clusterExport(cl, "LIB_DIR", envir = environment())
     function (x, fun) parallel::parLapply(cl, x, fun)
   } else {
