@@ -16,7 +16,7 @@ teardown({
 })
 
 
-test_that("parse_fn works", {
+test_that("parse_fn", {
   expect_identical(pastapi:::parse_fn("foo::bar"), c("foo", "bar"))
 })
 
@@ -32,7 +32,7 @@ test_that("Failure to install a file does not leave a directory on disk", {
 })
 
 
-test_that("na_binary_search works", {
+test_that("na_binary_search", {
   run_bs <- function (x) {
     f <- function (n) x[n]
     pastapi:::na_binary_search(1L, length(!!x), f)
@@ -74,13 +74,12 @@ test_that("na_binary_search works", {
 })
 
 
-test_that("search_versions works", {
-  with_mock(`pastapi:::mran_versions` = function (package) data.frame(version = 1:3), {
+test_that("search_versions", {
 
     test_vars <- function (search, ...) {
       x <- as.logical(list(...))
       test <- function (y) x[y]
-      pastapi:::search_versions("blah", test, search)
+      pastapi:::search_versions(1:3, test, search)
     }
 
     expect_equal(test_vars("forward", TRUE, FALSE, TRUE), c(2L, 1L, 1L))
@@ -90,15 +89,22 @@ test_that("search_versions works", {
     expect_equal(test_vars("backward", TRUE, FALSE, TRUE), c(-1L, -2L, 2L))
     expect_equal(test_vars("backward", TRUE, FALSE, TRUE), c(-1L, -2L, 2L))
     expect_equal(test_vars("backward", TRUE, NA, FALSE), c(-1L, -1L, -2L))
-
-    expect_equal(test_vars("all", TRUE, FALSE, TRUE), c(2L, -2L, 2L))
-    expect_equal(test_vars("all", TRUE, NA, TRUE), c(2L, 0L, 2L))
-    expect_equal(test_vars("all", FALSE, NA, TRUE), c(-2L, 0L, 2L))
-  })
 })
 
 
-test_that("clear_package_cache works", {
+test_that("search_all", {
+  test_vars <- function (search, ...) {
+    x <- as.logical(list(...))
+    test <- function (y) x[y]
+    pastapi:::search_all(seq_along(x), test, search)
+  }
+
+  expect_equal(test_vars("all", FALSE, NA, TRUE), c(-2L, 0, 2L))
+  expect_equal(test_vars("parallel", FALSE, NA, TRUE), c(-2L, 0, 2L))
+})
+
+
+test_that("clear_package_cache", {
   ld <- get_lib_dir()
   cat("blah", file = file.path(ld, "notarealpackage-0.2.0"))
   clear_package_cache()

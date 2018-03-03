@@ -6,10 +6,10 @@
 \title{Compare function existence and APIs across package versions}
 \usage{
 api_first_same(fn, package, current_fn = NULL, search = c("binary",
-  "forward", "backward", "all"), report = c("full", "brief"))
+  "forward", "backward", "all", "parallel"), report = c("full", "brief"))
 
 fn_first_exists(fn, package, search = c("binary", "forward", "backward",
-  "all"), report = c("full", "brief"))
+  "all", "parallel"), report = c("full", "brief"))
 }
 \arguments{
 \item{fn}{Function name as a character string.}
@@ -21,7 +21,7 @@ the package (which is assumed to be available in a standard library location). I
 must be an actual function, not a character string. You can use
 \code{\link{get_fn_at}} for this.}
 
-\item{search}{"binary", "forward", "backward" or "all". See Details.}
+\item{search}{"binary", "forward", "backward", "all" or "parallel". See Details.}
 
 \item{report}{"brief" or "full". See Value.}
 }

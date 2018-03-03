@@ -5,8 +5,8 @@ old <- NULL
 
 setup({
   if (Sys.info()["sysname"] != "Windows") {
-  old <<- getOption("pastapi.lib_dir") # don't use get_lib_dir as it never returns NULL
-  set_lib_dir("testing_lib_dir")
+    old <<- getOption("pastapi.lib_dir") # don't use get_lib_dir as it never returns NULL
+    set_lib_dir("testing_lib_dir")
   }
 })
 
@@ -110,7 +110,8 @@ test_that("api_first_same", {
                 rep("Assumed same", 4)),
     forward  = c("Unknown", "Known different", "Known same", rep("Assumed same", 6)),
     backward = c("Assumed different", "Known different", rep("Known same", 7)),
-    all      = c("Unknown", "Known different", rep("Known same", 7))
+    all      = c("Unknown", "Known different", rep("Known same", 7)),
+    parallel = c("Unknown", "Known different", rep("Known same", 7))
   )
   for (search in strategies) {
     expect_error(res <- api_first_same("clipr::write_clip", current_fn = wc, search = search, report = "full"), NA)
@@ -131,7 +132,8 @@ test_that("fn_first_exists", {
     binary   = c(rep("Assumed absent", 4), "Known absent", "Assumed absent", rep("Known absent", 2), "Known present"),
     forward  = c("Unknown", rep("Known absent", 7), "Known present"),
     backward = c(rep("Assumed absent", 7), "Known absent", "Known present"),
-    all      = c("Unknown", rep("Known absent", 7), "Known present")
+    all      = c("Unknown", rep("Known absent", 7), "Known present"),
+    parallel = c("Unknown", rep("Known absent", 7), "Known present")
   )
   for (search in strategies) {
     expect_error(res <- fn_first_exists("clipr::dr_clipr", search = search, report = "full"), NA)

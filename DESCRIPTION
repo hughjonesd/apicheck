@@ -10,7 +10,8 @@ RoxygenNote: 6.0.1
 Imports:
     memoise,
     versions, 
-    zeallot
+    zeallot,
+    parallel
 Suggests:
     testthat,
     covr

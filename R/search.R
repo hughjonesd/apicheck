@@ -1,13 +1,14 @@
 
 
 
-#' @param search "binary", "forward", "backward" or "all". See Details.
+#' @param search "binary", "forward", "backward", "all" or "parallel". See Details.
 #' @param report "brief" or "full". See Value.
 #' @details
-#' Search strategy can be "binary", "forward", "backward", or "all". Forward (backward) searches incrementally
-#' from the earliest (latest) version; binary does a binary search from the midpoint. These search
+#' "forward" ("backward") searches incrementally
+#' from the earliest (latest) version; "binary" does a binary search from the midpoint. These search
 #' strategies assume that API changes happen just once - i.e. once a function exists or API is the same as now,
-#' it will stay so in future versions. "all" searches every version and makes no assumptions.
+#' it will stay so in future versions. "all" searches every version and makes no assumptions. "parallel" searches
+#' every version in parallel using \code{\link[parallel]{parLapply}}.
 #'
 #' @return
 #' If \code{report} is "brief", the earliest "known good" version.
@@ -36,17 +37,23 @@ NULL
 #' \dontrun{
 #' api_first_same("read.dta", "foreign")
 #' }
-api_first_same <- function (fn, package, current_fn = NULL, search = c("binary", "forward", "backward", "all"),
-  report = c("full", "brief")) {
+api_first_same <- function (
+        fn,
+        package,
+        current_fn = NULL,
+        search     = c("binary", "forward", "backward", "all", "parallel"),
+        report     = c("full", "brief"))
+      {
   search <- match.arg(search)
   report   <- match.arg(report)
   if (missing(package)) c(package, fn) %<-% parse_fn(fn)
   force(current_fn)
 
   test <- wrap_test(
-    function (version) api_same_at(fn, package = package, version = version, current_fn = current_fn)
+    function (version) suppressWarnings(api_same_at(fn, package = package, version = version,
+          current_fn = current_fn))
   )
-  res <- if(search == "binary") binary_search_versions(package, test) else search_versions(package, test, search)
+  res <- run_search(package, test, search)
 
   res <- clean_up_result(res, package, report, labels = c("Known different", "Assumed different", "Unknown",
     "Assumed same", "Known same"))
@@ -69,17 +76,21 @@ api_first_same <- function (fn, package, current_fn = NULL, search = c("binary",
 #' \dontrun{
 #' fn_first_exists('read.dta', 'foreign')
 #' }
-fn_first_exists <- function (fn, package, search = c("binary", "forward", "backward", "all"),
-  report = c("full", "brief")) {
+fn_first_exists <- function (
+        fn,
+        package,
+        search = c("binary", "forward", "backward", "all", "parallel"),
+        report = c("full", "brief"))
+      {
   search <- match.arg(search)
   report   <- match.arg(report)
   if (missing(package)) c(package, fn) %<-% parse_fn(fn)
+
   test <- wrap_test(function (version) fn_exists_at(fn, package = package, version = version))
+  res <- run_search(package, test, search)
 
-  res <- if(search == "binary") binary_search_versions(package, test) else search_versions(package, test, search)
-
-  res <- clean_up_result(res, package, report, labels = c("Known absent", "Assumed absent", "Unknown", "Assumed present",
-    "Known present"))
+  res <- clean_up_result(res, package, report,
+        labels = c("Known absent", "Assumed absent", "Unknown", "Assumed present", "Known present"))
 
   return(res)
 }
@@ -96,11 +107,24 @@ wrap_test <- function (test_fn) {
 }
 
 
+run_search <- function (package, test, search) {
+  versions <- mran_versions(package)$version
+  res <- switch(search,
+          binary   = binary_search_versions(versions, test),
+          backward = ,
+          forward  = search_versions(versions, test, search),
+          parallel = ,
+          all = search_all(versions, test, search)
+  )
+
+  return(res)
+}
+
+
+
 # the next functions run a test and return results for all versions:
 # -2 = FALSE, -1 assumed FALSE, 0 = NA, 1 = assumed TRUE, 2 = TRUE
-binary_search_versions <- function(package, test) {
-  vns <- mran_versions(package)
-  versions <- vns$version
+binary_search_versions <- function(versions, test) {
   test_wrap <- function (x) test(versions[x])
   result <- na_binary_search(1L, length(versions), test_wrap)
 
@@ -118,14 +142,11 @@ na_binary_search <- function (l, r, test) {
 }
 
 
-search_versions <- function (package, test, search) {
-  versions <- mran_versions(package)$version
-
+search_versions <- function (versions, test, search) {
   res <- logical(0)
   stop_test <- switch(search,
           forward  = isTRUE,
-          backward = function (x) isTRUE(! x),
-          all       = function (x) FALSE
+          backward = function (x) isTRUE(! x)
         )
   assume_rest <- switch(search, forward = 1L, backward = -1L, NA)
   if (search == "backward") versions <- rev(versions)
@@ -143,6 +164,23 @@ search_versions <- function (package, test, search) {
   return(res)
 }
 
+
+search_all <- function (versions, test, search) {
+  lapply_fn <- if (search == "parallel") {
+    if (! requireNamespace('parallel', quietly = TRUE)) stop("Could not load `parallel` namespace")
+    cl <- parallel::makeCluster(getOption("cl.cores", if (is.na(nc <- parallel::detectCores())) 2 else nc - 1))
+    parallel::clusterEvalQ(cl, library(pastapi))
+    function (x, fun) parallel::parLapply(cl, x, fun)
+  } else {
+    lapply
+  }
+
+  res <- lapply_fn(versions, test)
+  res <- as.logical(res)
+  res <- ifelse(is.na(res), 0L, 4 * as.integer(res) - 2)
+
+  return(res)
+}
 
 clean_up_result <- function (res, package, report, labels) {
   if (report == "brief") {
