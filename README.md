@@ -14,10 +14,9 @@ Example
 
 From [clipr](https://github.com/mdlincoln/clipr/)'s NEWS file:
 
-clipr 0.4.0:
-------------
+`clipr 0.4.0`:
 
-### Introduces `dr_clipr()` ...
+-   Introduces `dr_clipr()` ...
 
 ``` r
 library(pastapi)
@@ -29,10 +28,9 @@ when_fn_exists("clipr::dr_clipr", report = "brief") # binary search
 #> [1] "0.4.0"
 ```
 
-clipr 0.2.0:
-------------
+`clipr 0.2.0`:
 
-### Several changes to `write_clip` ...
+-   Several changes to `write_clip` ...
 
 ``` r
 
