@@ -79,7 +79,9 @@ test_that("load_version_namespace with attached namespace", {
   skip_on_cran()
 
   if (! require(withr)) skip("Couldn't attach withr")
-  expect_warning(load_version_namespace("withr", "2.1.1"), "already loaded")
+  run_in_fresh_cache(cran = TRUE,
+          expect_warning(load_version_namespace("withr", "2.1.1"), "already loaded")
+        )
 })
 
 

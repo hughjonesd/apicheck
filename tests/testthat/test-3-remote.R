@@ -1,26 +1,12 @@
 
 context("Remote tests")
 
-library(rlang)
-
-run_nicely <- function(cran, expr) {
-  expr <- enquo(expr)
-  old_opts <- options(pastapi.use_cran = cran, repos = "https://cloud.r-project.org")
-  old_lib_dir <- set_lib_dir(NULL) # can't avoid possibly putting LIB_DIR into options...
-  clear_package_cache()
-  on.exit({
-    options(old_opts)
-    set_lib_dir(old_lib_dir)
-  })
-  eval_tidy(expr)
-}
-
 
 install_on <- function (cran, package, version) {
   if (cran == FALSE) skip("MRAN not working for the moment...")
   force(package)
   force(version)
-  run_nicely(cran,
+  run_in_fresh_cache(cran,
     expect_error(call_with_namespace(package, version, function (x) NULL, quiet = TRUE), NA,
           info = sprintf("cran: %s, package: %s, version: %s", cran, package, version))
   )
@@ -66,5 +52,5 @@ test_that("Can install versions when package already installed and loaded", {
 test_that("Multiple parallel remote installs", {
   skip_on_cran()
 
-  run_nicely(cran = TRUE, when_fn_exists("clipr::dr_clipr", search = "parallel"))
+  run_in_fresh_cache(cran = TRUE, when_fn_exists("clipr::dr_clipr", search = "parallel"))
 })
