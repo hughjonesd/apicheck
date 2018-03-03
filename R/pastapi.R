@@ -268,11 +268,8 @@ load_version_namespace <- function (package, version, cache = TRUE, ...) {
   force(version)
   lib_dir <- get_lib_dir()
   package_dir <- file.path(lib_dir, paste(package, version, sep = "-"))
+  if (! cache) loudly_unlink(package_dir, "Could not delete old package directory '", package_dir, "'")
 
-  if (! cache && dir.exists(package_dir)) {
-    if (! identical(unlink(package_dir, recursive = TRUE), 0L)) stop(
-          "Could not delete old package directory '", package_dir, "'")
-  }
   if (! cache || ! dir.exists(package_dir)) {
     dir.create(package_dir, recursive = TRUE)
     if (! dir.exists(package_dir)) stop("Could not create ", package_dir)
@@ -344,10 +341,11 @@ available_versions <- memoise::memoise(
 )
 
 
-loudly_unlink <- function (dir) {
-  if (dir.exists(dir) && ! identical(unlink(dir, recursive = TRUE), 0L)) stop(
-        "Could not unlink package dir ", dir, " after failed installation. ",
-        "Please delete the directory yourself or run clear_package_cache() to delete all directories")
+loudly_unlink <- function (dir, error = paste0("Could not unlink package dir ", dir,
+        " after failed installation.\n",
+        "Please delete the directory yourself or run clear_package_cache()",
+        "to delete all directories")) {
+  if (dir.exists(dir) && ! identical(unlink(dir, recursive = TRUE), 0L)) stop(error)
 
   invisible(NULL)
 }
