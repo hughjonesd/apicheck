@@ -15,7 +15,7 @@ get_lib_dir()
 \item{create}{Logical. Try to create the directory if it doesn't exist.}
 }
 \value{
-The old library location, invisibly. By default this is a subdirectory of \code{\link{tempdir}}.
+\code{set_lib_dir} returns the old library location, invisibly, or \code{NULL} if none was set in options.
 
 \code{get_lib_dir} returns the library location.
 }

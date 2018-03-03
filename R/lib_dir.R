@@ -26,7 +26,7 @@ LIB_DIR <- NULL
 #' If \code{lib_dir} is set to \code{NULL}, a subdirectory of \code{tempdir()} will be used.
 #' \code{lib_dir} will be normalized via \code{\link{normalizePath}}.
 #'
-#' @return The old library location, invisibly. By default this is a subdirectory of \code{\link{tempdir}}.
+#' @return \code{set_lib_dir} invisibly returns the old library location, or \code{NULL} if none was set in options.
 #'
 #' @export
 #'
@@ -41,14 +41,12 @@ set_lib_dir <- function (lib_dir, create = FALSE) {
 
   if (! is.null(lib_dir)) lib_dir <- normalizePath(lib_dir)
   x <- options('pastapi.lib_dir' = lib_dir)
-  x <- x$pastapi.lib_dir
-  if (is.null(x)) x <- LIB_DIR
 
-  return(invisible(x))
+  return(invisible(x$pastapi.lib_dir))
 }
 
 
-#' @return \code{get_lib_dir} returns the library location.
+#' @return \code{get_lib_dir} returns the actual library location, whether or not an option has been set.
 #'
 #' @rdname set_lib_dir
 #'

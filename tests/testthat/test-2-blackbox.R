@@ -4,20 +4,15 @@ old_lib_dir <- NULL
 old_opts <- NULL
 
 setup({
-  old_opts <- options(pastapi.use_CRAN = TRUE, repos = "https://cloud.r-project.org")
-  if (Sys.info()["sysname"] != "Windows") {
-    old_lib_dir <<- getOption("pastapi.lib_dir") # don't use get_lib_dir as it never returns NULL
-    set_lib_dir("testing_lib_dir")
-  }
+  old_opts <<- options(pastapi.use_CRAN = TRUE, repos = "https://cloud.r-project.org")
+  old_lib_dir <<- set_lib_dir(if (Sys.info()["sysname"] != "Windows") "testing_lib_dir" else NULL)
 })
 
 
 teardown({
   options(old_opts)
-  if (Sys.info()["sysname"] != "Windows") {
-    set_lib_dir(old_lib_dir)
-  }
-
+  if (Sys.info()["sysname"] == "Windows") clear_package_cache()
+  set_lib_dir(old_lib_dir)
 })
 
 
