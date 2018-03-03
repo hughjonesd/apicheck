@@ -15,6 +15,7 @@ Imports:
 Suggests:
     covr,
     devtools,
+    rlang,
     testthat,
     withr
     
