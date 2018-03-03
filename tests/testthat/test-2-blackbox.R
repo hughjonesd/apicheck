@@ -80,6 +80,14 @@ test_that("load_version_namespace and call_with_namespace", {
 })
 
 
+test_that("load_version_namespace with attached namespace", {
+  skip_on_cran()
+
+  if (! require(withr)) skip("Couldn't attach withr")
+  expect_warning(load_version_namespace("withr", "2.1.1"), "already loaded")
+})
+
+
 test_that("Can call functions with different calling conventions", {
   skip_on_cran()
 
