@@ -10,11 +10,14 @@ pastapi
 `pastapi` works by downloading package versions from MRAN and temporarily installing them in a special directory. Results take time.
 
 Example
--------
+=======
 
 From [clipr](https://github.com/mdlincoln/clipr/)'s NEWS file:
 
--   clipr 0.4.0: \*\* Introduces `dr_clipr()` ...
+clipr 0.4.0:
+------------
+
+### Introduces `dr_clipr()` ...
 
 ``` r
 library(pastapi)
@@ -22,50 +25,30 @@ fn_exists_at("clipr::dr_clipr", version =  "0.4.0")
 #> [1] TRUE
 fn_exists_at("clipr::dr_clipr", version =  "0.3.3")
 #> [1] FALSE
-when_fn_exists("clipr::dr_clipr")
-#>   version       date available         result
-#> 9   0.1.0 2015-09-02      TRUE Assumed absent
-#> 8   0.1.1 2015-09-03      TRUE Assumed absent
-#> 7   0.2.0 2015-10-06      TRUE Assumed absent
-#> 6   0.2.1 2016-06-23      TRUE Assumed absent
-#> 5   0.3.0 2016-11-19      TRUE   Known absent
-#> 4   0.3.1 2016-12-02      TRUE Assumed absent
-#> 3   0.3.2 2017-01-09      TRUE   Known absent
-#> 2   0.3.3 2017-06-19      TRUE   Known absent
-#> 1   0.4.0 2017-11-03      TRUE  Known present
+when_fn_exists("clipr::dr_clipr", report = "brief") # binary search
+#> [1] "0.4.0"
 ```
 
--   clipr 0.2.0: \*\* Several changes to `write_clip` ...
+clipr 0.2.0:
+------------
+
+### Several changes to `write_clip` ...
 
 ``` r
 
 api_same_at("clipr::write_clip", version = "0.2.0")
-#> Downloading package from url: https://cloud.r-project.org/src/contrib/Archive/clipr/clipr_0.2.0.tar.gz
-#> Installing clipr
-#> '/Library/Frameworks/R.framework/Resources/bin/R' --no-site-file  \
-#>   --no-environ --no-save --no-restore --quiet CMD INSTALL  \
-#>   '/private/var/folders/d5/ttls77nd1tdd89gl0p4cdkkc0000gn/T/RtmpztjWGQ/devtools172a36ecc925d/clipr'  \
-#>   --library='/Users/david/pastapi/.pastapi/clipr-0.2.0' --install-tests
-#> 
 #> [1] TRUE
 api_same_at("clipr::write_clip", version = "0.1.1")
-#> Downloading package from url: https://cloud.r-project.org/src/contrib/Archive/clipr/clipr_0.1.1.tar.gz
-#> Installing clipr
-#> '/Library/Frameworks/R.framework/Resources/bin/R' --no-site-file  \
-#>   --no-environ --no-save --no-restore --quiet CMD INSTALL  \
-#>   '/private/var/folders/d5/ttls77nd1tdd89gl0p4cdkkc0000gn/T/RtmpztjWGQ/devtools172a373578524/clipr'  \
-#>   --library='/Users/david/pastapi/.pastapi/clipr-0.1.1' --install-tests
-#> 
 #> [1] FALSE
-when_api_same("clipr::write_clip")
-#>   version       date available            result
-#> 9   0.1.0 2015-09-02      TRUE Assumed different
-#> 8   0.1.1 2015-09-03      TRUE   Known different
-#> 7   0.2.0 2015-10-06      TRUE        Known same
-#> 6   0.2.1 2016-06-23      TRUE      Assumed same
-#> 5   0.3.0 2016-11-19      TRUE        Known same
-#> 4   0.3.1 2016-12-02      TRUE      Assumed same
-#> 3   0.3.2 2017-01-09      TRUE      Assumed same
-#> 2   0.3.3 2017-06-19      TRUE      Assumed same
-#> 1   0.4.0 2017-11-03      TRUE      Assumed same
+when_api_same("clipr::write_clip", report = "full", search = "all") # check all versions
+#>   version       date available          result
+#> 9   0.1.0 2015-09-02      TRUE Known different
+#> 8   0.1.1 2015-09-03      TRUE Known different
+#> 7   0.2.0 2015-10-06      TRUE      Known same
+#> 6   0.2.1 2016-06-23      TRUE      Known same
+#> 5   0.3.0 2016-11-19      TRUE      Known same
+#> 4   0.3.1 2016-12-02      TRUE      Known same
+#> 3   0.3.2 2017-01-09      TRUE      Known same
+#> 2   0.3.3 2017-06-19      TRUE      Known same
+#> 1   0.4.0 2017-11-03      TRUE      Known same
 ```
