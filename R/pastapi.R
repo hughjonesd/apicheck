@@ -199,7 +199,7 @@ get_fn_at <- function (
 #' }
 get_version_at_date <- function (package, date) {
   vns <- available_versions(package)
-  vns <- vns$version[vns$date <= date & vns$available]
+  vns <- vns$version[vns$date <= date]
   latest <- vns[length(vns)]
 
   return(latest)

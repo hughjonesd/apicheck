@@ -21,13 +21,21 @@ teardown({
 })
 
 
-test_that("available_versions works", {
+test_that("available_versions", {
   expect_silent(vns <- available_versions("longurl"))
   # check caching:
   expect_silent(vns2 <- available_versions("longurl"))
   expect_identical(vns, vns2)
   expect_identical(names(vns), c("version", "date"))
   expect_identical(vns, vns[order(vns$date), ])
+})
+
+
+test_that("get_version_at_date", {
+  expect_silent(d <- get_version_at_date("clipr", "2017-01-01"))
+  expect_identical(d, "0.3.1")
+  expect_silent(d <- get_version_at_date("clipr", "2016-01-01"))
+  expect_identical(d, "0.2.0")
 })
 
 
