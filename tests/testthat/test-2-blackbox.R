@@ -3,12 +3,16 @@ context("Blackbox tests")
 old <- NULL
 
 setup({
+  if (Sys.info()$sysname != "Windows") {
   old <<- getOption("pastapi.lib_dir") # don't use get_lib_dir as it never returns NULL
   set_lib_dir("testing_lib_dir")
+  }
 })
 
 teardown({
-  set_lib_dir(old)
+  if (Sys.info()$sysname != "Windows") {
+    set_lib_dir(old)
+  }
 })
 
 
