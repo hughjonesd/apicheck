@@ -25,7 +25,11 @@ test_that("Failure to install a file does not leave a directory on disk", {
   tempdir <- tempfile(pattern = "testing", tmpdir = normalizePath(tempdir()))
   dir.create(tempdir)
   set_lib_dir(tempdir)
-  with_mock(`versions::install.versions` = function (...) stop("Some crazy failure"), {
+  fail <- function (...) stop("Some crazy failure")
+  with_mock(
+    `versions::install.versions` = fail,
+    `devtools::install_version`  = fail,
+  {
     expect_error(get_fn_at("expand_urls", "longurl", "0.3.0"), "Some crazy failure")
     expect_false(dir.exists(file.path(tempdir, "longurl")))
   })
