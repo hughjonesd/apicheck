@@ -34,7 +34,7 @@ test_that("available_versions works", {
 test_that("arguments passed to install.packages", {
   expect_error(load_version_namespace("fortunes", "1.5-1", repos = "BROKEN"))
   expect_error(fn_exists_at("fortunes::fortune", version = "1.5-0", repos = "BROKEN"))
-  fn <- get_fn_at("fortunes::fortune", version = "1.5-3")
+  fn <- base::as.character
   expect_error(api_same_at("fortunes::fortune", version = "1.5-2", current_fn = fn, repos = "BROKEN"))
   # these guys throw warnings, but special weird install.packages warnings that don't get trapped.
   # and if you do capture.output, it fucks things up even worse.
