@@ -90,17 +90,17 @@ test_that("fn_first_exists and api_first_same", {
   }
 
   results_wanted <- list(
-    forward = c("Unknown", rep("Known different", 7), "Known same"),
-    backward = c(rep("Assumed different", 7), "Known different", "Known same"),
-    binary = c(rep("Assumed different", 4), "Known different", "Assumed different", rep("Known different", 2),
-          "Known same"),
-    all = c("Unknown", rep("Known different", 7), "Known same")
+    forward = c("Unknown", "Known different", "Known same", rep("Assumed same", 6)),
+    backward = c("Assumed different", "Known different", rep("Known same", 7)),
+    binary = c("Assumed different", "Known different", "Known same", "Assumed same",
+          "Known same", rep("Assumed same", 4)),
+    all = c("Unknown", "Known different", rep("Known same", 7))
   )
   for (search in strategies) {
-    expect_error(res <- api_first_same("clipr::write_clip", search = search, report = "full"), NA)
+    expect_error(res <- api_first_same("clipr::write_clip", current_fn = wc, search = search, report = "full"), NA)
     expect_s3_class(res, "data.frame")
-    expect_identical(names(res), c("version", "date", "available", "result"))
-    expect_identical(res$result, results_wanted[[search]])
+    expect_identical(!! names(res), c("version", "date", "available", "result"))
+    expect_identical(!! res$result, !! results_wanted[[search]])
   }
 
 
