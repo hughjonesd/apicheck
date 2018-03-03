@@ -168,7 +168,10 @@ search_versions <- function (versions, test, search) {
 search_all <- function (versions, test, search) {
   lapply_fn <- if (search == "parallel") {
     if (! requireNamespace('parallel', quietly = TRUE)) stop("Could not load `parallel` namespace")
-    cl <- parallel::makeCluster(getOption("cl.cores", if (is.na(nc <- parallel::detectCores())) 2 else nc - 1))
+    ncores <- getOption("cl.cores")
+    if (is.na(ncores)) ncores <- min(parallel::detectCores() - 1, length(versions))
+    if (is.na(ncores)) ncores <- 2
+    cl <- parallel::makeCluster(ncores)
     parallel::clusterEvalQ(cl, library(pastapi))
     function (x, fun) parallel::parLapply(cl, x, fun)
   } else {
