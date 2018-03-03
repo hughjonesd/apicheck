@@ -72,29 +72,28 @@ test_that("api_same_at", {
 })
 
 
-test_that("fn_first_exists and api_first_same", {
+test_that("api_first_same", {
   skip_on_cran()
-  skip_on_travis()
-  skip_if_mran_down()
 
-  expect_equal(fn_first_exists("clipr::dr_clipr", report = "brief"), "0.4.0")
   dr_c <- get_fn_at("clipr::dr_clipr", version = "0.4.0")
   wc   <- get_fn_at("clipr::write_clip", version = "0.4.0")
 
+  expect_identical(suppressWarnings(api_first_same("clipr::dr_clipr", current_fn = dr_c, search = search,
+        report = "brief")), "0.4.0") # new function, so we suppress warnings
+
   strategies <- c("binary", "forward", "backward", "all")
+
   for (search in strategies) {
-    expect_identical(api_first_same("clipr::dr_clipr", current_fn = dr_c, search = search, report = "brief"),
-          "0.4.0") # new function
     expect_identical(api_first_same("clipr::write_clip", current_fn = wc, search = search, report = "brief"),
           "0.2.0") # API change
   }
 
   results_wanted <- list(
-    forward = c("Unknown", "Known different", "Known same", rep("Assumed same", 6)),
+    binary   = c("Assumed different", "Known different", "Known same", "Assumed same", "Known same",
+                rep("Assumed same", 4)),
+    forward  = c("Unknown", "Known different", "Known same", rep("Assumed same", 6)),
     backward = c("Assumed different", "Known different", rep("Known same", 7)),
-    binary = c("Assumed different", "Known different", "Known same", "Assumed same",
-          "Known same", rep("Assumed same", 4)),
-    all = c("Unknown", "Known different", rep("Known same", 7))
+    all      = c("Unknown", "Known different", rep("Known same", 7))
   )
   for (search in strategies) {
     expect_error(res <- api_first_same("clipr::write_clip", current_fn = wc, search = search, report = "full"), NA)
@@ -102,8 +101,27 @@ test_that("fn_first_exists and api_first_same", {
     expect_identical(!! names(res), c("version", "date", "available", "result"))
     expect_identical(!! res$result, !! results_wanted[[search]])
   }
+})
 
 
+test_that("fn_first_exists", {
+  skip_on_cran()
+
+  expect_equal(fn_first_exists("clipr::dr_clipr", report = "brief"), "0.4.0")
+
+  strategies <- c("binary", "forward", "backward", "all")
+  results_wanted <- list(
+    binary   = c(rep("Assumed absent", 4), "Known absent", "Assumed absent", rep("Known absent", 2), "Known present"),
+    forward  = c("Unknown", rep("Known absent", 7), "Known present"),
+    backward = c(rep("Assumed absent", 7), "Known absent", "Known present"),
+    all      = c("Unknown", rep("Known absent", 7), "Known present")
+  )
+  for (search in strategies) {
+    expect_error(res <- fn_first_exists("clipr::dr_clipr", search = search, report = "full"), NA)
+    expect_s3_class(res, "data.frame")
+    expect_identical(!! names(res), c("version", "date", "available", "result"))
+    expect_identical(!! res$result, !! results_wanted[[search]])
+  }
 })
 
 
