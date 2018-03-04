@@ -38,14 +38,6 @@ NULL
 NULL
 
 
-#' @param current_fn Current function for comparison. By default, \code{fn} in the current version of
-#'   the package (which is assumed to be available in a standard library location). If provided, this
-#'   must be an actual function, not a character string. You can use
-#'   \code{\link{get_fn_at}} for this.
-#' @name current_fn_doc
-NULL
-
-
 #' @details
 #' "Same API" is defined by the function arguments, as reported by \code{\link{formals}}, being the same.
 #' @name same_api_doc
@@ -60,32 +52,31 @@ NULL
 NULL
 
 
-#' @param quiet   Logical. Hide output from \code{install.packages}?
-#' @param ... Arguments passed to \code{\link[versions]{install.versions}} or
-#'   \code{\link[devtools]{install_version}}, and thence to \code{\link{install.packages}}.
-#' @name shared_params_doc
-NULL
-
 
 #' @param fn Function name as a character string.
 #' @param package Package. Alternatively, specify the function name as e.g. \code{"package::function"}.
+#' @param version Version as a character string. If omitted, use the version available at \code{date}.
+#' @param date Date, as a character string that can be read by \code{\link{as.Date}} e.g. "2016-01-01".
+#' @param current_fn Current function for comparison. By default, \code{fn} in the current version of
+#'   the package (which is assumed to be available in a standard library location). If provided, this
+#'   must be an actual function, not a character string. You can use
+#'   \code{\link{get_fn_at}} for this.
+#' @param test    A one-argument function. See Details.
+#' @param current_fn Current function
 #' @param quiet Logical. Hide output from \code{install.packages}?
-#' @inherit shared_params_doc params
-#' @name basic_params_doc
+#' @param ... Arguments passed to \code{\link[versions]{install.versions}} or
+#'   \code{\link[devtools]{install_version}}, and thence to \code{\link{install.packages}}.
+#' @name params_doc
+NULL
+
+
+#' @param version Version as a character string.
+#' @name version_nodate_params_doc
 NULL
 
 
 #' @param package Package name.
-#' @param version Version as a character string.
-#' @param test    A one-argument function. See Details.
-#' @inherit shared_params_doc params
-#' @name package_params_doc
-NULL
-
-
-#' @param version Version as a character string. If omitted, use the version available at \code{date}.
-#' @param date Date, as a character string that can be read by \code{\link{as.Date}} e.g. "2016-01-01".
-#' @name version_params_doc
+#' @name package_nofn_params_doc
 NULL
 
 
@@ -93,9 +84,7 @@ NULL
 #'
 #' \code{api_same_at} reports whether a function had the same API at a previous version or date.
 #'
-#' @inherit basic_params_doc params
-#' @inherit version_params_doc params
-#' @inherit current_fn_doc params
+#' @inherit params_doc params
 #'
 #' @details
 #' If \code{fn} does not exist at \code{version}, \code{api_same_at} returns \code{FALSE} with a warning.
@@ -114,8 +103,8 @@ NULL
 #' }
 api_same_at <- function (
         fn,
-        package,
         version    = get_version_at_date(package, date),
+        package,
         date       = NULL,
         quiet      = TRUE,
         current_fn = NULL,
@@ -144,13 +133,11 @@ api_same_at <- function (
 }
 
 
-
 #' Test if a function exists at a given version
 #'
 #' \code{fn_exists_at} reports whether a function exists at a specific previous version or date.
 #'
-#' @inherit basic_params_doc params
-#' @inherit version_params_doc params
+#' @inherit params_doc params
 #'
 #' @return \code{TRUE} or \code{FALSE}.
 #'
@@ -164,8 +151,8 @@ api_same_at <- function (
 #' }
 fn_exists_at <- function (
         fn,
-        package,
         version = get_version_at_date(package, date),
+        package,
         date    = NULL,
         quiet   = TRUE,
         ...
@@ -178,8 +165,7 @@ fn_exists_at <- function (
 
 #' Retrieve a function from a particular package version
 #'
-#' @inherit basic_params_doc params
-#' @inherit version_params_doc params
+#' @inherit params_doc params
 #'
 #' @return The function itself.
 #'
@@ -205,7 +191,9 @@ get_fn_at <- function (
 
 #' Loads a package namespace at a particular version and runs an arbitrary function
 #'
-#' @inherit package_params_doc params
+#' @inherit package_nofn_params_doc params
+#' @inherit version_nodate_params_doc params
+#' @inherit params_doc params
 #' @param test    A one-argument function. See Details.
 #'
 #' @details
@@ -237,7 +225,9 @@ call_with_namespace  <- function (
 
 #' Load the namespace from a version of a package
 #'
-#' @inherit package_params_doc params
+#' @inherit package_nofn_params_doc params
+#' @inherit version_nodate_params_doc params
+#' @inherit params_doc params
 #' @param cache   If \code{FALSE}, always try to reinstall the package.
 #'
 #' @details
@@ -302,15 +292,18 @@ load_version_namespace <- function (
         loudly_unlink(package_dir)
         stop(e$message, call. = FALSE)
       }))
-    if (! quiet) cat(output)
+    if (! quiet) message(output)
   }
 
   namespace <- tryCatch(
     loadNamespace(package, lib.loc = package_dir, partial = TRUE),
     error = function (e) {
       loudly_unlink(package_dir)
-      stop("Failed to load the namespace of '", package, "' version '", version ,"'.\n",
-        "Maybe something went silently wrong during installation.", call. = FALSE)
+      message("Failed to load the namespace of '", package, "' version '", version ,"'.\n",
+        "Maybe something went silently wrong during installation.\n",
+        "Output from install.packages is below:\n")
+      if (quiet) message(output)
+      stop("Giving up", call. = FALSE)
     }
   )
 
@@ -326,7 +319,7 @@ load_version_namespace <- function (
 #' then only versions available on MRAN (i.e. after 2014-09-17) will be returned;
 #' otherwise older versions will be returned too.
 #'
-#' @inherit package_params_doc params
+#' @inherit package_nofn_doc params
 #'
 #' @return A data frame with columns "version" and "date".
 #'
@@ -348,12 +341,10 @@ available_versions <- memoise::memoise(
 )
 
 
-
-
 #' Return the current version of a package at a given date
 #'
-#' @param package A package as a string.
-#' @param date A date.
+#' @inherit params_doc params
+#' @inherit package_nofn_params_doc params
 #'
 #' @return A version string.
 #'

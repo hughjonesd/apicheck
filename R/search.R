@@ -23,13 +23,11 @@ NULL
 #' \code{when_api_same} reports package versions where the API of a function was the same as now (or
 #' the same as \code{current_fn}).
 #'
-#' @inherit basic_params_doc params
-#' @inherit version_params_doc params
-#' @inherit current_fn_doc params
+#' @inherit params_doc params
+#' @inherit search_doc params details return
 #'
 #' @inherit same_api_doc details
 #' @inheritSection slow_warning_doc Speed
-#' @inherit search_doc params details return
 #'
 #' @export
 #'
@@ -43,6 +41,7 @@ when_api_same <- function (
         current_fn = NULL,
         search     = c("binary", "forward", "backward", "all", "parallel"),
         report     = c("full", "brief"),
+        quiet      = TRUE,
         ...
       ) {
   search <- match.arg(search)
@@ -65,8 +64,6 @@ when_api_same <- function (
 
 #' \code{when_fn_exists} reports the first package version where a function exists.
 #'
-#' @inherit basic_params_doc params
-#'
 #--NB-- don't inheritSection slow_warning_doc Speed, it will be shown twice
 #' @rdname when_api_same
 #' @export
@@ -80,6 +77,7 @@ when_fn_exists <- function (
           package,
           search = c("binary", "forward", "backward", "all", "parallel"),
           report = c("full", "brief"),
+          quiet  = TRUE,
           ...
         )
       {

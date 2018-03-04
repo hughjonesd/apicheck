@@ -12,6 +12,11 @@ load_version_namespace(package, version, cache = TRUE, quiet = TRUE, ...)
 \item{version}{Version as a character string.}
 
 \item{cache}{If \code{FALSE}, always try to reinstall the package.}
+
+\item{quiet}{Logical. Hide output from \code{install.packages}?}
+
+\item{...}{Arguments passed to \code{\link[versions]{install.versions}} or
+\code{\link[devtools]{install_version}}, and thence to \code{\link{install.packages}}.}
 }
 \value{
 The namespace object.

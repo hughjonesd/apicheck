@@ -12,6 +12,11 @@ call_with_namespace(package, version, test, quiet = TRUE, ...)
 \item{version}{Version as a character string.}
 
 \item{test}{A one-argument function. See Details.}
+
+\item{quiet}{Logical. Hide output from \code{install.packages}?}
+
+\item{...}{Arguments passed to \code{\link[versions]{install.versions}} or
+\code{\link[devtools]{install_version}}, and thence to \code{\link{install.packages}}.}
 }
 \value{
 The value returned by \code{test}.

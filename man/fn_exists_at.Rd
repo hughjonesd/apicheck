@@ -17,6 +17,9 @@ fn_exists_at(fn, package, version = get_version_at_date(package, date),
 \item{date}{Date, as a character string that can be read by \code{\link{as.Date}} e.g. "2016-01-01".}
 
 \item{quiet}{Logical. Hide output from \code{install.packages}?}
+
+\item{...}{Arguments passed to \code{\link[versions]{install.versions}} or
+\code{\link[devtools]{install_version}}, and thence to \code{\link{install.packages}}.}
 }
 \value{
 \code{TRUE} or \code{FALSE}.

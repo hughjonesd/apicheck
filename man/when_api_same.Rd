@@ -6,10 +6,11 @@
 \title{Compare function existence and APIs across package versions}
 \usage{
 when_api_same(fn, package, current_fn = NULL, search = c("binary",
-  "forward", "backward", "all", "parallel"), report = c("full", "brief"), ...)
+  "forward", "backward", "all", "parallel"), report = c("full", "brief"),
+  quiet = TRUE, ...)
 
 when_fn_exists(fn, package, search = c("binary", "forward", "backward", "all",
-  "parallel"), report = c("full", "brief"), ...)
+  "parallel"), report = c("full", "brief"), quiet = TRUE, ...)
 }
 \arguments{
 \item{fn}{Function name as a character string.}
@@ -24,6 +25,11 @@ must be an actual function, not a character string. You can use
 \item{search}{"binary", "forward", "backward", "all" or "parallel". See Details.}
 
 \item{report}{"brief" or "full". See Value.}
+
+\item{quiet}{Logical. Hide output from \code{install.packages}?}
+
+\item{...}{Arguments passed to \code{\link[versions]{install.versions}} or
+\code{\link[devtools]{install_version}}, and thence to \code{\link{install.packages}}.}
 }
 \value{
 If \code{report} is "brief", the earliest "known good" version.
@@ -36,7 +42,11 @@ the same as \code{current_fn}).
 \code{when_fn_exists} reports the first package version where a function exists.
 }
 \details{
-"Same API" is defined by the function arguments, as reported by \code{\link{formals}}, being the same.
+"forward" ("backward") searches incrementally
+from the earliest (latest) version; "binary" does a binary search from the midpoint. These search
+strategies assume that API changes happen just once - i.e. once a function exists or API is the same as now,
+it will stay so in future versions. "all" searches every version and makes no assumptions. "parallel" searches
+every version in parallel using \code{\link[parallel]{parLapply}}.
 }
 \section{Speed}{
 

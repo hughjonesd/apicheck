@@ -7,9 +7,9 @@
 get_version_at_date(package, date)
 }
 \arguments{
-\item{package}{A package as a string.}
+\item{package}{Package. Alternatively, specify the function name as e.g. \code{"package::function"}.}
 
-\item{date}{A date.}
+\item{date}{Date, as a character string that can be read by \code{\link{as.Date}} e.g. "2016-01-01".}
 }
 \value{
 A version string.

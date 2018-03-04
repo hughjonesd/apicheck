@@ -6,9 +6,6 @@
 \usage{
 available_versions(package)
 }
-\arguments{
-\item{package}{Package name.}
-}
 \value{
 A data frame with columns "version" and "date".
 }
