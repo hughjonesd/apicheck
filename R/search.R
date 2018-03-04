@@ -1,8 +1,9 @@
 
 
-
 #' @param search "binary", "forward", "backward", "all" or "parallel". See Details.
 #' @param report "brief" or "full". See Value.
+#' @param min_version Lowest version to check.
+#' @param max_version Highest version to check.
 #' @details
 #' "forward" ("backward") searches incrementally
 #' from the earliest (latest) version; "binary" does a binary search from the midpoint. These search
@@ -42,6 +43,8 @@ when_api_same <- function (
         search     = c("binary", "forward", "backward", "all", "parallel"),
         report     = c("full", "brief"),
         quiet      = TRUE,
+        min_version = NULL,
+        max_version = NULL,
         ...
       ) {
   search <- match.arg(search)
@@ -53,10 +56,11 @@ when_api_same <- function (
     function (version) suppressWarnings(api_same_at(fn, package = package, version = version,
           current_fn = current_fn, ...))
   )
-  res <- run_search(package, test, search)
+  res <- run_search(package, test, search, min_version, max_version)
 
-  res <- clean_up_result(res, package, report, labels = c("Known different", "Assumed different", "Unknown",
-    "Assumed same", "Known same"))
+  res <- clean_up_result(res, package, report,
+        labels = c("Known different", "Assumed different", "Unknown", "Assumed same", "Known same"),
+        min_version, max_version)
 
   return(res)
 }
@@ -78,6 +82,8 @@ when_fn_exists <- function (
           search = c("binary", "forward", "backward", "all", "parallel"),
           report = c("full", "brief"),
           quiet  = TRUE,
+          min_version = NULL,
+          max_version = NULL,
           ...
         ) {
   search <- match.arg(search)
@@ -85,10 +91,10 @@ when_fn_exists <- function (
   if (missing(package)) c(package, fn) %<-% parse_fn(fn)
 
   test <- wrap_test(function (version) fn_exists_at(fn, package = package, version = version, ...))
-  res <- run_search(package, test, search)
-
+  res <- run_search(package, test, search, min_version, max_version)
   res <- clean_up_result(res, package, report,
-        labels = c("Known absent", "Assumed absent", "Unknown", "Assumed present", "Known present"))
+        labels = c("Known absent", "Assumed absent", "Unknown", "Assumed present", "Known present"),
+        min_version, max_version)
 
   return(res)
 }
@@ -105,8 +111,19 @@ wrap_test <- function (test_fn) {
 }
 
 
-run_search <- function (package, test, search) {
-  versions <- available_versions(package)$version
+suitable_versions <- function(package, min_version, max_version) {
+  vns_df <- available_versions(package)
+  versions <- as.package_version(vns_df$version)
+  if (! is.null(min_version)) vns_df <- vns_df[versions >= min_version, ]
+  if (! is.null(max_version)) vns_df <- vns_df[versions <= max_version, ]
+
+  return(vns_df)
+}
+
+
+run_search <- function (package, test, search, min_version, max_version) {
+  versions <- suitable_versions(package, min_version, max_version)$version
+
   res <- switch(search,
           binary   = binary_search_versions(versions, test),
           backward = ,
@@ -187,25 +204,24 @@ search_all <- function (versions, test, search) {
   return(res)
 }
 
-clean_up_result <- function (res, package, report, labels) {
+clean_up_result <- function (res, package, report, labels, min_version, max_version) {
+  vns_df <- suitable_versions(package, min_version, max_version)
   if (report == "brief") {
-    first_known_good(package, res)
+    first_known_good(package, res, vns_df)
   } else {
-    versions_with_result(package, res, labels = labels)
+    versions_with_result(package, res, labels, vns_df)
   }
 }
 
 
-first_known_good <- function (package, res) {
-  vns <- available_versions(package)
-  return(vns$version[match(2L, res)])
+first_known_good <- function (package, res, vns_df) {
+  return(vns_df$version[match(2L, res)])
 }
 
 
-versions_with_result <- function (package, res, labels) {
-  vns <- available_versions(package)
+versions_with_result <- function (package, res, labels, vns_df) {
   res <- factor(res, levels = seq(-2L, 2L), labels = labels)
-  vns$result <- as.character(res)
+  vns_df$result <- as.character(res)
 
-  return(vns)
+  return(vns_df)
 }

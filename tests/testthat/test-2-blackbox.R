@@ -177,6 +177,15 @@ test_that("when_fn_exists", {
 })
 
 
+test_that("min_version and max_version work", {
+  expect_error(res <- when_fn_exists("clipr::dr_clipr", search = "binary", min_version = "0.3.2", report = "full"), NA)
+  expect_true(all(res$version >= as.package_version("0.3.2")))
+
+  expect_error(res <- when_fn_exists("clipr::dr_clipr", search = "binary", max_version = "0.2.0", report = "full"), NA)
+  expect_true(all(res$version <= as.package_version("0.2.0")))
+})
+
+
 test_that("get_help_at", {
   skip_on_cran()
 

@@ -381,13 +381,13 @@ cached_install <- function (
 #' }
 available_versions <- memoise::memoise(
   function (package) {
-    vns <- versions::available.versions(package)[[package]]
-    if (! isTRUE(getOption("apicheck.use_cran", TRUE))) vns <- vns[vns$available == TRUE, ]
-    vns$available <- NULL
-    vns$date <- as.Date(vns$date)
-    vns <- vns[order(vns$date), ]
+    vns_df <- versions::available.versions(package)[[package]]
+    if (! isTRUE(getOption("apicheck.use_cran", TRUE))) vns_df <- vns_df[vns_df$available == TRUE, ]
+    vns_df$available <- NULL
+    vns_df$date <- as.Date(vns_df$date)
+    vns_df <- vns_df[order(vns_df$date), ]
 
-    return(vns)
+    return(vns_df)
   }
 )
 
@@ -406,9 +406,9 @@ available_versions <- memoise::memoise(
 #' get_version_at_date("huxtable", "2017-01-01")
 #' }
 get_version_at_date <- function (package, date) {
-  vns <- available_versions(package)
-  vns <- vns$version[vns$date <= date]
-  latest <- vns[length(vns)]
+  vns_df <- available_versions(package)
+  vns_df <- vns_df$version[vns_df$date <= date]
+  latest <- vns_df[length(vns_df)]
 
   return(latest)
 }

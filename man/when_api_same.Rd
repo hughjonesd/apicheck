@@ -7,10 +7,11 @@
 \usage{
 when_api_same(fn, package, current_fn = NULL, search = c("binary",
   "forward", "backward", "all", "parallel"), report = c("full", "brief"),
-  quiet = TRUE, ...)
+  quiet = TRUE, min_version = NULL, max_version = NULL, ...)
 
 when_fn_exists(fn, package, search = c("binary", "forward", "backward", "all",
-  "parallel"), report = c("full", "brief"), quiet = TRUE, ...)
+  "parallel"), report = c("full", "brief"), quiet = TRUE,
+  min_version = NULL, max_version = NULL, ...)
 }
 \arguments{
 \item{fn}{Function name as a character string.}
@@ -27,6 +28,10 @@ must be an actual function, not a character string. You can use
 \item{report}{"brief" or "full". See Value.}
 
 \item{quiet}{Logical. Try to minimize output from package installation. (Some output comes from \code{R CMD INSTALL} and may be unavoidable.)}
+
+\item{min_version}{Lowest version to check.}
+
+\item{max_version}{Highest version to check.}
 
 \item{...}{Arguments passed to \code{\link[versions]{install.versions}} or
 \code{\link[remotes]{install_version}}, and thence to \code{\link{install.packages}}.}
