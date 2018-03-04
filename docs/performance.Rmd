@@ -1,0 +1,82 @@
+---
+title: "Performance Tests"
+author: "David Hugh-Jones"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# Speed tests
+
+On my Macbook Air, standard broadband connection.
+
+## Pre-downloaded
+
+`clipr` is a small package with few versions. `mice` is a larger package which requires compilation, with more
+dependencies.
+
+```{r}
+library(apicheck)
+library(microbenchmark)
+library(ggplot2)
+options(repos = "https://cloud.r-project.org")
+
+
+invisible(when_fn_exists("clipr::dr_clipr", search = "parallel")) # pre-cache
+invisible(when_fn_exists("mice::ncc", min_version = "2.20", search = "parallel")) 
+
+cached <- microbenchmark(
+        clipr_all      = when_fn_exists("clipr::dr_clipr", search = "all"),
+        clipr_parallel = when_fn_exists("clipr::dr_clipr", search = "parallel"),
+        mice_all       = when_fn_exists("mice::ncc", min_version = "2.20", search = "all"),
+        mice_parallel  = when_fn_exists("mice::ncc", min_version = "2.20", search = "parallel"),
+        times = 5
+      )
+
+cached
+
+autoplot(cached)
+
+```
+
+## With download
+
+
+```{r}
+
+clear_package_cache()
+
+uncached <- microbenchmark(
+        clipr_all      = {
+          when_fn_exists("clipr::dr_clipr", search = "all")
+          clear_package_cache()
+        },
+        clipr_parallel = {
+          when_fn_exists("clipr::dr_clipr", search = "parallel")
+          clear_package_cache()
+        },
+        mice_all       = {
+          when_fn_exists("mice::ncc", min_version = "2.20", search = "all")
+          clear_package_cache()
+        },
+        mice_parallel  = {
+          when_fn_exists("mice::ncc", min_version = "2.20", search = "parallel")
+          clear_package_cache()
+        },
+        times = 5
+      )
+
+uncached
+
+autoplot(uncached)
+```
