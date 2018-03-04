@@ -7,6 +7,8 @@
 * Many more whitebox tests
 * Renamed package
 * Default uses CRAN via `remotes::install_version` rather than MRAN
+* Get versions from metacran not MRAN
+  * TODO: start a Patreon to buy Microsoft a functioning server
 * Performance vignette
 
 # apicheck (was pastapi) 0.1.0 
