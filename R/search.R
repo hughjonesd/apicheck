@@ -79,8 +79,7 @@ when_fn_exists <- function (
           report = c("full", "brief"),
           quiet  = TRUE,
           ...
-        )
-      {
+        ) {
   search <- match.arg(search)
   report   <- match.arg(report)
   if (missing(package)) c(package, fn) %<-% parse_fn(fn)

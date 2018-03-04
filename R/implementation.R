@@ -310,7 +310,7 @@ load_version_namespace <- function (
     error = function (e) {
       loudly_unlink(package_dir)
       stop(
-              "Failed to load the namespace of '", package, "' version '", version ,"'.\n",
+              "Failed to load the namespace of '", package, "' version '", version, "'.\n",
               "Maybe something went silently wrong during installation.",
               if (quiet && exists("output")) paste0(
                 "\nOutput from install.packages is below:\n==========\nMessages:\n", output$msg,
@@ -346,10 +346,10 @@ load_version_namespace <- function (
 available_versions <- memoise::memoise(
   function (package) {
     vns <- versions::available.versions(package)[[package]]
-    if (! isTRUE(getOption("apicheck.use_cran", TRUE))) vns <- vns[vns$available == TRUE,]
+    if (! isTRUE(getOption("apicheck.use_cran", TRUE))) vns <- vns[vns$available == TRUE, ]
     vns$available <- NULL
     vns$date <- as.Date(vns$date)
-    vns <- vns[order(vns$date),]
+    vns <- vns[order(vns$date), ]
 
     return(vns)
   }

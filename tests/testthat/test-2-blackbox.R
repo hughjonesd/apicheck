@@ -143,7 +143,8 @@ test_that("when_api_same", {
   )
   for (search in strategies) {
     info <- paste("Search strategy was:", search)
-    expect_error(res <- when_api_same("clipr::write_clip", current_fn = wc, search = search, report = "full"), NA, info = info)
+    expect_error(res <- when_api_same("clipr::write_clip", current_fn = wc, search = search, report = "full"), NA,
+          info = info)
     expect_s3_class(res, "data.frame") # no info arg :-(
     expect_identical(names(res), c("version", "date", "result"), info = info)
     # see below re clipr 0.1.0
