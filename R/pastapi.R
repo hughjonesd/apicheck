@@ -268,7 +268,7 @@ load_version_namespace <- function (package, version, cache = TRUE, ...) {
   force(version)
   lib_dir <- get_lib_dir()
   package_dir <- file.path(lib_dir, paste(package, version, sep = "-"))
-  if (! cache) loudly_unlink(package_dir, "Could not delete old package directory '", package_dir, "'")
+  if (! cache) loudly_unlink(package_dir, paste0("Could not delete old package directory '", package_dir, "'"))
 
   if (! cache || ! dir.exists(package_dir)) {
     dir.create(package_dir, recursive = TRUE)
