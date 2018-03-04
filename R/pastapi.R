@@ -267,8 +267,16 @@ load_version_namespace <- function (
   if (! cache || ! dir.exists(package_dir)) {
     dir.create(package_dir, recursive = TRUE)
     if (! dir.exists(package_dir)) stop("Could not create ", package_dir)
-    # RStudio changes warnings of install.packages into output, so we have to both capture.output and return warnings
-    output <- capture.output(tryCatch({
+    # install.packages spews to stderr, but not via
+    # message. So we can't use tryCatch for messages, have to use capture.output. This gets message() output too.
+    # RStudio cat()s warnings of install.packages; so they aren't caught in tryCatch. The solution is to
+    # cat everything in tryCatch and then to capture.output twice.
+    here <- environment()
+    capture_all <- function (expr){
+      msg <- capture.output(out <- capture.output(eval(substitute(expr, here))), type = "message")
+      return(list(msg = msg, out = out))
+    }
+    output <- capture_all(tryCatch({
       if (isTRUE(getOption('pastapi.use_cran', TRUE))) {
         if (! requireNamespace('devtools', quietly = TRUE) || ! requireNamespace('withr', quietly = TRUE)) stop(
               "To use CRAN for pastapi, devtools and withr must be installed.\n",
@@ -277,7 +285,7 @@ load_version_namespace <- function (
           devtools::install_version(package, version, lib = package_dir, type = "source", ...)
         )
       } else {
-        versions::install.versions(package, versions = version, lib = package_dir, ...)
+        versions::install.versions(package, versions = version, lib = package_dir,  ...)
       }
     },
       warning = function (w) {
@@ -285,25 +293,32 @@ load_version_namespace <- function (
           loudly_unlink(package_dir)
           stop("Failed to install version ", version, ", aborting")
         } else {
-          return(w$message)
+          cat(w$message)
         }
       },
       error = function (e) {
         loudly_unlink(package_dir)
         stop(e$message, call. = FALSE)
       }))
-    if (! quiet) message(output)
+    if (! quiet) {
+      message(output$msg)
+      cat(output$out)
+    }
   }
 
   namespace <- tryCatch(
     loadNamespace(package, lib.loc = package_dir, partial = TRUE),
     error = function (e) {
       loudly_unlink(package_dir)
-      message("Failed to load the namespace of '", package, "' version '", version ,"'.\n",
-        "Maybe something went silently wrong during installation.\n",
-        "Output from install.packages is below:\n")
-      if (quiet) message(output)
-      stop("Giving up", call. = FALSE)
+      stop(
+              "Failed to load the namespace of '", package, "' version '", version ,"'.\n",
+              "Maybe something went silently wrong during installation.",
+              if (quiet && exists("output")) paste0(
+                "\nOutput from install.packages is below:\n==========\nMessages:\n", output$msg,
+                "\n==========\nOutput:\n", output$out, "\n==========\n"
+              ),
+              call. = FALSE
+            )
     }
   )
 

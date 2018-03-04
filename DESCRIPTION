@@ -9,13 +9,13 @@ LazyData: true
 RoxygenNote: 6.0.1
 Imports:
     memoise,
+    parallel,
+    devtools,
     versions, 
+    withr,
     zeallot,
-    parallel
 Suggests:
     covr,
-    devtools,
     rlang,
-    testthat,
-    withr
+    testthat
     
