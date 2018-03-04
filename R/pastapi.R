@@ -63,9 +63,9 @@ NULL
 #'   \code{\link{get_fn_at}} for this.
 #' @param test    A one-argument function. See Details.
 #' @param current_fn Current function
-#' @param quiet Logical. Hide output from \code{install.packages}?
-#' @param ... Arguments passed to \code{\link[remotes]{install.versions}} or
-#'   \code{\link[devtools]{install_version}}, and thence to \code{\link{install.packages}}.
+#' @param quiet Logical. Try to minimize output from package installation. (Some output comes from \code{R CMD INSTALL} and cannot be avoided.)
+#' @param ... Arguments passed to \code{\link[versions]{install.versions}} or
+#'   \code{\link[remotes]{install_version}}, and thence to \code{\link{install.packages}}.
 #' @name params_doc
 NULL
 
