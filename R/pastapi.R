@@ -21,7 +21,7 @@ NULL
 #' Packages are cached within a session. To cache packages across sessions, use
 #' \code{\link{set_lib_dir}} to point to a persistent directory.
 #'
-#' By default, \code{pastapi} uses the \code{devtools}
+#' By default, \code{pastapi} uses the \code{remotes}
 #' package to install source versions from CRAN. Alternatively, it can use the \code{versions} package to install different versions of a package
 #' from \href{https://mran.microsoft.com/}{MRAN}. To do this set \code{options(pastapi.use_cran = FALSE)}.
 #'
@@ -64,7 +64,7 @@ NULL
 #' @param test    A one-argument function. See Details.
 #' @param current_fn Current function
 #' @param quiet Logical. Hide output from \code{install.packages}?
-#' @param ... Arguments passed to \code{\link[versions]{install.versions}} or
+#' @param ... Arguments passed to \code{\link[remotes]{install.versions}} or
 #'   \code{\link[devtools]{install_version}}, and thence to \code{\link{install.packages}}.
 #' @name params_doc
 NULL
@@ -278,11 +278,8 @@ load_version_namespace <- function (
     }
     output <- capture_all(tryCatch({
       if (isTRUE(getOption('pastapi.use_cran', TRUE))) {
-        if (! requireNamespace('devtools', quietly = TRUE) || ! requireNamespace('withr', quietly = TRUE)) stop(
-              "To use CRAN for pastapi, devtools and withr must be installed.\n",
-              "Try `install.packages(c('devtools', 'withr'))`")
         withr::with_libpaths(package_dir,
-          devtools::install_version(package, version, lib = package_dir, type = "source", ...)
+          remotes::install_version(package, version, lib = package_dir, type = "source", ...)
         )
       } else {
         versions::install.versions(package, versions = version, lib = package_dir,  ...)

@@ -23,7 +23,7 @@ install_early_late <- function (package) {
 }
 
 
-test_that("Can install early and current versions using devtools, and early versions using `versions`", {
+test_that("Can install early and current versions using `remotes`, and early versions using `versions`", {
   skip_on_cran()
 
   install_early_late("clipr") # no compilation
