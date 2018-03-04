@@ -7,7 +7,15 @@ pastapi
 
 `pastapi`, pronounced "Pasta Pi", is a small R package to explore the historical API of functions in CRAN packages. It is designed to help you work out minimum version requirements for packages mentioned in your DESCRIPTION file.
 
-`pastapi` works by downloading package versions from MRAN and temporarily installing them in a special directory. Results take time.
+`pastapi` works by downloading package versions from CRAN and temporarily installing them in a special directory.
+
+Installation
+============
+
+``` r
+install.packages("remotes") 
+remotes::install_github("pastapi")
+```
 
 Example
 =======
@@ -20,9 +28,9 @@ From [clipr](https://github.com/mdlincoln/clipr/)'s NEWS file:
 
 ``` r
 library(pastapi)
-fn_exists_at("clipr::dr_clipr", version =  "0.4.0")
+fn_exists_at("clipr::dr_clipr", "0.4.0")
 #> [1] TRUE
-fn_exists_at("clipr::dr_clipr", version =  "0.3.3")
+fn_exists_at("clipr::dr_clipr", "0.3.3")
 #> [1] FALSE
 when_fn_exists("clipr::dr_clipr", report = "brief") # binary search
 #> [1] "0.4.0"
@@ -34,19 +42,19 @@ when_fn_exists("clipr::dr_clipr", report = "brief") # binary search
 
 ``` r
 
-api_same_at("clipr::write_clip", version = "0.2.0")
+api_same_at("clipr::write_clip", "0.2.0")
 #> [1] TRUE
-api_same_at("clipr::write_clip", version = "0.1.1")
+api_same_at("clipr::write_clip", "0.1.1")
 #> [1] FALSE
 when_api_same("clipr::write_clip", report = "full", search = "all") # check all versions
-#>   version       date available          result
-#> 9   0.1.0 2015-09-02      TRUE Known different
-#> 8   0.1.1 2015-09-03      TRUE Known different
-#> 7   0.2.0 2015-10-06      TRUE      Known same
-#> 6   0.2.1 2016-06-23      TRUE      Known same
-#> 5   0.3.0 2016-11-19      TRUE      Known same
-#> 4   0.3.1 2016-12-02      TRUE      Known same
-#> 3   0.3.2 2017-01-09      TRUE      Known same
-#> 2   0.3.3 2017-06-19      TRUE      Known same
-#> 1   0.4.0 2017-11-03      TRUE      Known same
+#>   version       date          result
+#> 9   0.1.0 2015-09-02 Known different
+#> 8   0.1.1 2015-09-03 Known different
+#> 7   0.2.0 2015-10-06      Known same
+#> 6   0.2.1 2016-06-23      Known same
+#> 5   0.3.0 2016-11-19      Known same
+#> 4   0.3.1 2016-12-02      Known same
+#> 3   0.3.2 2017-01-09      Known same
+#> 2   0.3.3 2017-06-19      Known same
+#> 1   0.4.0 2017-11-03      Known same
 ```

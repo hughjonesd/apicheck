@@ -23,7 +23,15 @@ knitr::opts_chunk$set(
 `pastapi`, pronounced "Pasta Pi", is a small R package to explore the historical API of functions in CRAN packages.
 It is designed to help you work out minimum version requirements for packages mentioned in your DESCRIPTION file.
 
-`pastapi` works by downloading package versions from MRAN and temporarily installing them in a special directory. Results take time.
+`pastapi` works by downloading package versions from CRAN and temporarily installing them in a special directory. 
+
+# Installation
+
+```{r, eval = FALSE}
+install.packages("remotes") 
+remotes::install_github("pastapi")
+```
+
 
 # Example
 
@@ -41,8 +49,8 @@ options(repos = "https://cloud.r-project.org")
 
 ```{r example}
 library(pastapi)
-fn_exists_at("clipr::dr_clipr", version =  "0.4.0")
-fn_exists_at("clipr::dr_clipr", version =  "0.3.3")
+fn_exists_at("clipr::dr_clipr", "0.4.0")
+fn_exists_at("clipr::dr_clipr", "0.3.3")
 when_fn_exists("clipr::dr_clipr", report = "brief") # binary search
 ```
 
@@ -52,7 +60,7 @@ when_fn_exists("clipr::dr_clipr", report = "brief") # binary search
 
 ```{r example2, warning=FALSE}
 
-api_same_at("clipr::write_clip", version = "0.2.0")
-api_same_at("clipr::write_clip", version = "0.1.1")
+api_same_at("clipr::write_clip", "0.2.0")
+api_same_at("clipr::write_clip", "0.1.1")
 when_api_same("clipr::write_clip", report = "full", search = "all") # check all versions
 ```
