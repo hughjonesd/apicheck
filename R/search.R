@@ -2,6 +2,7 @@
 
 #' @param search "binary", "forward", "backward", "all" or "parallel". See Details.
 #' @param report "brief" or "full". See Value.
+#' @param progress Print a progress bar.
 #' @param min_version Lowest version to check.
 #' @param max_version Highest version to check.
 #' @details
@@ -39,10 +40,11 @@ NULL
 when_api_same <- function (
         fn,
         package,
-        current_fn = NULL,
-        search     = c("binary", "forward", "backward", "all", "parallel"),
-        report     = c("full", "brief"),
-        quiet      = TRUE,
+        current_fn  = NULL,
+        search      = c("binary", "forward", "backward", "all", "parallel"),
+        report      = c("full", "brief"),
+        quiet       = TRUE,
+        progress    = interactive() && search != "parallel",
         min_version = NULL,
         max_version = NULL,
         ...
@@ -56,7 +58,7 @@ when_api_same <- function (
     function (version) suppressWarnings(api_same_at(fn, package = package, version = version,
           current_fn = current_fn, ...))
   )
-  res <- run_search(package, test, search, min_version, max_version)
+  res <- run_search(package, test, search, progress, min_version, max_version)
 
   res <- clean_up_result(res, package, report,
         labels = c("Known different", "Assumed different", "Unknown", "Assumed same", "Known same"),
@@ -79,9 +81,10 @@ when_api_same <- function (
 when_fn_exists <- function (
           fn,
           package,
-          search = c("binary", "forward", "backward", "all", "parallel"),
-          report = c("full", "brief"),
-          quiet  = TRUE,
+          search      = c("binary", "forward", "backward", "all", "parallel"),
+          report      = c("full", "brief"),
+          quiet       = TRUE,
+          progress    = interactive() && search != "parallel",
           min_version = NULL,
           max_version = NULL,
           ...
@@ -91,7 +94,7 @@ when_fn_exists <- function (
   if (missing(package)) c(package, fn) %<-% parse_fn(fn)
 
   test <- wrap_test(function (version) fn_exists_at(fn, package = package, version = version, ...))
-  res <- run_search(package, test, search, min_version, max_version)
+  res <- run_search(package, test, search, progress, min_version, max_version)
   res <- clean_up_result(res, package, report,
         labels = c("Known absent", "Assumed absent", "Unknown", "Assumed present", "Known present"),
         min_version, max_version)
@@ -121,8 +124,20 @@ suitable_versions <- function(package, min_version, max_version) {
 }
 
 
-run_search <- function (package, test, search, min_version, max_version) {
+run_search <- function (package, test, search, progress, min_version, max_version) {
   versions <- suitable_versions(package, min_version, max_version)$version
+  pb <- NULL
+  if (progress && ! search == "parallel") {
+    pb <- txtProgressBar(style = 3)
+    inc <- 1/length(versions)
+    test_inner <- test
+    test <- function (x) {
+      res <- test_inner(x)
+      g <- getTxtProgressBar(pb)
+      setTxtProgressBar(pb, g + inc)
+      return(res)
+    }
+  }
 
   res <- switch(search,
           binary   = binary_search_versions(versions, test),
@@ -131,6 +146,10 @@ run_search <- function (package, test, search, min_version, max_version) {
           parallel = ,
           all = search_all(versions, test, search)
   )
+  if (! is.null(pb)) {
+    setTxtProgressBar(pb, 1)
+    cat("\n")
+  }
 
   return(res)
 }
