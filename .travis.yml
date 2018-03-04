@@ -11,4 +11,6 @@ r:
 
 after_success:
   - Rscript -e 'covr::codecov()'
+
+after_failure:
   - Rscript -e 'devtools::install(); devtools::test()'

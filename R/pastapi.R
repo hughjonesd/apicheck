@@ -338,8 +338,9 @@ load_version_namespace <- function (
 #' @export
 #'
 #' @examples
+#' dontrun{
 #' available_versions("clipr")
-#'
+#' }
 available_versions <- memoise::memoise(
   function (package) {
     vns <- versions::available.versions(package)[[package]]
