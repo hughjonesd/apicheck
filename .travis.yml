@@ -10,7 +10,7 @@ r:
   - devel
 
 after_success:
-  - Rscript -e 'covr::codecov()'
+  - Rscript -e 'covr::codecov(function_exclusions = "\\.onLoad")'
 
 after_failure:
   - Rscript -e 'devtools::install(); devtools::test()'
