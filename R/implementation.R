@@ -217,7 +217,7 @@ get_help_at <- function (
   if (missing(package)) c(package, fn) %<-% parse_fn(fn)
   on.exit(unloadNamespace(package))
   package_dir <- cached_install(package, version, return = "path", quiet = quiet, ...)
-  help((fn), package = (package), lib.loc = package_dir, help_type = "text")
+  utils::help((fn), package = (package), lib.loc = package_dir, help_type = "text")
 }
 
 #' Loads a package namespace at a particular version and runs an arbitrary function

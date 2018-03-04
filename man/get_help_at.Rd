@@ -2,7 +2,7 @@
 % Please edit documentation in R/implementation.R
 \name{get_help_at}
 \alias{get_help_at}
-\title{Get text help for a function at a package version}
+\title{Get help for a function at a package version}
 \usage{
 get_help_at(fn, version = get_version_at_date(package, date), package,
   date = NULL, quiet = TRUE, ...)
@@ -22,14 +22,15 @@ get_help_at(fn, version = get_version_at_date(package, date), package,
 \code{\link[remotes]{install_version}}, and thence to \code{\link{install.packages}}.}
 }
 \value{
-The help object in text format.
+The help object (text format only).
 }
 \description{
-Get text help for a function at a package version
+Get help for a function at a package version
 }
 \examples{
 \dontrun{
 get_help_at("clipr::write_clip", "0.1.1")
+get_help_at("clipr::write_clip", "0.2.0")
 }
 }
 \seealso{
