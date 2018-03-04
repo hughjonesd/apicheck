@@ -22,9 +22,7 @@ Example
 
 From [clipr](https://github.com/mdlincoln/clipr/)'s NEWS file:
 
-`clipr 0.4.0`:
-
--   Introduces `dr_clipr()` ...
+`clipr 0.4.0` introduces `dr_clipr()`:
 
 ``` r
 library(apicheck)
@@ -36,9 +34,7 @@ when_fn_exists("clipr::dr_clipr", report = "brief") # binary search
 #> [1] "0.4.0"
 ```
 
-`clipr 0.2.0`:
-
--   Several changes to `write_clip` ...
+`clipr 0.2.0`: several changes to `write_clip`.
 
 ``` r
 
@@ -57,4 +53,5 @@ when_api_same("clipr::write_clip", report = "full", search = "all") # check all 
 #> 3   0.3.2 2017-01-09      Known same
 #> 2   0.3.3 2017-06-19      Known same
 #> 1   0.4.0 2017-11-03      Known same
+get_help_at("clipr::write_clip", "0.1.1") # see what's changed
 ```

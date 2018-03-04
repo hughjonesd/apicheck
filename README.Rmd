@@ -37,9 +37,7 @@ remotes::install_github("apicheck")
 
 From [clipr](https://github.com/mdlincoln/clipr/)'s NEWS file:
 
-`clipr 0.4.0`:
-
-* Introduces `dr_clipr()` ...
+`clipr 0.4.0` introduces `dr_clipr()`:
 
 ```{r options, include = FALSE}
 library(apicheck)
@@ -54,13 +52,12 @@ fn_exists_at("clipr::dr_clipr", "0.3.3")
 when_fn_exists("clipr::dr_clipr", report = "brief") # binary search
 ```
 
-`clipr 0.2.0`:
+`clipr 0.2.0`: several changes to `write_clip`.
 
-* Several changes to `write_clip` ...
-
-```{r example2, warning=FALSE}
+```{r example2, warning = FALSE}
 
 api_same_at("clipr::write_clip", "0.2.0")
 api_same_at("clipr::write_clip", "0.1.1")
 when_api_same("clipr::write_clip", report = "full", search = "all") # check all versions
+get_help_at("clipr::write_clip", "0.1.1") # see what's changed
 ```
