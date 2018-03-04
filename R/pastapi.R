@@ -63,7 +63,7 @@ NULL
 #'   \code{\link{get_fn_at}} for this.
 #' @param test    A one-argument function. See Details.
 #' @param current_fn Current function
-#' @param quiet Logical. Try to minimize output from package installation. (Some output comes from \code{R CMD INSTALL} and cannot be avoided.)
+#' @param quiet Logical. Try to minimize output from package installation. (Some output comes from \code{R CMD INSTALL} and may be unavoidable.)
 #' @param ... Arguments passed to \code{\link[versions]{install.versions}} or
 #'   \code{\link[remotes]{install_version}}, and thence to \code{\link{install.packages}}.
 #' @name params_doc
@@ -279,7 +279,7 @@ load_version_namespace <- function (
     output <- capture_all(tryCatch({
       if (isTRUE(getOption('pastapi.use_cran', TRUE))) {
         withr::with_libpaths(package_dir,
-          remotes::install_version(package, version, lib = package_dir, type = "source", ...)
+          remotes::install_version(package, version, lib = package_dir, type = "source", quiet = quiet, ...)
         )
       } else {
         versions::install.versions(package, versions = version, lib = package_dir,  ...)
@@ -288,7 +288,7 @@ load_version_namespace <- function (
       warning = function (w) {
         if (grepl("non-zero exit", w$message)) {
           loudly_unlink(package_dir)
-          stop("Failed to install version ", version, ", aborting")
+          stop("Failed to install version ", version)
         } else {
           cat(w$message)
         }
