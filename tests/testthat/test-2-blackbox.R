@@ -17,12 +17,17 @@ teardown({
 
 
 test_that("available_versions", {
-  expect_silent(vns <- available_versions("longurl"))
-  # check caching:
-  expect_silent(vns2 <- available_versions("longurl"))
-  expect_identical(vns, vns2)
-  expect_identical(names(vns), c("version", "date"))
-  expect_identical(vns, vns[order(vns$date), ])
+  for (cran in c(TRUE, FALSE)) {
+    withr::with_options(list(apicheck.use_cran = cran), {
+      info <- paste("use_cran:", cran)
+      expect_error(vns <- available_versions("longurl"), regexp = NA, info = info)
+      # check caching:
+      expect_error(vns2 <- available_versions("longurl"), regexp = NA, info = info)
+      expect_identical(vns, vns2, info = info)
+      expect_identical(names(vns), c("version", "date"), info = info)
+      expect_identical(vns, vns[order(vns$date), ], info = info)
+    })
+  }
 })
 
 

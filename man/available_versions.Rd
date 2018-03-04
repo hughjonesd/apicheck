@@ -13,14 +13,21 @@ available_versions(package)
 A data frame with columns "version" and "date".
 }
 \description{
-This is a simple wrapper round \code{\link[versions]{available.versions}}. It
-returns packages ordered by date. Results are cached so as to
-relieve pressure on the MRAN server. If \code{options("apicheck.use_cran") == FALSE},
+This returns packages ordered by date, using either \href{https://mran.microsoft.com}{MRAN} or
+\href{http://crandb.r-pkg.org}{metacran}.
+Results are cached so as to
+relieve pressure on the server. If \code{options("apicheck.use_cran") == FALSE},
 then only versions available on MRAN (i.e. after 2014-09-17) will be returned;
 otherwise older versions will be returned too.
 }
+\section{Speed}{
+
+In my limited experience, metacran is much faster. YMMV.
+}
+
 \examples{
 \dontrun{
 available_versions("clipr")
 }
+
 }
