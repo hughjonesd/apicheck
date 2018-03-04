@@ -14,22 +14,22 @@ knitr::opts_chunk$set(
 ```
 
 
-[![Travis-CI Build Status](https://travis-ci.org/hughjonesd/pastapi.svg?branch=master)](https://travis-ci.org/hughjonesd/pastapi)
-[![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/hughjonesd/pastapi?branch=master&svg=true)](https://ci.appveyor.com/project/hughjonesd/pastapi)
-[![Coverage status](https://codecov.io/gh/hughjonesd/pastapi/branch/master/graph/badge.svg)](https://codecov.io/github/hughjonesd/pastapi?branch=master)
+[![Travis-CI Build Status](https://travis-ci.org/hughjonesd/apicheck.svg?branch=master)](https://travis-ci.org/hughjonesd/apicheck)
+[![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/hughjonesd/apicheck?branch=master&svg=true)](https://ci.appveyor.com/project/hughjonesd/apicheck)
+[![Coverage status](https://codecov.io/gh/hughjonesd/apicheck/branch/master/graph/badge.svg)](https://codecov.io/github/hughjonesd/apicheck?branch=master)
 
-# pastapi
+# apicheck
 
-`pastapi`, pronounced "Pasta Pi", is a small R package to explore the historical API of functions in CRAN packages.
+`apicheck` is a small R package to explore the historical API of functions in CRAN packages.
 It is designed to help you work out minimum version requirements for packages mentioned in your DESCRIPTION file.
 
-`pastapi` works by downloading package versions from CRAN and temporarily installing them in a special directory. 
+`apicheck` works by downloading package versions from CRAN and temporarily installing them in a special directory. 
 
 # Installation
 
 ```{r, eval = FALSE}
 install.packages("remotes") 
-remotes::install_github("pastapi")
+remotes::install_github("apicheck")
 ```
 
 
@@ -42,13 +42,13 @@ From [clipr](https://github.com/mdlincoln/clipr/)'s NEWS file:
 * Introduces `dr_clipr()` ...
 
 ```{r options, include = FALSE}
-library(pastapi)
-set_lib_dir(".pastapi")
+library(apicheck)
+set_lib_dir(".apicheck")
 options(repos = "https://cloud.r-project.org")
 ```
 
 ```{r example}
-library(pastapi)
+library(apicheck)
 fn_exists_at("clipr::dr_clipr", "0.4.0")
 fn_exists_at("clipr::dr_clipr", "0.3.3")
 when_fn_exists("clipr::dr_clipr", report = "brief") # binary search

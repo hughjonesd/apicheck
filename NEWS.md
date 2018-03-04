@@ -1,15 +1,15 @@
-# pastapi 0.1.0.9000
+# apicheck 0.1.0.9000
 
 * Simpler testing
 * `load_version_namespace` and `mran_versions` exported
 * Different search algorithms for searching through versions, including parallel with parLapply
 * Many more whitebox tests
 
-# pastapi 0.1.0
+# apicheck 0.1.0
 
 * First version which mostly passes tests
 
-# pastapi 0.0.0.9000
+# apicheck 0.0.0.9000
 
 * Initial commit to github
 * Added a `NEWS.md` file to track changes to the package

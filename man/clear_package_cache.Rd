@@ -13,7 +13,7 @@ TRUE if all files and directories could be removed, FALSE otherwise.
 This attempts to delete \emph{everything} in the package cache.
 }
 \details{
-The package cache is under the directory specified by \code{getOption("pastapi.lib_dir")},
+The package cache is under the directory specified by \code{getOption("apicheck.lib_dir")},
 or, if that is unset, in a per-session temporary directory. You should use \code{\link{set_lib_dir}}
 to change this rather than setting the option directly. Within this directory, subdirectories
 are named like \code{package-version}, e.g. \code{longurl-0.3.0}. Within these subdirectories are

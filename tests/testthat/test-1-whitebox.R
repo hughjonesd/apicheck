@@ -20,7 +20,7 @@ teardown({
 
 
 test_that("parse_fn", {
-  expect_identical(pastapi:::parse_fn("foo::bar"), c("foo", "bar"))
+  expect_identical(apicheck:::parse_fn("foo::bar"), c("foo", "bar"))
 })
 
 
@@ -42,7 +42,7 @@ test_that("Failure to install a file does not leave a directory on disk", {
 test_that("na_binary_search", {
   run_bs <- function (x) {
     f <- function (n) x[n]
-    pastapi:::na_binary_search(1L, length(!!x), f)
+    apicheck:::na_binary_search(1L, length(!!x), f)
   }
 
   # TRUE can be "assumed FALSE" -1, if L of a FALSE; but never known FALSE -2;
@@ -86,7 +86,7 @@ test_that("search_versions", {
     test_vars <- function (search, ...) {
       x <- as.logical(list(...))
       test <- function (y) x[y]
-      pastapi:::search_versions(1:3, test, search)
+      apicheck:::search_versions(1:3, test, search)
     }
 
     expect_equal(test_vars("forward", TRUE, FALSE, TRUE), c(2L, 1L, 1L))
@@ -103,7 +103,7 @@ test_that("search_all", {
   test_vars <- function (search, ...) {
     x <- as.logical(list(...))
     test <- function (y) x[y]
-    pastapi:::search_all(seq_along(x), test, search)
+    apicheck:::search_all(seq_along(x), test, search)
   }
 
   expect_equal(test_vars("all", FALSE, NA, TRUE), c(-2L, 0, 2L))

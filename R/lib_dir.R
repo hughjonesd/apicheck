@@ -4,9 +4,9 @@ LIB_DIR <- NULL
 
 
 .onLoad <- function (lib, pkg) {
-  tf <- tempfile(pattern = "pastapi", tmpdir = normalizePath(tempdir()))
+  tf <- tempfile(pattern = "apicheck", tmpdir = normalizePath(tempdir()))
   dir.create(tf)
-  LIB_DIR <<- getOption('pastapi.lib_dir', tf)
+  LIB_DIR <<- getOption('apicheck.lib_dir', tf)
   if (LIB_DIR == tf && ! dir.exists(tf)) {
     warning("Could not create temporary directory for package caching",
       "Package download won't work. To workaround, use `set_lib_dir()` manually.")
@@ -32,7 +32,7 @@ LIB_DIR <- NULL
 #'
 #' @examples
 #' \dontrun{
-#' set_lib_dir("~/.pastapi")
+#' set_lib_dir("~/.apicheck")
 #' }
 set_lib_dir <- function (lib_dir, create = FALSE) {
   notthere <- ! is.null(lib_dir) && ! dir.exists(lib_dir)
@@ -40,9 +40,9 @@ set_lib_dir <- function (lib_dir, create = FALSE) {
   if (notthere) stop("Directory '", lib_dir, "' does not exist", if (create) " and could not be created")
 
   if (! is.null(lib_dir)) lib_dir <- normalizePath(lib_dir)
-  x <- options('pastapi.lib_dir' = lib_dir)
+  x <- options('apicheck.lib_dir' = lib_dir)
 
-  return(invisible(x$pastapi.lib_dir))
+  return(invisible(x$apicheck.lib_dir))
 }
 
 
@@ -57,7 +57,7 @@ set_lib_dir <- function (lib_dir, create = FALSE) {
 #' @examples
 #' get_lib_dir()
 get_lib_dir <- function () {
-  getOption('pastapi.lib_dir', LIB_DIR)
+  getOption('apicheck.lib_dir', LIB_DIR)
 }
 
 
@@ -66,7 +66,7 @@ get_lib_dir <- function () {
 #' This attempts to delete \emph{everything} in the package cache.
 #'
 #' @details
-#' The package cache is under the directory specified by \code{getOption("pastapi.lib_dir")},
+#' The package cache is under the directory specified by \code{getOption("apicheck.lib_dir")},
 #' or, if that is unset, in a per-session temporary directory. You should use \code{\link{set_lib_dir}}
 #' to change this rather than setting the option directly. Within this directory, subdirectories
 #' are named like \code{package-version}, e.g. \code{longurl-0.3.0}. Within these subdirectories are

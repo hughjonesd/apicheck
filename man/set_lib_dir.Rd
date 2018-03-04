@@ -29,7 +29,7 @@ If \code{lib_dir} is set to \code{NULL}, a subdirectory of \code{tempdir()} will
 }
 \examples{
 \dontrun{
-set_lib_dir("~/.pastapi")
+set_lib_dir("~/.apicheck")
 }
 get_lib_dir()
 }

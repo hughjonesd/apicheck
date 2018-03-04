@@ -171,10 +171,10 @@ search_all <- function (versions, test, search) {
     if (is.null(ncores)) ncores <- min(parallel::detectCores() - 1, length(versions))
     if (is.na(ncores)) ncores <- 2
     cl <- parallel::makeCluster(ncores)
-    parallel::clusterEvalQ(cl, library(pastapi))
-    use_cran <- getOption("pastapi.use_cran", TRUE)
+    parallel::clusterEvalQ(cl, library(apicheck))
+    use_cran <- getOption("apicheck.use_cran", TRUE)
     repos <- getOption("repos", "https://cloud.r-project.org")
-    parallel::clusterCall(cl, options, pastapi.use_cran = use_cran, repos = repos)
+    parallel::clusterCall(cl, options, apicheck.use_cran = use_cran, repos = repos)
     parallel::clusterExport(cl, "LIB_DIR", envir = environment())
     function (x, fun) parallel::parLapply(cl, x, fun)
   } else {

@@ -1,4 +1,4 @@
-Package: pastapi
+Package: apicheck
 Title: Explore the Historical API of Functions in CRAN Packages
 Version: 0.1.0.9000
 Authors@R: person("David", "Hugh-Jones", email = "davidhughjones@gmail.com", role = c("aut", "cre"))
@@ -17,5 +17,5 @@ Imports:
 Suggests:
     covr,
     rlang,
-    testthat
+    testthat (>= 2.0.0)
     

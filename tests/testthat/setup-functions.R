@@ -3,7 +3,7 @@
 
 run_in_fresh_cache <- function(cran, expr) {
   expr <- rlang::enquo(expr)
-  old_opts <- options(pastapi.use_cran = cran, repos = "https://cloud.r-project.org", cl.cores = 2)
+  old_opts <- options(apicheck.use_cran = cran, repos = "https://cloud.r-project.org", cl.cores = 2)
   old_lib_dir <- set_lib_dir(NULL) # can't avoid possibly putting LIB_DIR into options...
   clear_package_cache()
   on.exit({

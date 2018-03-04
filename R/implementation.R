@@ -5,6 +5,8 @@
 # deal with S4 methods; and test for that.
 # tests: maybe rather than pre-installed (OS X) versions, have pre-installed source
 # files and then mock install.versions
+# rename to apicheck?
+# add function to check incremental burden of a dependency?
 
 
 
@@ -21,9 +23,9 @@ NULL
 #' Packages are cached within a session. To cache packages across sessions, use
 #' \code{\link{set_lib_dir}} to point to a persistent directory.
 #'
-#' By default, \code{pastapi} uses the \code{remotes}
+#' By default, \code{apicheck} uses the \code{remotes}
 #' package to install source versions from CRAN. Alternatively, it can use the \code{versions} package to install different versions of a package
-#' from \href{https://mran.microsoft.com/}{MRAN}. To do this set \code{options(pastapi.use_cran = FALSE)}.
+#' from \href{https://mran.microsoft.com/}{MRAN}. To do this set \code{options(apicheck.use_cran = FALSE)}.
 #'
 #' Be aware that functions can take a long time to return, as different versions of a package are
 #' installed and/or loaded.
@@ -32,9 +34,9 @@ NULL
 #' restarting your session.
 #'
 #' @section Warning:
-#' Do not try to use \code{pastapi} on itself. This will lead to fiery elephants in the sky.
+#' Do not try to use \code{apicheck} on itself. This will lead to fiery elephants in the sky.
 #'
-#' @name pastapi-package
+#' @name apicheck-package
 NULL
 
 
@@ -277,7 +279,7 @@ load_version_namespace <- function (
       return(list(msg = msg, out = out))
     }
     output <- capture_all(tryCatch({
-      if (isTRUE(getOption('pastapi.use_cran', TRUE))) {
+      if (isTRUE(getOption('apicheck.use_cran', TRUE))) {
         withr::with_libpaths(package_dir,
           remotes::install_version(package, version, lib = package_dir, type = "source", quiet = quiet, ...)
         )
@@ -327,7 +329,7 @@ load_version_namespace <- function (
 #'
 #' This is a simple wrapper round \code{\link[versions]{available.versions}}. It
 #' returns packages ordered by date. Results are cached so as to
-#' relieve pressure on the MRAN server. If \code{options("pastapi.use_cran") == FALSE},
+#' relieve pressure on the MRAN server. If \code{options("apicheck.use_cran") == FALSE},
 #' then only versions available on MRAN (i.e. after 2014-09-17) will be returned;
 #' otherwise older versions will be returned too.
 #'
@@ -344,7 +346,7 @@ load_version_namespace <- function (
 available_versions <- memoise::memoise(
   function (package) {
     vns <- versions::available.versions(package)[[package]]
-    if (! isTRUE(getOption("pastapi.use_cran", TRUE))) vns <- vns[vns$available == TRUE,]
+    if (! isTRUE(getOption("apicheck.use_cran", TRUE))) vns <- vns[vns$available == TRUE,]
     vns$available <- NULL
     vns$date <- as.Date(vns$date)
     vns <- vns[order(vns$date),]

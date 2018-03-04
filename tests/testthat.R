@@ -1,4 +1,4 @@
 library(testthat)
-library(pastapi)
+library(apicheck)
 
-test_check("pastapi")
+test_check("apicheck")

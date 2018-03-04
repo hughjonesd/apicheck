@@ -4,7 +4,7 @@ old_lib_dir <- NULL
 old_opts <- NULL
 
 setup({
-  old_opts <<- options(pastapi.use_cran = TRUE, repos = "https://cloud.r-project.org", cl.cores = 2)
+  old_opts <<- options(apicheck.use_cran = TRUE, repos = "https://cloud.r-project.org", cl.cores = 2)
   old_lib_dir <<- set_lib_dir(if (Sys.info()["sysname"] != "Windows") "testing_lib_dir" else NULL)
 })
 
