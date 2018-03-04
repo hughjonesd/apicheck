@@ -4,7 +4,7 @@
 \alias{call_with_namespace}
 \title{Loads a package namespace at a particular version and runs an arbitrary function}
 \usage{
-call_with_namespace(package, version, test, ...)
+call_with_namespace(package, version, test, quiet = TRUE, ...)
 }
 \arguments{
 \item{package}{Package name.}
@@ -12,8 +12,6 @@ call_with_namespace(package, version, test, ...)
 \item{version}{Version as a character string.}
 
 \item{test}{A one-argument function. See Details.}
-
-\item{...}{Arguments passed along to \code{\link{install.packages}}.}
 }
 \value{
 The value returned by \code{test}.

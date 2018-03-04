@@ -24,9 +24,6 @@ must be an actual function, not a character string. You can use
 \item{search}{"binary", "forward", "backward", "all" or "parallel". See Details.}
 
 \item{report}{"brief" or "full". See Value.}
-
-\item{...}{Arguments passed to \code{\link[versions]{install.versions}} or
-\code{\link[devtools]{install_version}}, and thence to \code{\link{install.packages}}.}
 }
 \value{
 If \code{report} is "brief", the earliest "known good" version.

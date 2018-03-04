@@ -7,7 +7,7 @@
 available_versions(package)
 }
 \arguments{
-\item{package}{A single package name as a character string.}
+\item{package}{Package name.}
 }
 \value{
 A data frame with columns "version" and "date".

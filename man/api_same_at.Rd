@@ -5,7 +5,7 @@
 \title{Test if a function's API is unchanged at a given version}
 \usage{
 api_same_at(fn, package, version = get_version_at_date(package, date),
-  date = NULL, current_fn = NULL, ...)
+  date = NULL, quiet = TRUE, current_fn = NULL, ...)
 }
 \arguments{
 \item{fn}{Function name as a character string.}
@@ -16,13 +16,12 @@ api_same_at(fn, package, version = get_version_at_date(package, date),
 
 \item{date}{Date, as a character string that can be read by \code{\link{as.Date}} e.g. "2016-01-01".}
 
+\item{quiet}{Logical. Hide output from \code{install.packages}?}
+
 \item{current_fn}{Current function for comparison. By default, \code{fn} in the current version of
 the package (which is assumed to be available in a standard library location). If provided, this
 must be an actual function, not a character string. You can use
 \code{\link{get_fn_at}} for this.}
-
-\item{...}{Arguments passed to \code{\link[versions]{install.versions}} or
-\code{\link[devtools]{install_version}}, and thence to \code{\link{install.packages}}.}
 }
 \value{
 \code{TRUE} or \code{FALSE}.

@@ -4,7 +4,7 @@
 \alias{load_version_namespace}
 \title{Load the namespace from a version of a package}
 \usage{
-load_version_namespace(package, version, cache = TRUE, ...)
+load_version_namespace(package, version, cache = TRUE, quiet = TRUE, ...)
 }
 \arguments{
 \item{package}{Package name.}
@@ -12,8 +12,6 @@ load_version_namespace(package, version, cache = TRUE, ...)
 \item{version}{Version as a character string.}
 
 \item{cache}{If \code{FALSE}, always try to reinstall the package.}
-
-\item{...}{Arguments passed along to \code{\link{install.packages}}.}
 }
 \value{
 The namespace object.

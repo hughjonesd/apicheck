@@ -60,20 +60,30 @@ NULL
 NULL
 
 
-#' @param fn Function name as a character string.
-#' @param package Package. Alternatively, specify the function name as e.g. \code{"package::function"}.
+#' @param quiet   Logical. Hide output from \code{install.packages}?
 #' @param ... Arguments passed to \code{\link[versions]{install.versions}} or
 #'   \code{\link[devtools]{install_version}}, and thence to \code{\link{install.packages}}.
+#' @name shared_params_doc
+NULL
+
+
+#' @param fn Function name as a character string.
+#' @param package Package. Alternatively, specify the function name as e.g. \code{"package::function"}.
+#' @param quiet Logical. Hide output from \code{install.packages}?
+#' @inherit shared_params_doc params
 #' @name basic_params_doc
 NULL
 
 
-#' @param version Version as a character string. If omitted, use the version available at \code{date}.
-#' @param date Date, as a character string that can be read by \code{\link{as.Date}} e.g. "2016-01-01".
-#' @name version_params_doc
+#' @param package Package name.
+#' @param version Version as a character string.
+#' @param test    A one-argument function. See Details.
+#' @inherit shared_params_doc params
+#' @name package_params_doc
 NULL
 
 
+#' @param version Version as a character string. If omitted, use the version available at \code{date}.
 #' @param date Date, as a character string that can be read by \code{\link{as.Date}} e.g. "2016-01-01".
 #' @name version_params_doc
 NULL
@@ -102,8 +112,15 @@ NULL
 #' # equivalently
 #' api_same_at("write_clip", "clipr", "0.1.1")
 #' }
-api_same_at <- function (fn, package, version = get_version_at_date(package, date), date = NULL,
-  current_fn = NULL, ...) {
+api_same_at <- function (
+        fn,
+        package,
+        version    = get_version_at_date(package, date),
+        date       = NULL,
+        quiet      = TRUE,
+        current_fn = NULL,
+        ...
+      ) {
   if (missing(package)) c(package, fn) %<-% parse_fn(fn)
   if (missing(current_fn) || is.null(current_fn)) {
     cur_namespace <- try(loadNamespace(package, partial = TRUE), silent = TRUE)
@@ -123,7 +140,7 @@ api_same_at <- function (fn, package, version = get_version_at_date(package, dat
     identical(formals(current_fn), formals(g))
   }
 
-  call_with_namespace(package, version, test, ...)
+  call_with_namespace(package, version, test, quiet = quiet, ...)
 }
 
 
@@ -149,12 +166,13 @@ fn_exists_at <- function (
         fn,
         package,
         version = get_version_at_date(package, date),
-        date = NULL,
+        date    = NULL,
+        quiet   = TRUE,
         ...
       ) {
   if (missing(package)) c(package, fn) %<-% parse_fn(fn)
   test <- function (namespace) fn %in% names(namespace)
-  call_with_namespace(package, version, test, ...)
+  call_with_namespace(package, version, test, quiet = quiet, ...)
 }
 
 
@@ -175,13 +193,161 @@ get_fn_at <- function (
         fn,
         package,
         version = get_version_at_date(package, date),
-        date = NULL,
+        date    = NULL,
+        quiet   = TRUE,
         ...
       ) {
   if (missing(package)) c(package, fn) %<-% parse_fn(fn)
   test <- function (namespace) get(fn, namespace)
-  call_with_namespace(package, version, test, ...)
+  call_with_namespace(package, version, test, quiet = quiet, ...)
 }
+
+
+#' Loads a package namespace at a particular version and runs an arbitrary function
+#'
+#' @inherit package_params_doc params
+#' @param test    A one-argument function. See Details.
+#'
+#' @details
+#' The package is downloaded and installed if necessary, and its namespace is loaded. Then the
+#' \code{test(ns)} is called with the namespace object, and its value is returned. On exit, the
+#' namespace is unloaded, hopefully leaving your environment clean.
+#'
+#' @return The value returned by \code{test}.
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' can_it_expand_urls <- function (namespace) "expand_urls" %in% names(namespace)
+#' call_with_namespace("longurl", "0.3.0", test = can_it_expand_urls)
+#' }
+call_with_namespace  <- function (
+        package,
+        version,
+        test,
+        quiet = TRUE,
+        ...
+      ) {
+  namespace <- load_version_namespace(package, version, quiet = quiet, ...)
+  on.exit(unloadNamespace(package))
+  test(namespace)
+}
+
+
+#' Load the namespace from a version of a package
+#'
+#' @inherit package_params_doc params
+#' @param cache   If \code{FALSE}, always try to reinstall the package.
+#'
+#' @details
+#' If the package is not found in the package cache, it will be downloaded and
+#' installed there.
+#'
+#' If the package is already loaded, \code{load_version_namespace} will first attempt
+#' to unload it with a warning. This may not always work!
+#'
+#' Note that the namespace is not attached.
+#'
+#' @return The namespace object.
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' load_version_namespace("clipr", "0.4.0")
+#' }
+load_version_namespace <- function (
+        package,
+        version,
+        cache = TRUE,
+        quiet = TRUE,
+        ...
+      ) {
+  if (isNamespaceLoaded(package)) {
+    warning(package, " namespace is already loaded. Attempting to unload.")
+    unloadNamespace(package)
+  }
+
+  force(version)
+  lib_dir <- get_lib_dir()
+  package_dir <- file.path(lib_dir, paste(package, version, sep = "-"))
+  if (! cache) loudly_unlink(package_dir, paste0("Could not delete old package directory '", package_dir, "'"))
+
+  if (! cache || ! dir.exists(package_dir)) {
+    dir.create(package_dir, recursive = TRUE)
+    if (! dir.exists(package_dir)) stop("Could not create ", package_dir)
+    # RStudio changes warnings of install.packages into output, so we have to both capture.output and return warnings
+    output <- capture.output(tryCatch({
+      if (isTRUE(getOption('pastapi.use_cran', TRUE))) {
+        if (! requireNamespace('devtools', quietly = TRUE) || ! requireNamespace('withr', quietly = TRUE)) stop(
+              "To use CRAN for pastapi, devtools and withr must be installed.\n",
+              "Try `install.packages(c('devtools', 'withr'))`")
+        withr::with_libpaths(package_dir,
+          devtools::install_version(package, version, lib = package_dir, type = "source", ...)
+        )
+      } else {
+        versions::install.versions(package, versions = version, lib = package_dir, ...)
+      }
+    },
+      warning = function (w) {
+        if (grepl("non-zero exit", w$message)) {
+          loudly_unlink(package_dir)
+          stop("Failed to install version ", version, ", aborting")
+        } else {
+          return(w$message)
+        }
+      },
+      error = function (e) {
+        loudly_unlink(package_dir)
+        stop(e$message, call. = FALSE)
+      }))
+    if (! quiet) cat(output)
+  }
+
+  namespace <- tryCatch(
+    loadNamespace(package, lib.loc = package_dir, partial = TRUE),
+    error = function (e) {
+      loudly_unlink(package_dir)
+      stop("Failed to load the namespace of '", package, "' version '", version ,"'.\n",
+        "Maybe something went silently wrong during installation.", call. = FALSE)
+    }
+  )
+
+  return(namespace)
+}
+
+
+#' Report available versions
+#'
+#' This is a simple wrapper round \code{\link[versions]{available.versions}}. It
+#' returns packages ordered by date. Results are cached so as to
+#' relieve pressure on the MRAN server. If \code{options("pastapi.use_cran") == FALSE},
+#' then only versions available on MRAN (i.e. after 2014-09-17) will be returned;
+#' otherwise older versions will be returned too.
+#'
+#' @inherit package_params_doc params
+#'
+#' @return A data frame with columns "version" and "date".
+#'
+#' @export
+#'
+#' @examples
+#' available_versions("clipr")
+#'
+available_versions <- memoise::memoise(
+  function (package) {
+    vns <- versions::available.versions(package)[[package]]
+    if (! isTRUE(getOption("pastapi.use_cran", TRUE))) vns <- vns[vns$available == TRUE,]
+    vns$available <- NULL
+    vns$date <- as.Date(vns$date)
+    vns <- vns[order(vns$date),]
+
+    return(vns)
+  }
+)
+
+
 
 
 #' Return the current version of a package at a given date
@@ -204,141 +370,6 @@ get_version_at_date <- function (package, date) {
 
   return(latest)
 }
-
-
-
-#' Loads a package namespace at a particular version and runs an arbitrary function
-#'
-#' @param package Package name.
-#' @param version Version as a character string.
-#' @param test    A one-argument function. See Details.
-#' @param ...     Arguments passed along to \code{\link{install.packages}}.
-#'
-#' @details
-#' The package is downloaded and installed if necessary, and its namespace is loaded. Then the
-#' \code{test(ns)} is called with the namespace object, and its value is returned. On exit, the
-#' namespace is unloaded, hopefully leaving your environment clean.
-#'
-#' @return The value returned by \code{test}.
-#'
-#' @export
-#'
-#' @examples
-#' \dontrun{
-#' can_it_expand_urls <- function (namespace) "expand_urls" %in% names(namespace)
-#' call_with_namespace("longurl", "0.3.0", test = can_it_expand_urls)
-#' }
-call_with_namespace  <- function (package, version, test, ...) {
-  namespace <- load_version_namespace(package, version, ...)
-  on.exit(unloadNamespace(package))
-  test(namespace)
-}
-
-
-#' Load the namespace from a version of a package
-#'
-#' @param package Package name.
-#' @param version Version as a character string.
-#' @param cache   If \code{FALSE}, always try to reinstall the package.
-#' @param ...     Arguments passed along to \code{\link{install.packages}}.
-#'
-#' @details
-#' If the package is not found in the package cache, it will be downloaded and
-#' installed there.
-#'
-#' If the package is already loaded, \code{load_version_namespace} will first attempt
-#' to unload it with a warning. This may not always work!
-#'
-#' Note that the namespace is not attached.
-#'
-#' @return The namespace object.
-#'
-#' @export
-#'
-#' @examples
-#' \dontrun{
-#' load_version_namespace("clipr", "0.4.0")
-#' }
-load_version_namespace <- function (package, version, cache = TRUE, ...) {
-  if (isNamespaceLoaded(package)) {
-    warning(package, " namespace is already loaded. Attempting to unload.")
-    unloadNamespace(package)
-  }
-
-  force(version)
-  lib_dir <- get_lib_dir()
-  package_dir <- file.path(lib_dir, paste(package, version, sep = "-"))
-  if (! cache) loudly_unlink(package_dir, paste0("Could not delete old package directory '", package_dir, "'"))
-
-  if (! cache || ! dir.exists(package_dir)) {
-    dir.create(package_dir, recursive = TRUE)
-    if (! dir.exists(package_dir)) stop("Could not create ", package_dir)
-    tryCatch({
-      if (isTRUE(getOption('pastapi.use_cran', TRUE))) {
-        if (! requireNamespace('devtools', quietly = TRUE) || ! requireNamespace('withr', quietly = TRUE)) stop(
-              "To use CRAN for pastapi, devtools and withr must be installed.\n",
-              "Try `install.packages(c('devtools', 'withr'))`")
-        withr::with_libpaths(package_dir,
-          devtools::install_version(package, version, lib = package_dir, type = "source", ...)
-        )
-      } else {
-        versions::install.versions(package, versions = version, lib = package_dir, ...)
-      }
-    },
-      warning = function (w) {
-        if (grepl("non-zero exit", w$message)) {
-          loudly_unlink(package_dir)
-          stop("Failed to install version ", version, ", aborting")
-        } else {
-          warning(w$message)
-        }
-      },
-      error = function (e) {
-        loudly_unlink(package_dir)
-        stop(e$message, call. = FALSE)
-      })
-  }
-
-  namespace <- tryCatch(
-    loadNamespace(package, lib.loc = package_dir, partial = TRUE),
-    error = function (e) {
-      loudly_unlink(package_dir)
-      stop("Failed to load the namespace of '", package, "' version '", version ,"'.\n",
-        "Maybe something went silently wrong during installation.", call. = FALSE)
-    }
-  )
-
-  return(namespace)
-}
-
-#' Report available versions
-#'
-#' This is a simple wrapper round \code{\link[versions]{available.versions}}. It
-#' returns packages ordered by date. Results are cached so as to
-#' relieve pressure on the MRAN server. If \code{options("pastapi.use_cran") == FALSE},
-#' then only versions available on MRAN (i.e. after 2014-09-17) will be returned;
-#' otherwise older versions will be returned too.
-#'
-#' @param package A single package name as a character string.
-#'
-#' @return A data frame with columns "version" and "date".
-#'
-#' @export
-#'
-#' @examples
-#' available_versions("clipr")
-#'
-available_versions <- memoise::memoise(
-  function (package) {
-    vns <- versions::available.versions(package)[[package]]
-    if (! isTRUE(getOption("pastapi.use_cran", TRUE))) vns <- vns[vns$available == TRUE,]
-    vns$available <- NULL
-    vns$date <- as.Date(vns$date)
-    vns <- vns[order(vns$date),]
-
-    return(vns)
-  }
-)
 
 
 loudly_unlink <- function (dir, error = paste0("Could not unlink package dir ", dir,

@@ -5,7 +5,7 @@
 \title{Retrieve a function from a particular package version}
 \usage{
 get_fn_at(fn, package, version = get_version_at_date(package, date),
-  date = NULL, ...)
+  date = NULL, quiet = TRUE, ...)
 }
 \arguments{
 \item{fn}{Function name as a character string.}
@@ -16,8 +16,7 @@ get_fn_at(fn, package, version = get_version_at_date(package, date),
 
 \item{date}{Date, as a character string that can be read by \code{\link{as.Date}} e.g. "2016-01-01".}
 
-\item{...}{Arguments passed to \code{\link[versions]{install.versions}} or
-\code{\link[devtools]{install_version}}, and thence to \code{\link{install.packages}}.}
+\item{quiet}{Logical. Hide output from \code{install.packages}?}
 }
 \value{
 The function itself.
