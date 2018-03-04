@@ -35,29 +35,28 @@ test_that("get_version_at_date", {
 
 
 test_that("arguments passed to install.packages", {
-  expect_error(load_version_namespace("fortunes", "1.5-1", repos = "BROKEN"))
+  expect_error(cached_install("fortunes", "1.5-1", repos = "BROKEN"))
   expect_error(fn_exists_at("fortunes::fortune", version = "1.5-0", repos = "BROKEN"))
   fn <- base::as.character
   expect_error(api_same_at("fortunes::fortune", version = "1.5-2", current_fn = fn, repos = "BROKEN"))
-  # these guys throw warnings, but special weird install.packages warnings that don't get trapped.
-  # and if you do capture.output, it fucks things up even worse.
-  skip("Skipping two tests where install.packages spews weird uncatchable errors")
+
+  # skip("Skipping two tests where install.packages spews weird uncatchable errors")
   expect_warning(when_fn_exists("fortunes::fortune", repos = "BROKEN"))
   expect_warning(when_api_same("rbcb::get_currency", current_fn = fn, repos = "BROKEN"))
 })
 
 
-test_that("load_version_namespace and call_with_namespace", {
+test_that("cached_install and call_with_namespace", {
   skip_on_cran()
   skip_on_travis() # slow
   # can't skip_if_mran_down() because it uses this very function, so instead:
 
   # expect possible warnings etc. but no errors
   # res is NULL if there is an error
-  res <- expect_error(d1 <- load_version_namespace("clipr", "0.4.0"), regexp = NA)
-  if (is.null(res)) skip("load_version_namespace failed, no point trying the others")
-  expect_error(d2 <- load_version_namespace("clipr", "0.4.0"), regexp = NA)
-  expect_error(d3 <- load_version_namespace("clipr", "0.2.0"), regexp = NA)
+  res <- expect_error(d1 <- cached_install("clipr", "0.4.0"), regexp = NA)
+  if (is.null(res)) skip("cached_install failed, no point trying the others")
+  expect_error(d2 <- cached_install("clipr", "0.4.0"), regexp = NA)
+  expect_error(d3 <- cached_install("clipr", "0.2.0"), regexp = NA)
   expect_equal(d1, d2) # but not identical for some reason
   expect_false(isTRUE(all.equal(d1, d3)))
   unloadNamespace("clipr")
@@ -75,12 +74,12 @@ test_that("load_version_namespace and call_with_namespace", {
 })
 
 
-test_that("load_version_namespace with attached namespace", {
+test_that("cached_install with attached namespace", {
   skip_on_cran()
 
   if (! require(withr)) skip("Couldn't attach withr")
   run_in_fresh_cache(cran = TRUE,
-          expect_warning(load_version_namespace("withr", "2.1.1"), "already loaded")
+          expect_warning(cached_install("withr", "2.1.1"), "already loaded")
         )
 })
 
@@ -178,14 +177,22 @@ test_that("when_fn_exists", {
 })
 
 
+test_that("get_help_at", {
+  skip_on_cran()
+
+  expect_error(helpfile <- get_help_at("clipr::write_clip", "0.4.0"), NA)
+  expect_s3_class(helpfile, "help_files_with_topic")
+})
+
+
 test_that("Can set lib_dir", {
   skip_on_cran()
-  skip_on_travis()
+  skip_on_travis() # slow
 
   tempdir <- tempfile(pattern = "testing", tmpdir = normalizePath(tempdir()))
   dir.create(tempdir)
   set_lib_dir(tempdir)
-  prepare <- try(load_version_namespace("clipr", "0.4.0"))
+  prepare <- try(cached_install("clipr", "0.4.0"))
   if (class(prepare) == "try-error") skip("Couldn't download package for testing")
   expect_true(dir.exists(file.path(tempdir, "clipr-0.4.0", "clipr")))
 })

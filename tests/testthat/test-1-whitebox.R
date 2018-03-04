@@ -106,8 +106,7 @@ test_that("search_all", {
     apicheck:::search_all(seq_along(x), test, search)
   }
 
-  expect_equal(test_vars("all", FALSE, NA, TRUE), c(-2L, 0, 2L))
-  expect_equal(test_vars("parallel", FALSE, NA, TRUE), c(-2L, 0, 2L))
+  for (strat in c("all", "parallel")) expect_equal(test_vars(strat, FALSE, NA, TRUE), c(-2L, 0, 2L))
 })
 
 

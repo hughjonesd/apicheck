@@ -179,8 +179,8 @@ fn_exists_at <- function (
 #' }
 get_fn_at <- function (
         fn,
-        package,
         version = get_version_at_date(package, date),
+        package,
         date    = NULL,
         quiet   = TRUE,
         ...
@@ -190,6 +190,35 @@ get_fn_at <- function (
   call_with_namespace(package, version, test, quiet = quiet, ...)
 }
 
+
+#' Get help for a function at a package version
+#'
+#' @inherit params_doc params
+#'
+#' @return The help object (text format only).
+#'
+#' @seealso \code{\link{help}}
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' get_help_at("clipr::write_clip", "0.1.1")
+#' get_help_at("clipr::write_clip", "0.2.0")
+#' }
+get_help_at <- function (
+        fn,
+        version = get_version_at_date(package, date),
+        package,
+        date    = NULL,
+        quiet   = TRUE,
+        ...
+) {
+  if (missing(package)) c(package, fn) %<-% parse_fn(fn)
+  on.exit(unloadNamespace(package))
+  package_dir <- cached_install(package, version, return = "path", quiet = quiet, ...)
+  help((fn), package = (package), lib.loc = package_dir, help_type = "text")
+}
 
 #' Loads a package namespace at a particular version and runs an arbitrary function
 #'
@@ -219,43 +248,49 @@ call_with_namespace  <- function (
         quiet = TRUE,
         ...
       ) {
-  namespace <- load_version_namespace(package, version, quiet = quiet, ...)
+  namespace <- cached_install(package, version, return = "namespace", quiet = quiet, ...)
   on.exit(unloadNamespace(package))
   test(namespace)
 }
 
 
-#' Load the namespace from a version of a package
+#' Return a package version's location or namespace, possibly installing it
 #'
 #' @inherit package_nofn_params_doc params
 #' @inherit version_nodate_params_doc params
 #' @inherit params_doc params
+#' @param return  Return the file "path" to the installed package, or the "namespace" object?
 #' @param cache   If \code{FALSE}, always try to reinstall the package.
+#' @param partial Default \code{TRUE}. Passed to \code{\link{loadNamespace}}.
 #'
 #' @details
 #' If the package is not found in the package cache, it will be downloaded and
 #' installed there.
 #'
-#' If the package is already loaded, \code{load_version_namespace} will first attempt
+#' If the package is already loaded, \code{cached_install} will first attempt
 #' to unload it with a warning. This may not always work!
 #'
-#' Note that the namespace is not attached.
+#' Note that the namespace is not attached. Partial loading is faster and safer when
+#' you are (un)loading multiple versions, but does not export functions etc.
 #'
-#' @return The namespace object.
+#' @return The namespace object or directory where the package is installed.
 #'
 #' @export
 #'
 #' @examples
 #' \dontrun{
-#' load_version_namespace("clipr", "0.4.0")
+#' cached_install("clipr", "0.4.0")
 #' }
-load_version_namespace <- function (
+cached_install <- function (
         package,
         version,
-        cache = TRUE,
-        quiet = TRUE,
+        return  = c("namespace", "path"),
+        cache   = TRUE,
+        quiet   = TRUE,
+        partial = TRUE,
         ...
       ) {
+  ret <- match.arg(return)
   if (isNamespaceLoaded(package)) {
     warning(package, " namespace is already loaded. Attempting to unload.")
     unloadNamespace(package)
@@ -305,8 +340,8 @@ load_version_namespace <- function (
     }
   }
 
-  namespace <- tryCatch(
-    loadNamespace(package, lib.loc = package_dir, partial = TRUE),
+  tryCatch(
+    namespace <- loadNamespace(package, lib.loc = package_dir, partial = partial),
     error = function (e) {
       loudly_unlink(package_dir)
       stop(
@@ -321,7 +356,8 @@ load_version_namespace <- function (
     }
   )
 
-  return(namespace)
+  res <- if (ret == "namespace") namespace else package_dir
+  return(res)
 }
 
 
