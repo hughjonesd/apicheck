@@ -1,0 +1,66 @@
+---
+title: "Performance Tests"
+author: "David Hugh-Jones"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# Speed tests
+
+On my Macbook Air, standard broadband connection.
+
+## Download and install
+
+`clipr` is a small package with few versions. `dplyr` is a large package which requires compilation, and old
+versions are likely not to work.
+
+```{r}
+library(apicheck)
+library(microbenchmark)
+library(ggplot2)
+options(repos = "https://cloud.r-project.org")
+
+uncached <- microbenchmark(
+        clipr_all      = {when_fn_exists("clipr::dr_clipr", search = "all"); clear_package_cache()},
+        clipr_parallel = {when_fn_exists("clipr::dr_clipr", search = "parallel"); clear_package_cache()},
+        dplyr_all      = {when_fn_exists("dplyr::filter", search = "all"); clear_package_cache()},
+        dplyr_parallel = {when_fn_exists("dplyr::filter", search = "parallel"); clear_package_cache()},
+        times = 10
+      )
+
+uncached
+
+autoplot(uncached)
+```
+
+## Pre-downloaded
+
+```{r}
+
+invisible(when_fn_exists("clipr::dr_clipr", search = "parallel")) # pre-cache
+invisible(when_fn_exists("dplyr::filter", search = "parallel")) 
+
+cached <- microbenchmark(
+        clipr_all      = when_fn_exists("clipr::dr_clipr", search = "all"),
+        clipr_parallel = when_fn_exists("clipr::dr_clipr", search = "parallel"),
+        dplyr_all      = when_fn_exists("dplyr::filter", search = "all"),
+        dplyr_parallel = when_fn_exists("dplyr::filter", search = "parallel"),
+        times = 10
+      )
+
+cached
+
+autoplot(cached)
+
+```

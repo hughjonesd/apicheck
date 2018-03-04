@@ -14,8 +14,10 @@ Imports:
     versions, 
     withr,
     zeallot,
-Suggests:
+Suggests: 
     covr,
     rlang,
-    testthat (>= 2.0.0)
-    
+    testthat (>= 2.0.0),
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
