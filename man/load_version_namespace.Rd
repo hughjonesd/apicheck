@@ -13,10 +13,10 @@ load_version_namespace(package, version, cache = TRUE, quiet = TRUE, ...)
 
 \item{cache}{If \code{FALSE}, always try to reinstall the package.}
 
-\item{quiet}{Logical. Hide output from \code{install.packages}?}
+\item{quiet}{Logical. Try to minimize output from package installation. (Some output comes from \code{R CMD INSTALL} and may be unavoidable.)}
 
 \item{...}{Arguments passed to \code{\link[versions]{install.versions}} or
-\code{\link[devtools]{install_version}}, and thence to \code{\link{install.packages}}.}
+\code{\link[remotes]{install_version}}, and thence to \code{\link{install.packages}}.}
 }
 \value{
 The namespace object.

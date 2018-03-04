@@ -26,10 +26,10 @@ must be an actual function, not a character string. You can use
 
 \item{report}{"brief" or "full". See Value.}
 
-\item{quiet}{Logical. Hide output from \code{install.packages}?}
+\item{quiet}{Logical. Try to minimize output from package installation. (Some output comes from \code{R CMD INSTALL} and may be unavoidable.)}
 
 \item{...}{Arguments passed to \code{\link[versions]{install.versions}} or
-\code{\link[devtools]{install_version}}, and thence to \code{\link{install.packages}}.}
+\code{\link[remotes]{install_version}}, and thence to \code{\link{install.packages}}.}
 }
 \value{
 If \code{report} is "brief", the earliest "known good" version.

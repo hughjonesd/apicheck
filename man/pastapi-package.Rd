@@ -12,7 +12,7 @@ without attaching them.
 Packages are cached within a session. To cache packages across sessions, use
 \code{\link{set_lib_dir}} to point to a persistent directory.
 
-By default, \code{pastapi} uses the \code{devtools}
+By default, \code{pastapi} uses the \code{remotes}
 package to install source versions from CRAN. Alternatively, it can use the \code{versions} package to install different versions of a package
 from \href{https://mran.microsoft.com/}{MRAN}. To do this set \code{options(pastapi.use_cran = FALSE)}.
 

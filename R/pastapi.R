@@ -54,8 +54,8 @@ NULL
 
 
 #' @param fn Function name as a character string.
-#' @param package Package. Alternatively, specify the function name as e.g. \code{"package::function"}.
 #' @param version Version as a character string. If omitted, use the version available at \code{date}.
+#' @param package Package. Alternatively, specify the function name as e.g. \code{"package::function"}.
 #' @param date Date, as a character string that can be read by \code{\link{as.Date}} e.g. "2016-01-01".
 #' @param current_fn Current function for comparison. By default, \code{fn} in the current version of
 #'   the package (which is assumed to be available in a standard library location). If provided, this
@@ -272,8 +272,8 @@ load_version_namespace <- function (
     # RStudio cat()s warnings of install.packages; so they aren't caught in tryCatch. The solution is to
     # cat everything in tryCatch and then to capture.output twice.
     here <- environment()
-    capture_all <- function (expr){
-      msg <- capture.output(out <- capture.output(eval(substitute(expr, here))), type = "message")
+    capture_all <- function (expr) {
+      msg <- utils::capture.output(out <- utils::capture.output(eval(substitute(expr, here))), type = "message")
       return(list(msg = msg, out = out))
     }
     output <- capture_all(tryCatch({
@@ -331,14 +331,14 @@ load_version_namespace <- function (
 #' then only versions available on MRAN (i.e. after 2014-09-17) will be returned;
 #' otherwise older versions will be returned too.
 #'
-#' @inherit package_nofn_doc params
+#' @inherit package_nofn_params_doc params
 #'
 #' @return A data frame with columns "version" and "date".
 #'
 #' @export
 #'
 #' @examples
-#' dontrun{
+#' \dontrun{
 #' available_versions("clipr")
 #' }
 available_versions <- memoise::memoise(

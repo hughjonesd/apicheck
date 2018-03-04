@@ -6,6 +6,9 @@
 \usage{
 available_versions(package)
 }
+\arguments{
+\item{package}{Package name.}
+}
 \value{
 A data frame with columns "version" and "date".
 }
@@ -17,6 +20,7 @@ then only versions available on MRAN (i.e. after 2014-09-17) will be returned;
 otherwise older versions will be returned too.
 }
 \examples{
+\dontrun{
 available_versions("clipr")
-
+}
 }
