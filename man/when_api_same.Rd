@@ -53,6 +53,27 @@ the same as \code{current_fn}).
 \details{
 "Same API" is defined by the function arguments, as reported by \code{\link{formals}}, being the same.
 }
+\section{Search strategies}{
+
+\itemize{
+  \item \code{"forward"} (\code{"backward"}) search incrementally from the earliest (latest) version.
+  \item \code{"binary"} does a binary search from the midpoint.
+}
+
+These
+strategies assume that API changes happen just once - i.e. once a function exists or API is the same as now,
+it will stay so in future versions. This allows them to stop before searching every version.
+
+\itemize{
+  \item \code{"all"} searches every version.
+  \item \code{"parallel"} searches every version in parallel using \code{\link[parallel]{parLapply}}.
+}
+For parallel search, you can set up your own parallel
+cluster by using \code{\link[parallel]{setDefaultCluster}}; otherwise one will be created. If you
+set up your own cluster, it will not be stopped automatically via
+\code{\link[parallel]{StopCluster}}.
+}
+
 \section{Speed}{
 
 This function may download and install multiple versions from MRAN, so it is likely to be slow

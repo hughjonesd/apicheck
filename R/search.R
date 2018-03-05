@@ -5,24 +5,7 @@
 #' @param progress Print a progress bar.
 #' @param min_version Lowest version to check.
 #' @param max_version Highest version to check.
-#' @section Search strategies:
-#' \itemize{
-#'   \item \code{"forward"} (\code{"backward"}) search incrementally from the earliest (latest) version.
-#'   \item \code{"binary"} does a binary search from the midpoint.
-#' }
 #'
-#' These
-#' strategies assume that API changes happen just once - i.e. once a function exists or API is the same as now,
-#' it will stay so in future versions. This allows them to stop before searching every version.
-#'
-#' \itemize{
-#'   \item \code{"all"} searches every version.
-#'   \item \code{"parallel"} searches every version in parallel using \code{\link[parallel]{parLapply}}.
-#' }
-#' For parallel search, you can set up your own parallel
-#' cluster by using \code{\link[parallel]{setDefaultCluster}}; otherwise one will be created. If you
-#' set up your own cluster, it will not be stopped automatically via
-#' \code{\link[parallel]{StopCluster}}.
 #'
 #' @return
 #' If \code{report} is "brief", the earliest "known good" version.
@@ -43,6 +26,25 @@ NULL
 #' @inherit same_api_doc details
 #' @inheritSection slow_warning_doc Speed
 #'
+#' @section Search strategies:
+#' \itemize{
+#'   \item \code{"forward"} (\code{"backward"}) search incrementally from the earliest (latest) version.
+#'   \item \code{"binary"} does a binary search from the midpoint.
+#' }
+#'
+#' These
+#' strategies assume that API changes happen just once - i.e. once a function exists or API is the same as now,
+#' it will stay so in future versions. This allows them to stop before searching every version.
+#'
+#' \itemize{
+#'   \item \code{"all"} searches every version.
+#'   \item \code{"parallel"} searches every version in parallel using \code{\link[parallel]{parLapply}}.
+#' }
+#' For parallel search, you can set up your own parallel
+#' cluster by using \code{\link[parallel]{setDefaultCluster}}; otherwise one will be created. If you
+#' set up your own cluster, it will not be stopped automatically via
+#' \code{\link[parallel]{StopCluster}}.
+
 #' @export
 #'
 #' @examples
@@ -82,7 +84,6 @@ when_api_same <- function (
 
 #' \code{when_fn_exists} reports the first package version where a function exists.
 #'
-#--NB-- don't inheritSection slow_warning_doc Speed, it will be shown twice
 #' @rdname when_api_same
 #' @export
 #'
@@ -140,13 +141,13 @@ run_search <- function (package, test, search, progress, min_version, max_versio
   versions <- suitable_versions(package, min_version, max_version)$version
   pb <- NULL
   if (progress && ! search == "parallel") {
-    pb <- txtProgressBar(style = 3)
+    pb <- utils::txtProgressBar(style = 3)
     inc <- 1/length(versions)
     test_inner <- test
     test <- function (x) {
       res <- test_inner(x)
-      g <- getTxtProgressBar(pb)
-      setTxtProgressBar(pb, g + inc)
+      g <- utils::getTxtProgressBar(pb)
+      utils::setTxtProgressBar(pb, g + inc)
       return(res)
     }
   }
@@ -159,7 +160,7 @@ run_search <- function (package, test, search, progress, min_version, max_versio
           all = search_all(versions, test, search)
   )
   if (! is.null(pb)) {
-    setTxtProgressBar(pb, 1)
+    utils::setTxtProgressBar(pb, 1)
     cat("\n")
   }
 
