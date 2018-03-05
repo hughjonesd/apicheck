@@ -29,6 +29,7 @@ library(microbenchmark)
 library(ggplot2)
 library(dplyr)
 options(repos = "https://cran.rstudio.com")
+set_lib_dir(".apicheck")
 
 make_test <- function(fn, search, min_version = NA) {
   if (is.na(min_version)) min_version <- NULL
@@ -65,20 +66,23 @@ cached <- microbenchmark(
 ```{r}
 cached
 
-autoplot(cached)
+autoplot(cached) + geom_point(color = "red")
 
 ```
 
 ## With download
 
 
-```{r}
+```{r, cache = TRUE}
+
+set_lib_dir(NULL)
+clear_package_cache()
 
 clear <- function (fn) {
   function (search){fn(search); clear_package_cache()}
 }
 
-clear_package_cache()
+
 
 uncached <- microbenchmark(
         clipr_all      = clear(test_A)("all"),
@@ -92,5 +96,5 @@ uncached <- microbenchmark(
 ```{r}
 uncached
 
-autoplot(uncached)
+autoplot(uncached) + geom_point(color = "darkgreen")
 ```
