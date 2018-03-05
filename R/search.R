@@ -1,16 +1,28 @@
 
 
-#' @param search "binary", "forward", "backward", "all" or "parallel". See Details.
+#' @param search "binary", "forward", "backward", "all" or "parallel". See Search strategies.
 #' @param report "brief" or "full". See Value.
 #' @param progress Print a progress bar.
 #' @param min_version Lowest version to check.
 #' @param max_version Highest version to check.
-#' @details
-#' "forward" ("backward") searches incrementally
-#' from the earliest (latest) version; "binary" does a binary search from the midpoint. These search
+#' @section Search strategies:
+#' \itemize{
+#'   \item \code{"forward"} (\code{"backward"}) search incrementally from the earliest (latest) version.
+#'   \item \code{"binary"} does a binary search from the midpoint.
+#' }
+#'
+#' These
 #' strategies assume that API changes happen just once - i.e. once a function exists or API is the same as now,
-#' it will stay so in future versions. "all" searches every version and makes no assumptions. "parallel" searches
-#' every version in parallel using \code{\link[parallel]{parLapply}}.
+#' it will stay so in future versions. This allows them to stop before searching every version.
+#'
+#' \itemize{
+#'   \item \code{"all"} searches every version.
+#'   \item \code{"parallel"} searches every version in parallel using \code{\link[parallel]{parLapply}}.
+#' }
+#' For parallel search, you can set up your own parallel
+#' cluster by using \code{\link[parallel]{setDefaultCluster}}; otherwise one will be created. If you
+#' set up your own cluster, it will not be stopped automatically via
+#' \code{\link[parallel]{StopCluster}}.
 #'
 #' @return
 #' If \code{report} is "brief", the earliest "known good" version.
@@ -202,16 +214,23 @@ search_versions <- function (versions, test, search) {
 search_all <- function (versions, test, search) {
   lapply_fn <- if (search == "parallel") {
     if (! requireNamespace('parallel', quietly = TRUE)) stop("Could not load `parallel` namespace")
-    ncores <- getOption("cl.cores")
-    if (is.null(ncores)) ncores <- min(parallel::detectCores() - 1, length(versions))
-    if (is.na(ncores)) ncores <- 2
-    cl <- parallel::makeCluster(ncores)
+    # only way to find out if a cluster is registered?
+    x <- try(parallel::clusterApply(NULL, 1, identity), silent = TRUE)
+    cl <- if (class(x) == "try-error") {
+      ncores <- getOption("cl.cores")
+      if (is.null(ncores)) ncores <- min(parallel::detectCores() - 1, length(versions))
+      if (is.na(ncores)) ncores <- 2
+      parallel::makeCluster(ncores)
+    } else {
+      NULL
+    }
+
     parallel::clusterEvalQ(cl, library(apicheck))
     use_cran <- getOption("apicheck.use_cran", TRUE)
     repos <- getOption("repos", "https://cloud.r-project.org")
     parallel::clusterCall(cl, options, apicheck.use_cran = use_cran, repos = repos)
     parallel::clusterExport(cl, "LIB_DIR", envir = environment())
-    function (x, fun) parallel::parLapply(cl, x, fun)
+    function (x, fun) parallel::parLapplyLB(cl, x, fun)
   } else {
     lapply
   }
@@ -219,6 +238,8 @@ search_all <- function (versions, test, search) {
   res <- lapply_fn(versions, test)
   res <- as.logical(res)
   res <- ifelse(is.na(res), 0L, 4 * as.integer(res) - 2)
+  # only stop a cluster if we made it ourselves:
+  if (search == "parallel" && ! is.null(cl)) parallel::stopCluster(cl)
 
   return(res)
 }

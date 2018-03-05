@@ -25,7 +25,7 @@ the package (which is assumed to be available in a standard library location). I
 must be an actual function, not a character string. You can use
 \code{\link{get_fn_at}} for this.}
 
-\item{search}{"binary", "forward", "backward", "all" or "parallel". See Details.}
+\item{search}{"binary", "forward", "backward", "all" or "parallel". See Search strategies.}
 
 \item{report}{"brief" or "full". See Value.}
 
@@ -51,11 +51,7 @@ the same as \code{current_fn}).
 \code{when_fn_exists} reports the first package version where a function exists.
 }
 \details{
-"forward" ("backward") searches incrementally
-from the earliest (latest) version; "binary" does a binary search from the midpoint. These search
-strategies assume that API changes happen just once - i.e. once a function exists or API is the same as now,
-it will stay so in future versions. "all" searches every version and makes no assumptions. "parallel" searches
-every version in parallel using \code{\link[parallel]{parLapply}}.
+"Same API" is defined by the function arguments, as reported by \code{\link{formals}}, being the same.
 }
 \section{Speed}{
 
