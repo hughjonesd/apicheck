@@ -5,13 +5,16 @@
 # tests: maybe rather than pre-installed (OS X) versions, have pre-installed source
 # files and then mock install.versions
 # add function to check incremental burden of a dependency?
-# function to compare whole API of versions and issue a report; actually not hard
-#  - Separate from the downloading issue so keep it loosely coupled.
-#  - Data frame of functions, whether present/absent in each version; list columns for different formals
-#  - Nice print method
+# BUG: compare_versions fails silently when installed library is used (namespace unloading?)
+# BUG: compare_versions seems to overreport API changes, e.g. try `reprex`
 # parallelize binary and other methods
 #  - Should bring big speedups
-# maybe drop `partial`; and `date`?
+# if we have partial, can we load methods? CHECK.
+# Maybe drop `get_` from e.g. `get_version_at` or `get_help_at`
+# use_cran -> use_mran
+# Make versions a Suggests
+# Clean separate API: installing stuff in the package cache; querying it. Always two separate operations.
+# Clean unloading and reloading of current packages; always leave the computer in the state it was in before.
 
 
 #' @importFrom zeallot %<-%
@@ -19,17 +22,17 @@ NULL
 
 
 #' Basic details about the package
-#'
+#' @md
 #' This is a small package to check when functions were introduced in packages and/or APIs changed.
 #' It automatically installs different versions of a package in a separate directory and loads them
 #' without attaching them.
 #'
 #' Packages are cached within a session. To cache packages across sessions, use
-#' \code{\link{set_lib_dir}} to point to a persistent directory.
+#' [set_lib_dir()] to point to a persistent directory.
 #'
-#' By default, \code{apicheck} uses the \code{remotes}
-#' package to install source versions from CRAN. Alternatively, it can use the \code{versions} package to install different versions of a package
-#' from \href{https://mran.microsoft.com/}{MRAN}. To do this set \code{options(apicheck.use_cran = FALSE)}.
+#' By default, `apicheck`` uses the `remotes`
+#' package to install source versions from CRAN. Alternatively, it can use the `versions`` package to install different versions of a package
+#' from [MRAN]{https://mran.microsoft.com/}. To do this set `options(apicheck.use_cran = FALSE)`.
 #'
 #' Be aware that functions can take a long time to return, as different versions of a package are
 #' installed and/or loaded.
@@ -38,40 +41,44 @@ NULL
 #' restarting your session.
 #'
 #' @section Warning:
-#' Do not try to use \code{apicheck} on itself. This will lead to fiery elephants in the sky.
+#' Do not try to use `apicheck` on itself. This will lead to fiery elephants in the sky.
 #'
 #' @name apicheck-package
 NULL
 
 
+#' @md
 #' @details
-#' "Same API" is defined by the function arguments, as reported by \code{\link{formals}}, being the same.
+#' "Same API" means having the same function arguments, as reported by [formals()].
 #' @name same_api_doc
 NULL
 
 
 #' @section Speed:
+#' @md
 #' This function may download and install multiple versions from MRAN, so it is likely to be slow
-#' when first used (and even afterwards if library loading is slow). Using \code{search = "parallel"}
-#' may help, but not if the network is the bottleneck.
+#' when first used (and even afterwards if library loading is slow). Using `search = "parallel"`
+#' may help, but not if the network is the bottleneck: see
+#' (here)[https://hughjonesd.github.io/apicheck/performance2.html] for details.
 #' @name slow_warning_doc
 NULL
 
 
 
+#' @md
 #' @param fn Function name as a character string.
-#' @param version Version as a character string. If omitted, use the version available at \code{date}.
-#' @param package Package. Alternatively, specify the function name as e.g. \code{"package::function"}.
-#' @param date Date, as a character string that can be read by \code{\link{as.Date}} e.g. "2016-01-01".
-#' @param current_fn Current function for comparison. By default, \code{fn} in the current version of
+#' @param version Version as a character string. If omitted, use the version available at `date`.
+#' @param package Package. Alternatively, specify the function name as e.g. `"package::function"`.
+#' @param date Date, as a character string that can be read by [as.Date()] e.g. "2016-01-01".
+#' @param current_fn Current function for comparison. By default, `fn` in the current version of
 #'   the package (which is assumed to be available in a standard library location). If provided, this
 #'   must be an actual function, not a character string. You can use
-#'   \code{\link{get_fn_at}} for this.
+#'   [get_fn_at()] for this.
 #' @param test    A one-argument function. See Details.
 #' @param current_fn Current function
-#' @param quiet Logical. Try to minimize output from package installation. (Some output comes from \code{R CMD INSTALL} and may be unavoidable.)
-#' @param ... Arguments passed to \code{\link[versions]{install.versions}} or
-#'   \code{\link[remotes]{install_version}}, and thence to \code{\link{install.packages}}.
+#' @param quiet Logical. Try to minimize output from package installation. (Some output comes from `R CMD INSTALL` and may be unavoidable.)
+#' @param ... Arguments passed to [versions::install.versions()] or
+#'   [remotes::install_version()], and thence to [install.packages()].
 #' @name params_doc
 NULL
 
@@ -88,15 +95,15 @@ NULL
 
 #' Test if a function's API is unchanged at a given version
 #'
-#' \code{api_same_at} reports whether a function had the same API at a previous version or date.
+#' `api_same_at` reports whether a function had the same API at a previous version or date.
 #'
 #' @inherit params_doc params
 #'
 #' @details
-#' If \code{fn} does not exist at \code{version}, \code{api_same_at} returns \code{FALSE} with a warning.
+#' If `fn` does not exist at `version`, `api_same_at` returns `FALSE` with a warning.
 #' @inherit same_api_doc details
 #'
-#' @return \code{TRUE} or \code{FALSE}.
+#' @return `TRUE` or `FALSE`.
 #'
 #'
 #' @export
@@ -136,11 +143,11 @@ api_same_at <- function (
 
 #' Test if a function exists at a given version
 #'
-#' \code{fn_exists_at} reports whether a function exists at a specific previous version or date.
+#' `fn_exists_at` reports whether a function exists at a specific previous version or date.
 #'
 #' @inherit params_doc params
 #'
-#' @return \code{TRUE} or \code{FALSE}.
+#' @return `TRUE` or `FALSE`.
 #'
 #' @export
 #'
@@ -167,12 +174,13 @@ fn_exists_at <- function (
 #' Compare versions of a package and report changed functions and APIs
 #'
 
-#' @param version  First version to compare. If \code{NULL}, use the previous available version.
-#' @param version2 Second version to compare. If \code{NULL}, use the current version as installed.
+#' @param version  First version to compare. If `NULL`, use the previous available version.
+#' @param version2 Second version to compare. If `NULL`, use the current version as installed.
 #' @inherit package_nofn_params_doc params
 #' @inherit params_doc params
 #'
-#' @return A data frame reporting functions that have been "Added", "Removed" or had "API changed".
+#' @return A data frame reporting functions that have been "Added", "Removed" or had "API changed",
+#'   and details of function arguments.
 #' @export
 #'
 #' @examples
@@ -234,7 +242,7 @@ get_fn_at <- function (
 #'
 #' @return The help object (text format only).
 #'
-#' @seealso \code{\link{help}}
+#' @seealso [help()]
 #'
 #' @export
 #'
@@ -257,7 +265,7 @@ get_help_at <- function (
   utils::help((fn), package = (package), lib.loc = package_dir, help_type = "text")
 }
 
-#' Loads a package namespace at a particular version and runs an arbitrary function
+#' Load a package namespace at a particular version and run an arbitrary function
 #'
 #' @inherit package_nofn_params_doc params
 #' @inherit version_nodate_params_doc params
@@ -266,10 +274,10 @@ get_help_at <- function (
 #'
 #' @details
 #' The package is downloaded and installed if necessary, and its namespace is loaded. Then the
-#' \code{test(ns)} is called with the namespace object, and its value is returned. On exit, the
+#' `test(ns)` is called with the namespace object, and its value is returned. On exit, the
 #' namespace is unloaded, hopefully leaving your environment clean.
 #'
-#' @return The value returned by \code{test}.
+#' @return The value returned by `test`.
 #'
 #' @export
 #'
@@ -297,14 +305,14 @@ call_with_namespace  <- function (
 #' @inherit version_nodate_params_doc params
 #' @inherit params_doc params
 #' @param return  Return the file "path" to the installed package, or the "namespace" object?
-#' @param cache   If \code{FALSE}, always try to reinstall the package.
-#' @param partial Default \code{TRUE}. Passed to \code{\link{loadNamespace}}.
+#' @param cache   If `FALSE`, always reinstall the package.
+#' @param partial Default `TRUE`. Passed to [loadNamespace()].
 #'
 #' @details
 #' If the package is not found in the package cache, it will be downloaded and
 #' installed there.
 #'
-#' If the package is already loaded, \code{cached_install} will first attempt
+#' If the package is already loaded, `cached_install` will first attempt
 #' to unload it with a warning. This may not always work!
 #'
 #' Note that the namespace is not attached. Partial loading is faster and safer when
@@ -397,6 +405,7 @@ cached_install <- function (
   return(res)
 }
 
+
 get_current_ns <- function (package) {
   ns <- try(loadNamespace(package, partial = TRUE), silent = TRUE)
   if (class(ns) == "try-error") stop("Couldn't load current version of package.\n",
@@ -407,7 +416,6 @@ get_current_ns <- function (package) {
 
   return(ns)
 }
-
 
 
 loudly_unlink <- function (dir, error = paste0("Could not unlink package dir ", dir,

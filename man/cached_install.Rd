@@ -14,14 +14,14 @@ cached_install(package, version, return = c("namespace", "path"),
 
 \item{return}{Return the file "path" to the installed package, or the "namespace" object?}
 
-\item{cache}{If \code{FALSE}, always try to reinstall the package.}
+\item{cache}{If \code{FALSE}, always reinstall the package.}
 
 \item{quiet}{Logical. Try to minimize output from package installation. (Some output comes from \code{R CMD INSTALL} and may be unavoidable.)}
 
-\item{partial}{Default \code{TRUE}. Passed to \code{\link{loadNamespace}}.}
+\item{partial}{Default \code{TRUE}. Passed to \code{\link[=loadNamespace]{loadNamespace()}}.}
 
-\item{...}{Arguments passed to \code{\link[versions]{install.versions}} or
-\code{\link[remotes]{install_version}}, and thence to \code{\link{install.packages}}.}
+\item{...}{Arguments passed to \code{\link[versions:install.versions]{versions::install.versions()}} or
+\code{\link[remotes:install_version]{remotes::install_version()}}, and thence to \code{\link[=install.packages]{install.packages()}}.}
 }
 \value{
 The namespace object or directory where the package is installed.

@@ -2,7 +2,7 @@
 % Please edit documentation in R/implementation.R
 \name{call_with_namespace}
 \alias{call_with_namespace}
-\title{Loads a package namespace at a particular version and runs an arbitrary function}
+\title{Load a package namespace at a particular version and run an arbitrary function}
 \usage{
 call_with_namespace(package, version, test, quiet = TRUE, ...)
 }
@@ -15,14 +15,14 @@ call_with_namespace(package, version, test, quiet = TRUE, ...)
 
 \item{quiet}{Logical. Try to minimize output from package installation. (Some output comes from \code{R CMD INSTALL} and may be unavoidable.)}
 
-\item{...}{Arguments passed to \code{\link[versions]{install.versions}} or
-\code{\link[remotes]{install_version}}, and thence to \code{\link{install.packages}}.}
+\item{...}{Arguments passed to \code{\link[versions:install.versions]{versions::install.versions()}} or
+\code{\link[remotes:install_version]{remotes::install_version()}}, and thence to \code{\link[=install.packages]{install.packages()}}.}
 }
 \value{
 The value returned by \code{test}.
 }
 \description{
-Loads a package namespace at a particular version and runs an arbitrary function
+Load a package namespace at a particular version and run an arbitrary function
 }
 \details{
 The package is downloaded and installed if necessary, and its namespace is loaded. Then the

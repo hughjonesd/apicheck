@@ -16,11 +16,12 @@ compare_versions(package, version = previous_version(package),
 
 \item{quiet}{Logical. Try to minimize output from package installation. (Some output comes from \code{R CMD INSTALL} and may be unavoidable.)}
 
-\item{...}{Arguments passed to \code{\link[versions]{install.versions}} or
-\code{\link[remotes]{install_version}}, and thence to \code{\link{install.packages}}.}
+\item{...}{Arguments passed to \code{\link[versions:install.versions]{versions::install.versions()}} or
+\code{\link[remotes:install_version]{remotes::install_version()}}, and thence to \code{\link[=install.packages]{install.packages()}}.}
 }
 \value{
-A data frame reporting functions that have been "Added", "Removed" or had "API changed".
+A data frame reporting functions that have been "Added", "Removed" or had "API changed",
+and details of function arguments.
 }
 \description{
 Compare versions of a package and report changed functions and APIs

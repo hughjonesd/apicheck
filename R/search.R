@@ -8,7 +8,7 @@
 #'
 #'
 #' @return
-#' If \code{report} is "brief", the earliest "known good" version.
+#' If `report` is "brief", the earliest "known good" version.
 #' Otherwise, a data frame of versions with a full results column.
 #'
 #' @name search_doc
@@ -17,8 +17,8 @@ NULL
 
 #' Compare function existence and APIs across package versions
 #'
-#' \code{when_api_same} reports package versions where the API of a function was the same as now (or
-#' the same as \code{current_fn}).
+#' `when_api_same` reports package versions where the API of a function was the same as now (or
+#' the same as `current_fn`).
 #'
 #' @inherit params_doc params
 #' @inherit search_doc params details return
@@ -28,8 +28,8 @@ NULL
 #'
 #' @section Search strategies:
 #' \itemize{
-#'   \item \code{"forward"} (\code{"backward"}) search incrementally from the earliest (latest) version.
-#'   \item \code{"binary"} does a binary search from the midpoint.
+#'   \item `"forward"` (`"backward"`) searches incrementally from the earliest (latest) version.
+#'   \item `"binary"` does a binary search from the midpoint.
 #' }
 #'
 #' These
@@ -37,13 +37,13 @@ NULL
 #' it will stay so in future versions. This allows them to stop before searching every version.
 #'
 #' \itemize{
-#'   \item \code{"all"} searches every version.
-#'   \item \code{"parallel"} searches every version in parallel using \code{\link[parallel]{parLapply}}.
+#'   \item `"all"` searches every version.
+#'   \item `"parallel"` searches every version in parallel using [parallel::parLapply()].
 #' }
 #' For parallel search, you can set up your own parallel
-#' cluster by using \code{\link[parallel]{setDefaultCluster}}; otherwise one will be created. If you
-#' set up your own cluster, it will not be stopped automatically via
-#' \code{\link[parallel]{stopCluster}}.
+#' cluster by using [parallel::setDefaultCluster()]; otherwise one will be created. If you
+#' set up your own cluster, it will not be stopped automatically. You have to do this yourself, see
+#' [parallel::stopCluster()].
 
 #' @export
 #'
@@ -82,7 +82,7 @@ when_api_same <- function (
 }
 
 
-#' \code{when_fn_exists} reports the first package version where a function exists.
+#' `when_fn_exists` reports package versions where a function exists.
 #'
 #' @rdname when_api_same
 #' @export

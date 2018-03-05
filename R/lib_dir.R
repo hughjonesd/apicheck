@@ -16,23 +16,25 @@ LIB_DIR <- NULL
 
 #' Specify library location
 #'
-#' This specifies where libraries will be downloaded to,
-#' and resets the cache of installed library locations.
+#' `set_lib_dir()` specifies where packages will be downloaded to. `get_lib_dir()` returns this
+#' directory. `clear_lib_dir()` deletes all downloaded packages.
 #'
-#' @param lib_dir Path to a directory, or \code{NULL} to unset.
+#' @param lib_dir Path to a directory, or `NULL` to unset.
 #' @param create  Logical. Try to create the directory if it doesn't exist.
 #'
 #' @details
-#' If \code{lib_dir} is set to \code{NULL}, a subdirectory of \code{tempdir()} will be used.
-#' \code{lib_dir} will be normalized via \code{\link{normalizePath}}.
+#' If `lib_dir` is set to `NULL`, a subdirectory of `tempdir()` will be used.
+#' `lib_dir` will be normalized via [normalizePath()].
 #'
-#' \code{lib_dir} is \emph{not} appropriate for passing to functions like
-#' \code{library}. It contains directories named like \code{package-version}, e.g.
-#' \code{fortunes-1.5-4}. Those directories contain the actual libraries, which are named e.g.
-#' \code{fortunes}. So if you want to load a library from the cache yourself,
-#' do something like \code{library("blah", lib.loc = file.path(get_lib_dir(), "blah-0.1.0"))}.
+#' The package cache is under the directory specified by `getOption("apicheck.lib_dir")`,
+#' or, if that is unset, in a per-session temporary directory. You should use [set_lib_dir()]
+#' to change this rather than setting the option directly. Within this directory, subdirectories
+#' are named like `package-version`, e.g. `longurl-0.3.0`. Within these subdirectories are
+#' the actual installed libraries. So, `lib_dir` is not appropriate for passing to functions like
+#' `library`. To load a library from the cache yourself,
+#' do e.g. `library("blah", lib.loc = file.path(get_lib_dir(), "blah-0.1.0"))`.
 #'
-#' @return \code{set_lib_dir} invisibly returns the old library location, or \code{NULL} if none was set in options.
+#' @return `set_lib_dir` invisibly returns the old library location, or `NULL` if none was set in options.
 #'
 #' @export
 #'
@@ -52,7 +54,7 @@ set_lib_dir <- function (lib_dir, create = FALSE) {
 }
 
 
-#' @return \code{get_lib_dir} returns the actual library location, whether or not an option has been set.
+#' @return `get_lib_dir` returns the actual library location, whether or not an option has been set.
 #'
 #' @rdname set_lib_dir
 #'
@@ -68,14 +70,7 @@ get_lib_dir <- function () {
 
 
 
-#' @details
-#' The package cache is under the directory specified by \code{getOption("apicheck.lib_dir")},
-#' or, if that is unset, in a per-session temporary directory. You should use \code{\link{set_lib_dir}}
-#' to change this rather than setting the option directly. Within this directory, subdirectories
-#' are named like \code{package-version}, e.g. \code{longurl-0.3.0}. Within these subdirectories are
-#' the actual installed libraries.
-#'
-#' @return \code{clear_lib_dir} returns TRUE if all files and directories could be removed, FALSE otherwise.
+#' @return `clear_lib_dir` returns TRUE if all files and directories could be removed, FALSE otherwise.
 #'
 #' @family utility functions
 #'

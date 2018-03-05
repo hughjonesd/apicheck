@@ -14,12 +14,12 @@ get_fn_at(fn, version = get_version_at_date(package, date), package,
 
 \item{package}{Package. Alternatively, specify the function name as e.g. \code{"package::function"}.}
 
-\item{date}{Date, as a character string that can be read by \code{\link{as.Date}} e.g. "2016-01-01".}
+\item{date}{Date, as a character string that can be read by \code{\link[=as.Date]{as.Date()}} e.g. "2016-01-01".}
 
 \item{quiet}{Logical. Try to minimize output from package installation. (Some output comes from \code{R CMD INSTALL} and may be unavoidable.)}
 
-\item{...}{Arguments passed to \code{\link[versions]{install.versions}} or
-\code{\link[remotes]{install_version}}, and thence to \code{\link{install.packages}}.}
+\item{...}{Arguments passed to \code{\link[versions:install.versions]{versions::install.versions()}} or
+\code{\link[remotes:install_version]{remotes::install_version()}}, and thence to \code{\link[=install.packages]{install.packages()}}.}
 }
 \value{
 The function itself.

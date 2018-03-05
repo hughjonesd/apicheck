@@ -23,7 +23,7 @@ when_fn_exists(fn, package, search = c("binary", "forward", "backward", "all",
 \item{current_fn}{Current function for comparison. By default, \code{fn} in the current version of
 the package (which is assumed to be available in a standard library location). If provided, this
 must be an actual function, not a character string. You can use
-\code{\link{get_fn_at}} for this.}
+\code{\link[=get_fn_at]{get_fn_at()}} for this.}
 
 \item{search}{"binary", "forward", "backward", "all" or "parallel". See Search strategies.}
 
@@ -37,8 +37,8 @@ must be an actual function, not a character string. You can use
 
 \item{max_version}{Highest version to check.}
 
-\item{...}{Arguments passed to \code{\link[versions]{install.versions}} or
-\code{\link[remotes]{install_version}}, and thence to \code{\link{install.packages}}.}
+\item{...}{Arguments passed to \code{\link[versions:install.versions]{versions::install.versions()}} or
+\code{\link[remotes:install_version]{remotes::install_version()}}, and thence to \code{\link[=install.packages]{install.packages()}}.}
 }
 \value{
 If \code{report} is "brief", the earliest "known good" version.
@@ -48,16 +48,16 @@ Otherwise, a data frame of versions with a full results column.
 \code{when_api_same} reports package versions where the API of a function was the same as now (or
 the same as \code{current_fn}).
 
-\code{when_fn_exists} reports the first package version where a function exists.
+\code{when_fn_exists} reports package versions where a function exists.
 }
 \details{
-"Same API" is defined by the function arguments, as reported by \code{\link{formals}}, being the same.
+"Same API" means having the same function arguments, as reported by \code{\link[=formals]{formals()}}.
 }
 \section{Search strategies}{
 
 \itemize{
-  \item \code{"forward"} (\code{"backward"}) search incrementally from the earliest (latest) version.
-  \item \code{"binary"} does a binary search from the midpoint.
+\item \code{"forward"} (\code{"backward"}) searches incrementally from the earliest (latest) version.
+\item \code{"binary"} does a binary search from the midpoint.
 }
 
 These
@@ -65,20 +65,17 @@ strategies assume that API changes happen just once - i.e. once a function exist
 it will stay so in future versions. This allows them to stop before searching every version.
 
 \itemize{
-  \item \code{"all"} searches every version.
-  \item \code{"parallel"} searches every version in parallel using \code{\link[parallel]{parLapply}}.
+\item \code{"all"} searches every version.
+\item \code{"parallel"} searches every version in parallel using \code{\link[parallel:parLapply]{parallel::parLapply()}}.
 }
 For parallel search, you can set up your own parallel
-cluster by using \code{\link[parallel]{setDefaultCluster}}; otherwise one will be created. If you
-set up your own cluster, it will not be stopped automatically via
-\code{\link[parallel]{stopCluster}}.
+cluster by using \code{\link[parallel:setDefaultCluster]{parallel::setDefaultCluster()}}; otherwise one will be created. If you
+set up your own cluster, it will not be stopped automatically. You have to do this yourself, see
+\code{\link[parallel:stopCluster]{parallel::stopCluster()}}.
 }
 
 \section{Speed}{
 
-This function may download and install multiple versions from MRAN, so it is likely to be slow
-when first used (and even afterwards if library loading is slow). Using \code{search = "parallel"}
-may help, but not if the network is the bottleneck.
 }
 
 \examples{
