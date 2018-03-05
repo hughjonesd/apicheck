@@ -13,6 +13,7 @@ Imports:
     memoise,
     parallel,
     remotes,
+    utils,
     versions, 
     withr,
     zeallot,
