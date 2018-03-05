@@ -43,7 +43,7 @@ NULL
 #' For parallel search, you can set up your own parallel
 #' cluster by using \code{\link[parallel]{setDefaultCluster}}; otherwise one will be created. If you
 #' set up your own cluster, it will not be stopped automatically via
-#' \code{\link[parallel]{StopCluster}}.
+#' \code{\link[parallel]{stopCluster}}.
 
 #' @export
 #'
