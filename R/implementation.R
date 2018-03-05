@@ -1,13 +1,16 @@
 
 
 # TODO
-# debug parallel
 # deal with S4 methods; and test for that.
 # tests: maybe rather than pre-installed (OS X) versions, have pre-installed source
 # files and then mock install.versions
-# rename to apicheck?
 # add function to check incremental burden of a dependency?
-
+# function to compare whole API of versions and issue a report; actually not hard
+#  - Separate from the downloading issue so keep it loosely coupled.
+#  - Data frame of functions, whether present/absent in each version; list columns for different formals
+#  - Nice print method
+# parallelize binary and other methods
+#  - Should bring big speedups
 
 
 #' @importFrom zeallot %<-%

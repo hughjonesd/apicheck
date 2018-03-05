@@ -66,7 +66,7 @@ pretty_plot <- function (result) {
 dependencies.
 
 ```{r}
-fns <- c("clipr::dr_clipr", "mice::ncc")
+fns <- c("clipr::dr_clipr", "mice::ampute") 
 min_versions <- c(NA, "2.20")
 args <- expand.grid(
         fn          = fns,
@@ -88,16 +88,22 @@ Backward search should work well for both these functions.
 
 ```{r showresults}
 set_lib_dir(".apicheck")
-print_results(when_fn_exists("clipr::dr_clipr", search = "all"))
-print_results(when_fn_exists("mice::ncc", search = "all", min_version = "2.20"))
+for (f in fns) {
+  print(f)
+  print_results(when_fn_exists(f, search = "all", progress = FALSE))  
+}
+
 ```
 
 ## Pre-downloaded
 
-```{r predownloaded, cache = TRUE}
+```{r predownloaded, cache = TRUE, results="hide", warning=FALSE, message=FALSE}
+
+# DO NOT EDIT: CACHE WILL RESET
+  
 # cache packages:
 set_lib_dir(".apicheck")
-invisible(mapply(when_fn_exists, fn = fns, min_version = ifelse(is.na(min_versions), "0.0", min_versions), search = "all"))
+invisible(mapply(when_fn_exists, fn = fns, min_version = ifelse(is.na(min_versions), "0.0", min_versions), search = "all", progress = FALSE))
 
 
 cached <- microbenchmark(
@@ -116,8 +122,10 @@ pretty_plot(cached)
 ## With download
 
 
-```{r withdownload, eval = FALSE, cache = TRUE}
+```{r withdownload, cache = TRUE, results="hide", warning=FALSE, message=FALSE}
 
+# DO NOT EDIT: CACHE WILL RESET
+  
 set_lib_dir(NULL)
 
 tests2 <- lapply(tests, function (x) bquote(
@@ -129,9 +137,12 @@ uncached <- microbenchmark::microbenchmark(list = tests2, times = 5)
 
 ```
 
-```{r printwithdownload, eval = FALSE}
+```{r printwithdownload}
 
 pretty_print(uncached)
 pretty_plot(uncached)
 
 ```
+
+These results suggest that choosing the right algorithm matters as much as parallelism;
+and parallelism is costly once packages have already been downloaded.
