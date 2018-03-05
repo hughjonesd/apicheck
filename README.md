@@ -44,14 +44,19 @@ api_same_at("clipr::write_clip", "0.1.1")
 #> [1] FALSE
 when_api_same("clipr::write_clip", report = "full", search = "all") # check all versions
 #>   version       date          result
-#> 9   0.1.0 2015-09-02 Known different
-#> 8   0.1.1 2015-09-03 Known different
-#> 7   0.2.0 2015-10-06      Known same
-#> 6   0.2.1 2016-06-23      Known same
+#> 1   0.1.0 2015-09-02 Known different
+#> 2   0.1.1 2015-09-04 Known different
+#> 3   0.2.0 2015-10-06      Known same
+#> 4   0.2.1 2016-06-23      Known same
 #> 5   0.3.0 2016-11-19      Known same
-#> 4   0.3.1 2016-12-02      Known same
-#> 3   0.3.2 2017-01-09      Known same
-#> 2   0.3.3 2017-06-19      Known same
-#> 1   0.4.0 2017-11-03      Known same
+#> 6   0.3.1 2016-12-02      Known same
+#> 7   0.3.2 2017-01-09      Known same
+#> 8   0.3.3 2017-06-19      Known same
+#> 9   0.4.0 2017-11-03      Known same
 get_help_at("clipr::write_clip", "0.1.1") # see what's changed
 ```
+
+Performance
+===========
+
+[https://hughjonesd.github.io/apicheck/performance.html](Performance%20tests).
