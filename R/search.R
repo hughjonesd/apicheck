@@ -41,9 +41,10 @@ NULL
 #'   \item `"parallel"` searches every version in parallel using [parallel::parLapply()].
 #' }
 #' For parallel search, you can set up your own parallel
-#' cluster by using [parallel::setDefaultCluster()]; otherwise one will be created. If you
-#' set up your own cluster, it will not be stopped automatically. You have to do this yourself, see
-#' [parallel::stopCluster()].
+#' cluster by using [parallel::setDefaultCluster()]; otherwise one will be created, using
+#' `getOption("cl.cores")` cores if that is set. If you
+#' set up your own cluster, it will not be stopped automatically (see
+#' [parallel::stopCluster()]).
 
 #' @export
 #'
@@ -218,7 +219,7 @@ search_all <- function (versions, test, search) {
     # only way to find out if a cluster is registered?
     x <- try(parallel::clusterApply(NULL, 1, identity), silent = TRUE)
     cl <- if (class(x) == "try-error") {
-      ncores <- getOption("cl.cores")
+      ncores <- getOption("mc.cores")
       if (is.null(ncores)) ncores <- min(parallel::detectCores() - 1, length(versions))
       if (is.na(ncores)) ncores <- 2
       parallel::makeCluster(ncores)
