@@ -13,7 +13,7 @@ setup({
 
 
 teardown({
-  clear_package_cache()
+  clear_lib_dir()
   options(old_opts)
   set_lib_dir(old_lib_dir)
 })
@@ -110,9 +110,9 @@ test_that("search_all", {
 })
 
 
-test_that("clear_package_cache", {
+test_that("clear_lib_dir", {
   ld <- get_lib_dir()
   cat("blah", file = file.path(ld, "notarealpackage-0.2.0"))
-  clear_package_cache()
+  clear_lib_dir()
   expect_length(list.files(ld), 0)
 })

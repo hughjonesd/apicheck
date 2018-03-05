@@ -412,7 +412,7 @@ get_current_ns <- function (package) {
 
 loudly_unlink <- function (dir, error = paste0("Could not unlink package dir ", dir,
         " after failed installation.\n",
-        "Please delete the directory yourself or run clear_package_cache()",
+        "Please delete the directory yourself or run `clear_lib_dir()`",
         "to delete all directories")) {
   if (dir.exists(dir) && ! identical(unlink(dir, recursive = TRUE), 0L)) stop(error)
 

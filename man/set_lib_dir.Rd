@@ -3,11 +3,14 @@
 \name{set_lib_dir}
 \alias{set_lib_dir}
 \alias{get_lib_dir}
+\alias{clear_lib_dir}
 \title{Specify library location}
 \usage{
 set_lib_dir(lib_dir, create = FALSE)
 
 get_lib_dir()
+
+clear_lib_dir()
 }
 \arguments{
 \item{lib_dir}{Path to a directory, or \code{NULL} to unset.}
@@ -18,6 +21,8 @@ get_lib_dir()
 \code{set_lib_dir} invisibly returns the old library location, or \code{NULL} if none was set in options.
 
 \code{get_lib_dir} returns the actual library location, whether or not an option has been set.
+
+\code{clear_lib_dir} returns TRUE if all files and directories could be removed, FALSE otherwise.
 }
 \description{
 This specifies where libraries will be downloaded to,
@@ -26,13 +31,25 @@ and resets the cache of installed library locations.
 \details{
 If \code{lib_dir} is set to \code{NULL}, a subdirectory of \code{tempdir()} will be used.
 \code{lib_dir} will be normalized via \code{\link{normalizePath}}.
+
+\code{lib_dir} is \emph{not} appropriate for passing to functions like
+\code{library}. It contains directories named like \code{package-version}, e.g.
+\code{fortunes-1.5-4}. Those directories contain the actual libraries, which are named e.g.
+\code{fortunes}. So if you want to load a library from the cache yourself,
+do something like \code{library("blah", lib.loc = file.path(get_lib_dir(), "blah-0.1.0"))}.
+
+The package cache is under the directory specified by \code{getOption("apicheck.lib_dir")},
+or, if that is unset, in a per-session temporary directory. You should use \code{\link{set_lib_dir}}
+to change this rather than setting the option directly. Within this directory, subdirectories
+are named like \code{package-version}, e.g. \code{longurl-0.3.0}. Within these subdirectories are
+the actual installed libraries.
 }
 \examples{
 \dontrun{
 set_lib_dir("~/.apicheck")
 }
 get_lib_dir()
+\dontrun{
+clear_lib_dir()
 }
-\seealso{
-Other utility functions: \code{\link{clear_package_cache}}
 }

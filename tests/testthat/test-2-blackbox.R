@@ -11,7 +11,7 @@ setup({
 
 teardown({
   options(old_opts)
-  if (Sys.info()["sysname"] == "Windows") clear_package_cache()
+  if (Sys.info()["sysname"] == "Windows") clear_lib_dir()
   set_lib_dir(old_lib_dir)
 })
 

@@ -129,7 +129,7 @@ pretty_plot(cached)
 set_lib_dir(NULL)
 
 tests2 <- lapply(tests, function (x) bquote(
-  {.(x); clear_package_cache()})
+  {.(x); clear_lib_dir()})
 )
 names(tests2) <- names(tests)
 

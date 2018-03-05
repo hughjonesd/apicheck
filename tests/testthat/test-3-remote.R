@@ -34,7 +34,7 @@ test_that("Can install early and current versions using `remotes`, and early ver
 test_that("Can install versions when package already installed and loaded", {
   skip_on_cran()
 
-  clear_package_cache()
+  clear_lib_dir()
   if (! "clipr" %in% rownames(installed.packages())) {
     tempdir <- tempfile("testing", tmpdir = normalizePath(tempdir()))
     dir.create(tempdir)
