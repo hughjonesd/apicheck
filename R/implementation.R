@@ -11,6 +11,7 @@
 #  - Nice print method
 # parallelize binary and other methods
 #  - Should bring big speedups
+# maybe drop `partial`; and `date`?
 
 
 #' @importFrom zeallot %<-%
@@ -117,13 +118,8 @@ api_same_at <- function (
       ) {
   if (missing(package)) c(package, fn) %<-% parse_fn(fn)
   if (missing(current_fn) || is.null(current_fn)) {
-    cur_namespace <- try(loadNamespace(package, partial = TRUE), silent = TRUE)
-    if (class(cur_namespace) == "try-error") stop("Couldn't load current version of package.\n",
-          "Do you have it installed? If not run `install.packages('", package, "')`.\n",
-          "Or, use `current_fn = get_fn_at(fn, package, version)` to compare to a version\n",
-          " without doing a full install.")
-    current_fn <- get(fn, cur_namespace)
-    unloadNamespace(package)
+    cur_ns <- get_current_ns(package)
+    current_fn <- get(fn, cur_ns)
   }
   test <- function (namespace) {
     g <- tryCatch(
@@ -165,6 +161,44 @@ fn_exists_at <- function (
   if (missing(package)) c(package, fn) %<-% parse_fn(fn)
   test <- function (namespace) fn %in% names(namespace)
   call_with_namespace(package, version, test, quiet = quiet, ...)
+}
+
+
+#' Compare versions of a package and report changed functions and APIs
+#'
+
+#' @param version  First version to compare. If \code{NULL}, use the previous available version.
+#' @param version2 Second version to compare. If \code{NULL}, use the current version as installed.
+#' @inherit package_nofn_params_doc params
+#' @inherit params_doc params
+#'
+#' @return A data frame reporting functions that have been "Added", "Removed" or had "API changed".
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' compare_versions("clipr", "0.2.1", "0.3.0")
+#' }
+compare_versions <- function (
+        package,
+        version = previous_version(package),
+        version2 = NULL,
+        quiet    = TRUE,
+        ...
+      ) {
+  # if NULL, version2 is latest and version is previous
+  if (missing(version2) || is.null(version2)) {
+    cur_ns <- get_current_ns(package)
+    version2 <- current_version(package)
+  } else {
+    cur_ns <- cached_install(package, version2, return = "namespace", partial = FALSE)
+  }
+
+  test <- function (ns) {
+    versions_report(ns, cur_ns, version, version2)
+  }
+
+  call_with_namespace(package, version, test, quiet = quiet, partial = FALSE, ...)
 }
 
 
@@ -363,78 +397,17 @@ cached_install <- function (
   return(res)
 }
 
+get_current_ns <- function (package) {
+  ns <- try(loadNamespace(package, partial = TRUE), silent = TRUE)
+  if (class(ns) == "try-error") stop("Couldn't load current version of package.\n",
+    "Do you have it installed? If not run `install.packages('", package, "')`.\n",
+    "Or, use `current_fn = get_fn_at(fn, package, version)` to compare to a version\n",
+    " without doing a full install.")
+  unloadNamespace(package)
 
-#' Report available versions
-#'
-#' This returns packages ordered by date, using either \href{https://mran.microsoft.com}{MRAN} or
-#' \href{http://crandb.r-pkg.org}{metacran}.
-#' Results are cached so as to
-#' relieve pressure on the server. If \code{options("apicheck.use_cran") == FALSE},
-#' then only versions available on MRAN (i.e. after 2014-09-17) will be returned;
-#' otherwise older versions will be returned too.
-#'
-#' @inherit package_nofn_params_doc params
-#'
-#' @section Speed:
-#' In my limited experience, metacran is much faster. YMMV.
-#'
-#' @return A data frame with columns "version" and "date".
-#'
-#' @export
-#'
-#' @examples
-#' \dontrun{
-#' available_versions("clipr")
-#' }
-#'
-available_versions <- memoise::memoise(
-  function (package) {
-    vns_df <- if (isTRUE(getOption("apicheck.use_cran", TRUE))) av_metacran(package) else av_mran(package)
-    vns_df$date <- as.Date(vns_df$date)
-    vns_df <- vns_df[order(vns_df$date), ]
-    if (! isTRUE(getOption("apicheck.use_cran", TRUE))) vns_df <- vns_df[vns_df$Date >= "2014-09-17", ]
-
-    return(vns_df)
-  }
-)
-av_mran <- function (package) {
-  vns_df <- versions::available.versions(package)[[package]]
-  vns_df$available <- NULL
-
-  return(vns_df)
+  return(ns)
 }
 
-# code snatched from https://github.com/metacran/crandb
-av_metacran <- function (package) {
-  res <- httr::GET(paste0("http://crandb.r-pkg.org/", package, "/all"))
-  res <- httr::content(res, as = "text", encoding = "UTF-8")
-  res <- jsonlite::fromJSON(res)$timeline
-  vns_df <- data.frame(version = names(res), date = as.character(res), stringsAsFactors = FALSE)
-
-  return(vns_df)
-}
-
-
-#' Return the current version of a package at a given date
-#'
-#' @inherit params_doc params
-#' @inherit package_nofn_params_doc params
-#'
-#' @return A version string.
-#'
-#' @export
-#'
-#' @examples
-#' \dontrun{
-#' get_version_at_date("huxtable", "2017-01-01")
-#' }
-get_version_at_date <- function (package, date) {
-  vns_df <- available_versions(package)
-  vns_df <- vns_df$version[vns_df$date <= date]
-  latest <- vns_df[length(vns_df)]
-
-  return(latest)
-}
 
 
 loudly_unlink <- function (dir, error = paste0("Could not unlink package dir ", dir,

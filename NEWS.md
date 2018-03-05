@@ -6,6 +6,7 @@
 * `min_version` and `max_version` for searching
 * Many more whitebox tests
 * Renamed package
+* New `get_help_at` and `compare_versions` functions.
 * Default uses CRAN via `remotes::install_version` rather than MRAN
 * Get versions from metacran not MRAN
   * TODO: start a Patreon to buy Microsoft a functioning server
