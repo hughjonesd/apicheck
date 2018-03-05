@@ -28,9 +28,6 @@ library(microbenchmark)
 library(ggplot2)
 options(repos = "https://cran.rstudio.com")
 
-cl <- parallel::makeForkCluster() # you can skip this, but it's a good idea on a Mac
-parallel::setDefaultCluster(cl)   
-
 test_A <- function (search) when_fn_exists("clipr::dr_clipr", search = search, progress = FALSE)
 test_B <- function (search) when_fn_exists("mice::ncc", min_version = "2.20", search = search, progress = FALSE)
 
