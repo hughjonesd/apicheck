@@ -1,0 +1,9 @@
+base
+lazyeval
+dplyr
+rmarkdown
+apicheck
+microbenchmark
+ggplot2
+bindrcpp
+huxtable

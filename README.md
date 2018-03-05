@@ -59,4 +59,4 @@ get_help_at("clipr::write_clip", "0.1.1") # see what's changed
 Performance
 ===========
 
-[Performance tests](https://hughjonesd.github.io/apicheck/performance.html).
+[Performance tests](https://hughjonesd.github.io/apicheck/performance2.html).
