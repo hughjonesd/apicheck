@@ -1,5 +1,5 @@
 ---
-title: "Performance Tests"
+title: "apicheck Performance Tests"
 author: "David Hugh-Jones <davidhughjones@gmail.com>"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_document
@@ -11,41 +11,61 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
+
 ```
 
 # Speed tests
 
 On my Macbook Air, standard broadband connection.
 
-## Pre-downloaded
 
 `clipr` is a small package with few versions. `mice` is a larger package which requires compilation, with more
 dependencies.
+
 
 ```{r}
 library(apicheck)
 library(microbenchmark)
 library(ggplot2)
+library(dplyr)
 options(repos = "https://cran.rstudio.com")
 
-test_A <- function (search) when_fn_exists("clipr::dr_clipr", search = search, progress = FALSE)
-test_B <- function (search) when_fn_exists("mice::ncc", min_version = "2.20", search = search, progress = FALSE)
+make_test <- function(fn, search, min_version = NA) {
+  if (is.na(min_version)) min_version <- NULL
+  bquote(when_fn_exists(.(fn), search = .(search), min_version = .(min_version)))
+}
 
-# Pre-cache and show results:
-test_A("all") 
-test_B("all")
+fns <- c("clipr::dr_clipr", "mice::ncc")
+min_versions <- c(NA, "2.20")
+args <- expand.grid(
+        fn          = fns,
+        search      = c("binary", "forward", "backward", "all", "parallel"), 
+        stringsAsFactors = FALSE
+      )
+args$min_version <- min_versions[match(args$fn, fns)]
+
+tests <- do(rowwise(args), expr = make_test(.$fn, .$search, .$min_version)) %>% pull(expr)
+
+as.character(tests)
+```
+
+## Pre-downloaded
+
+```{r, cache = TRUE}
+# cache packages:
+invisible(mapply(when_fn_exists, fn = fns, min_version = min_versions, search = "all"))
+
 
 cached <- microbenchmark(
-        clipr_all      = test_A("all"),
-        clipr_parallel = test_A("parallel"),
-        mice_all       = test_B("all"),
-        mice_parallel  = test_B("parallel"),
+        list = tests,
         times = 20
       )
+```
 
+```{r}
 cached
 
-autoplot(cached, log = FALSE)
+autoplot(cached)
 
 ```
 
@@ -67,8 +87,10 @@ uncached <- microbenchmark(
         mice_parallel  = clear(test_B)("parallel"),
         times = 5
       )
+```
 
+```{r}
 uncached
 
-autoplot(uncached, log = FALSE)
+autoplot(uncached)
 ```
