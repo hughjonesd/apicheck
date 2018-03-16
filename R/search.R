@@ -215,7 +215,7 @@ search_versions <- function (versions, test, search) {
 
 search_all <- function (versions, test, search) {
   lapply_fun <- if (search == "parallel") {
-    if (! requireNamespace('parallel', quietly = TRUE)) stop("Could not load `parallel` namespace")
+    assert_package("parallel")
     # only way to find out if a cluster is registered?
     x <- try(parallel::clusterApply(NULL, 1, identity), silent = TRUE)
     cl <- if (class(x) == "try-error") {

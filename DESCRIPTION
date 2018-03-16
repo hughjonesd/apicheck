@@ -14,7 +14,6 @@ Imports:
     parallel,
     remotes,
     utils,
-    versions, 
     withr,
     zeallot,
 Suggests: 
@@ -22,6 +21,7 @@ Suggests:
     rlang,
     testthat (>= 2.0.0),
     knitr,
-    rmarkdown
+    rmarkdown,
+    versions
 VignetteBuilder: knitr
 Roxygen: list(markdown = TRUE)

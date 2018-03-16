@@ -37,6 +37,7 @@ available_versions <- memoise::memoise(
 
 
 av_mran <- function (package) {
+  assert_package("versions")
   vns_df <- versions::available.versions(package)[[package]]
   vns_df$available <- NULL
 

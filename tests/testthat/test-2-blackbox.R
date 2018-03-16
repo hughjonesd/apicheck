@@ -83,7 +83,7 @@ test_that("cached_install with attached namespace", {
   skip_on_cran()
 
   if (! require(withr)) skip("Couldn't attach withr")
-  run_in_fresh_cache(cran = TRUE,
+  run_in_fresh_cache(mran = FALSE,
           expect_warning(cached_install("withr", "2.1.1"), "already loaded")
         )
 })

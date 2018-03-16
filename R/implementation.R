@@ -10,7 +10,6 @@
 # parallelize binary and other methods
 #  - Should bring big speedups
 # if we have partial, can we load methods? CHECK.
-# Maybe drop `get_` from e.g. `get_version_at` or `get_help_at`
 # Make versions a Suggests
 # Clean separate API: installing stuff in the package cache; querying it. Always two separate operations.
 # Clean unloading and reloading of current packages; always leave the computer in the state it was in before.
@@ -356,6 +355,7 @@ cached_install <- function (
     }
     output <- capture_all(tryCatch({
       if (mran_selected()) {
+        assert_package("versions")
         versions::install.versions(package, versions = version, lib = package_dir,  ...)
       } else {
         withr::with_libpaths(package_dir,
@@ -425,6 +425,13 @@ loudly_unlink <- function (dir, error = paste0("Could not unlink package dir ", 
 
 
 mran_selected <- function () isTRUE(getOption("apicheck.use_mran", FALSE))
+
+
+assert_package <- function () {
+  if (! requireNamespace("versions", quietly = TRUE)) {
+    stop("Could not load the `", package, "` library.\n", "Try `install.packages(", package, ")`.")
+  }
+}
 
 
 parse_fun <- function (fun) {
