@@ -11,7 +11,6 @@
 #  - Should bring big speedups
 # if we have partial, can we load methods? CHECK.
 # Maybe drop `get_` from e.g. `get_version_at` or `get_help_at`
-# use_cran -> use_mran
 # Make versions a Suggests
 # Clean separate API: installing stuff in the package cache; querying it. Always two separate operations.
 # Clean unloading and reloading of current packages; always leave the computer in the state it was in before.
@@ -22,7 +21,7 @@ NULL
 
 
 #' Basic details about the package
-#' @md
+#'
 #' This is a small package to check when functions were introduced in packages and/or APIs changed.
 #' It automatically installs different versions of a package in a separate directory and loads them
 #' without attaching them.
@@ -32,7 +31,7 @@ NULL
 #'
 #' By default, `apicheck`` uses the `remotes`
 #' package to install source versions from CRAN. Alternatively, it can use the `versions`` package to install different versions of a package
-#' from [MRAN]{https://mran.microsoft.com/}. To do this set `options(apicheck.use_cran = FALSE)`.
+#' from [MRAN]{https://mran.microsoft.com/}. To do this set `options(apicheck.use_mran = TRUE)`.
 #'
 #' Be aware that functions can take a long time to return, as different versions of a package are
 #' installed and/or loaded.
@@ -47,7 +46,6 @@ NULL
 NULL
 
 
-#' @md
 #' @details
 #' "Same API" means having the same function arguments, as reported by [formals()].
 #' @name same_api_doc
@@ -55,7 +53,6 @@ NULL
 
 
 #' @section Speed:
-#' @md
 #' This function may download and install multiple versions from MRAN, so it is likely to be slow
 #' when first used (and even afterwards if library loading is slow). Using `search = "parallel"`
 #' may help, but not if the network is the bottleneck: see
@@ -64,8 +61,6 @@ NULL
 NULL
 
 
-
-#' @md
 #' @param fn Function name as a character string.
 #' @param version Version as a character string. If omitted, use the version available at `date`.
 #' @param package Package. Alternatively, specify the function name as e.g. `"package::function"`.
@@ -359,12 +354,12 @@ cached_install <- function (
       return(list(msg = msg, out = out))
     }
     output <- capture_all(tryCatch({
-      if (isTRUE(getOption('apicheck.use_cran', TRUE))) {
+      if (mran_selected()) {
+        versions::install.versions(package, versions = version, lib = package_dir,  ...)
+      } else {
         withr::with_libpaths(package_dir,
           remotes::install_version(package, version, lib = package_dir, type = "source", quiet = quiet, ...)
         )
-      } else {
-        versions::install.versions(package, versions = version, lib = package_dir,  ...)
       }
     },
       warning = function (w) {
@@ -426,6 +421,9 @@ loudly_unlink <- function (dir, error = paste0("Could not unlink package dir ", 
 
   invisible(NULL)
 }
+
+
+mran_selected <- function () isTRUE(getOption("apicheck.use_mran", FALSE))
 
 
 parse_fn <- function (fn) {

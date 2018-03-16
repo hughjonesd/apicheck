@@ -4,7 +4,7 @@ old_lib_dir <- NULL
 old_opts <- NULL
 
 setup({
-  old_opts <<- options(apicheck.use_cran = TRUE, repos = "https://cloud.r-project.org", mc.cores = 2)
+  old_opts <<- options(apicheck.use_mran = FALSE, repos = "https://cloud.r-project.org", mc.cores = 2)
   old_lib_dir <<- set_lib_dir(if (Sys.info()["sysname"] != "Windows") "testing_lib_dir" else NULL)
 })
 
@@ -17,9 +17,9 @@ teardown({
 
 
 test_that("available_versions", {
-  for (cran in c(TRUE, FALSE)) {
-    withr::with_options(list(apicheck.use_cran = cran), {
-      info <- paste("use_cran:", cran)
+  for (mran in c(TRUE, FALSE)) {
+    withr::with_options(list(apicheck.use_mran = mran), {
+      info <- paste("use_mran:", mran)
       expect_error(vns <- available_versions("longurl"), regexp = NA, info = info)
       # check caching:
       expect_error(vns2 <- available_versions("longurl"), regexp = NA, info = info)
@@ -163,7 +163,7 @@ test_that("when_fn_exists", {
   expect_equal(when_fn_exists("clipr::dr_clipr", report = "brief"), "0.4.0")
 
   strategies <- c("binary", "forward", "backward", "all")
-  # we only test versions 0.1.1 and onwards because version 0.1.0 varies with use_cran
+  # we only test versions 0.1.1 and onwards because version 0.1.0 varies with use_mran
   # being TRUE or FALSE
   results_wanted <- list(
     binary   = c(rep("Assumed absent", 3), "Known absent", "Assumed absent", rep("Known absent", 2), "Known present"),

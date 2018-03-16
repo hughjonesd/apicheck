@@ -16,7 +16,7 @@ A data frame with columns "version" and "date".
 This returns packages ordered by date, using either \href{https://mran.microsoft.com}{MRAN} or
 \href{http://crandb.r-pkg.org}{metacran}.
 Results are cached so as to
-relieve pressure on the server. If \code{options("apicheck.use_cran") == FALSE},
+relieve pressure on the server. If \code{options("apicheck.use_mran")} is \code{TRUE},
 then only versions available on MRAN (i.e. after 2014-09-17) will be returned;
 otherwise older versions will be returned too.
 }

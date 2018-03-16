@@ -5,7 +5,7 @@
 #' This returns packages ordered by date, using either \href{https://mran.microsoft.com}{MRAN} or
 #' \href{http://crandb.r-pkg.org}{metacran}.
 #' Results are cached so as to
-#' relieve pressure on the server. If `options("apicheck.use_cran") == FALSE`,
+#' relieve pressure on the server. If `options("apicheck.use_mran")` is `TRUE`,
 #' then only versions available on MRAN (i.e. after 2014-09-17) will be returned;
 #' otherwise older versions will be returned too.
 #'
@@ -25,11 +25,11 @@
 #'
 available_versions <- memoise::memoise(
   function (package) {
-    vns_df <- if (isTRUE(getOption("apicheck.use_cran", TRUE))) av_metacran(package) else av_mran(package)
+    vns_df <- if (mran_selected()) av_mran(package) else av_metacran(package)
     if (nrow(vns_df) == 0L) stop(sprintf("Could not find any available versions for '%s'", package))
     vns_df$date <- as.Date(vns_df$date)
     vns_df <- vns_df[order(vns_df$date), ]
-    if (! isTRUE(getOption("apicheck.use_cran", TRUE))) vns_df <- vns_df[vns_df$Date >= "2014-09-17", ]
+    if (mran_selected()) vns_df <- vns_df[vns_df$Date >= "2014-09-17", ]
 
     return(vns_df)
   }

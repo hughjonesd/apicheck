@@ -228,9 +228,9 @@ search_all <- function (versions, test, search) {
     }
 
     parallel::clusterEvalQ(cl, library(apicheck))
-    use_cran <- getOption("apicheck.use_cran", TRUE)
+    use_mran <- mran_selected()
     repos <- getOption("repos", "https://cloud.r-project.org")
-    parallel::clusterCall(cl, options, apicheck.use_cran = use_cran, repos = repos)
+    parallel::clusterCall(cl, options, apicheck.use_mran = use_mran, repos = repos)
     parallel::clusterExport(cl, "LIB_DIR", envir = environment())
     function (x, fun) parallel::parLapplyLB(cl, x, fun)
   } else {

@@ -4,7 +4,22 @@
 \alias{apicheck-package}
 \title{Basic details about the package}
 \description{
-Basic details about the package
+This is a small package to check when functions were introduced in packages and/or APIs changed.
+It automatically installs different versions of a package in a separate directory and loads them
+without attaching them.
+}
+\details{
+Packages are cached within a session. To cache packages across sessions, use
+\code{\link[=set_lib_dir]{set_lib_dir()}} to point to a persistent directory.
+
+By default, \code{apicheck`` uses the}remotes\code{package to install source versions from CRAN. Alternatively, it can use the}versions`` package to install different versions of a package
+from \link{MRAN}{https://mran.microsoft.com/}. To do this set \code{options(apicheck.use_mran = TRUE)}.
+
+Be aware that functions can take a long time to return, as different versions of a package are
+installed and/or loaded.
+
+Also, be aware that namespace loading and unloading can be unreliable. If this happens to you, try
+restarting your session.
 }
 \section{Warning}{
 

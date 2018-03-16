@@ -69,13 +69,18 @@ it will stay so in future versions. This allows them to stop before searching ev
 \item \code{"parallel"} searches every version in parallel using \code{\link[parallel:parLapply]{parallel::parLapply()}}.
 }
 For parallel search, you can set up your own parallel
-cluster by using \code{\link[parallel:setDefaultCluster]{parallel::setDefaultCluster()}}; otherwise one will be created. If you
-set up your own cluster, it will not be stopped automatically. You have to do this yourself, see
-\code{\link[parallel:stopCluster]{parallel::stopCluster()}}.
+cluster by using \code{\link[parallel:setDefaultCluster]{parallel::setDefaultCluster()}}; otherwise one will be created, using
+\code{getOption("cl.cores")} cores if that is set. If you
+set up your own cluster, it will not be stopped automatically (see
+\code{\link[parallel:stopCluster]{parallel::stopCluster()}}).
 }
 
 \section{Speed}{
 
+This function may download and install multiple versions from MRAN, so it is likely to be slow
+when first used (and even afterwards if library loading is slow). Using \code{search = "parallel"}
+may help, but not if the network is the bottleneck: see
+(here)\link{https://hughjonesd.github.io/apicheck/performance2.html} for details.
 }
 
 \examples{

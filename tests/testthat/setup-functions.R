@@ -1,9 +1,9 @@
 
 
 
-run_in_fresh_cache <- function(cran, expr) {
+run_in_fresh_cache <- function(mran, expr) {
   expr <- rlang::enquo(expr)
-  old_opts <- options(apicheck.use_cran = cran, repos = "https://cloud.r-project.org", mc.cores = 2)
+  old_opts <- options(apicheck.use_mran = mran, repos = "https://cloud.r-project.org", mc.cores = 2)
   old_lib_dir <- set_lib_dir(NULL) # can't avoid possibly putting LIB_DIR into options...
   clear_lib_dir()
   on.exit({
