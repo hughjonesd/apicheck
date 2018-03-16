@@ -427,8 +427,8 @@ loudly_unlink <- function (dir, error = paste0("Could not unlink package dir ", 
 mran_selected <- function () isTRUE(getOption("apicheck.use_mran", FALSE))
 
 
-assert_package <- function () {
-  if (! requireNamespace("versions", quietly = TRUE)) {
+assert_package <- function (package) {
+  if (! requireNamespace(package, quietly = TRUE)) {
     stop("Could not load the `", package, "` library.\n", "Try `install.packages(", package, ")`.")
   }
 }

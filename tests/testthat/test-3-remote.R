@@ -2,13 +2,13 @@
 context("Remote tests")
 
 
-install_on <- function (cran, package, version) {
-  if (cran == FALSE) skip("MRAN not working for the moment...")
+install_on <- function (mran, package, version) {
+  if (mran) skip("MRAN not working for the moment...")
   force(package)
   force(version)
-  run_in_fresh_cache(cran,
+  run_in_fresh_cache(mran,
     expect_error(call_with_namespace(package, version, function (x) NULL, quiet = TRUE), NA,
-          info = sprintf("cran: %s, package: %s, version: %s", cran, package, version))
+          info = sprintf("mran: %s, package: %s, version: %s", mran, package, version))
   )
 }
 
@@ -16,10 +16,10 @@ install_on <- function (cran, package, version) {
 install_early_late <- function (package) {
   v <- available_versions(package)$version
   current_v <- tail(v, 1)
-  install_on(cran = TRUE, package, current_v)
+  install_on(mran = FALSE, package, current_v)
   early_v <- v[length(v) - 1]
-  install_on(cran = TRUE, package, early_v)
-  install_on(cran = FALSE, package, early_v)
+  install_on(mran = FALSE, package, early_v)
+  install_on(mran = FALSE, package, early_v)
 }
 
 
@@ -52,5 +52,5 @@ test_that("Can install versions when package already installed and loaded", {
 test_that("Multiple parallel remote installs", {
   skip_on_cran()
 
-  run_in_fresh_cache(cran = TRUE, when_fun_exists("clipr::dr_clipr", search = "parallel"))
+  run_in_fresh_cache(mran = FALSE, when_fun_exists("clipr::dr_clipr", search = "parallel"))
 })
