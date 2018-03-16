@@ -19,8 +19,8 @@ teardown({
 })
 
 
-test_that("parse_fn", {
-  expect_identical(apicheck:::parse_fn("foo::bar"), c("foo", "bar"))
+test_that("parse_fun", {
+  expect_identical(apicheck:::parse_fun("foo::bar"), c("foo", "bar"))
 })
 
 
@@ -33,7 +33,7 @@ test_that("Failure to install a file does not leave a directory on disk", {
     `versions::install.versions` = fail,
     `remotes::install_version`   = fail,
   {
-    expect_error(get_fn_at("expand_urls", "longurl", "0.3.0"), "Some crazy failure")
+    expect_error(fun_at("expand_urls", "longurl", "0.3.0"), "Some crazy failure")
     expect_false(dir.exists(file.path(tempdir, "longurl")))
   })
 })

@@ -2,28 +2,28 @@
 % Please edit documentation in R/search.R
 \name{when_api_same}
 \alias{when_api_same}
-\alias{when_fn_exists}
+\alias{when_fun_exists}
 \title{Compare function existence and APIs across package versions}
 \usage{
-when_api_same(fn, package, current_fn = NULL, search = c("binary",
+when_api_same(fun, package, current_fun = NULL, search = c("binary",
   "forward", "backward", "all", "parallel"), report = c("full", "brief"),
   quiet = TRUE, progress = interactive() && search != "parallel",
   min_version = NULL, max_version = NULL, ...)
 
-when_fn_exists(fn, package, search = c("binary", "forward", "backward", "all",
-  "parallel"), report = c("full", "brief"), quiet = TRUE,
+when_fun_exists(fun, package, search = c("binary", "forward", "backward",
+  "all", "parallel"), report = c("full", "brief"), quiet = TRUE,
   progress = interactive() && search != "parallel", min_version = NULL,
   max_version = NULL, ...)
 }
 \arguments{
-\item{fn}{Function name as a character string.}
+\item{fun}{Function name as a character string.}
 
 \item{package}{Package. Alternatively, specify the function name as e.g. \code{"package::function"}.}
 
-\item{current_fn}{Current function for comparison. By default, \code{fn} in the current version of
+\item{current_fun}{Current function for comparison. By default, \code{fun} in the current version of
 the package (which is assumed to be available in a standard library location). If provided, this
 must be an actual function, not a character string. You can use
-\code{\link[=get_fn_at]{get_fn_at()}} for this.}
+\code{\link[=fun_at]{fun_at()}} for this.}
 
 \item{search}{"binary", "forward", "backward", "all" or "parallel". See Search strategies.}
 
@@ -46,9 +46,9 @@ Otherwise, a data frame of versions with a full results column.
 }
 \description{
 \code{when_api_same} reports package versions where the API of a function was the same as now (or
-the same as \code{current_fn}).
+the same as \code{current_fun}).
 
-\code{when_fn_exists} reports package versions where a function exists.
+\code{when_fun_exists} reports package versions where a function exists.
 }
 \details{
 "Same API" means having the same function arguments, as reported by \code{\link[=formals]{formals()}}.
@@ -88,6 +88,6 @@ may help, but not if the network is the bottleneck: see
 when_api_same("read.dta", "foreign")
 }
 \dontrun{
-when_fn_exists('read.dta', 'foreign')
+when_fun_exists('read.dta', 'foreign')
 }
 }

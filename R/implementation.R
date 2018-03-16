@@ -61,16 +61,16 @@ NULL
 NULL
 
 
-#' @param fn Function name as a character string.
+#' @param fun Function name as a character string.
 #' @param version Version as a character string. If omitted, use the version available at `date`.
 #' @param package Package. Alternatively, specify the function name as e.g. `"package::function"`.
 #' @param date Date, as a character string that can be read by [as.Date()] e.g. "2016-01-01".
-#' @param current_fn Current function for comparison. By default, `fn` in the current version of
+#' @param current_fun Current function for comparison. By default, `fun` in the current version of
 #'   the package (which is assumed to be available in a standard library location). If provided, this
 #'   must be an actual function, not a character string. You can use
-#'   [get_fn_at()] for this.
+#'   [fun_at()] for this.
 #' @param test    A one-argument function. See Details.
-#' @param current_fn Current function
+#' @param current_fun Current function
 #' @param quiet Logical. Try to minimize output from package installation. (Some output comes from `R CMD INSTALL` and may be unavoidable.)
 #' @param ... Arguments passed to [versions::install.versions()] or
 #'   [remotes::install_version()], and thence to [install.packages()].
@@ -84,7 +84,7 @@ NULL
 
 
 #' @param package Package name.
-#' @name package_nofn_params_doc
+#' @name package_nofun_params_doc
 NULL
 
 
@@ -95,7 +95,7 @@ NULL
 #' @inherit params_doc params
 #'
 #' @details
-#' If `fn` does not exist at `version`, `api_same_at` returns `FALSE` with a warning.
+#' If `fun` does not exist at `version`, `api_same_at` returns `FALSE` with a warning.
 #' @inherit same_api_doc details
 #'
 #' @return `TRUE` or `FALSE`.
@@ -110,26 +110,26 @@ NULL
 #' api_same_at("write_clip", "clipr", "0.1.1")
 #' }
 api_same_at <- function (
-        fn,
-        version    = get_version_at_date(package, date),
+        fun,
+        version    = version_at_date(package, date),
         package,
         date       = NULL,
         quiet      = TRUE,
-        current_fn = NULL,
+        current_fun = NULL,
         ...
       ) {
-  if (missing(package)) c(package, fn) %<-% parse_fn(fn)
-  if (missing(current_fn) || is.null(current_fn)) {
+  if (missing(package)) c(package, fun) %<-% parse_fun(fun)
+  if (missing(current_fun) || is.null(current_fun)) {
     cur_ns <- get_current_ns(package)
-    current_fn <- get(fn, cur_ns)
+    current_fun <- get(fun, cur_ns)
   }
   test <- function (namespace) {
     g <- tryCatch(
-      get(fn, namespace),
+      get(fun, namespace),
       error = function (e) {warning(e$message); return(NULL)}
     )
     if (is.null(g)) return(FALSE)
-    identical(formals(current_fn), formals(g))
+    identical(formals(current_fun), formals(g))
   }
 
   call_with_namespace(package, version, test, quiet = quiet, ...)
@@ -138,7 +138,7 @@ api_same_at <- function (
 
 #' Test if a function exists at a given version
 #'
-#' `fn_exists_at` reports whether a function exists at a specific previous version or date.
+#' `fun_exists_at` reports whether a function exists at a specific previous version or date.
 #'
 #' @inherit params_doc params
 #'
@@ -148,20 +148,20 @@ api_same_at <- function (
 #'
 #' @examples
 #' \dontrun{
-#' fn_exists_at("clipr::dr_clipr", version = "0.3.1")
+#' fun_exists_at("clipr::dr_clipr", version = "0.3.1")
 #' # or
-#' fn_exists_at("dr_clipr", "clipr", "0.3.1")
+#' fun_exists_at("dr_clipr", "clipr", "0.3.1")
 #' }
-fn_exists_at <- function (
-        fn,
-        version = get_version_at_date(package, date),
+fun_exists_at <- function (
+        fun,
+        version = version_at_date(package, date),
         package,
         date    = NULL,
         quiet   = TRUE,
         ...
       ) {
-  if (missing(package)) c(package, fn) %<-% parse_fn(fn)
-  test <- function (namespace) fn %in% names(namespace)
+  if (missing(package)) c(package, fun) %<-% parse_fun(fun)
+  test <- function (namespace) fun %in% names(namespace)
   call_with_namespace(package, version, test, quiet = quiet, ...)
 }
 
@@ -171,7 +171,7 @@ fn_exists_at <- function (
 
 #' @param version  First version to compare. If `NULL`, use the previous available version.
 #' @param version2 Second version to compare. If `NULL`, use the current version as installed.
-#' @inherit package_nofn_params_doc params
+#' @inherit package_nofun_params_doc params
 #' @inherit params_doc params
 #'
 #' @return A data frame reporting functions that have been "Added", "Removed" or had "API changed",
@@ -215,18 +215,18 @@ compare_versions <- function (
 #'
 #' @examples
 #' \dontrun{
-#' get_fn_at("write_clip", "clipr", "0.1.1")
+#' fun_at("write_clip", "clipr", "0.1.1")
 #' }
-get_fn_at <- function (
-        fn,
-        version = get_version_at_date(package, date),
+fun_at <- function (
+        fun,
+        version = version_at_date(package, date),
         package,
         date    = NULL,
         quiet   = TRUE,
         ...
       ) {
-  if (missing(package)) c(package, fn) %<-% parse_fn(fn)
-  test <- function (namespace) get(fn, namespace)
+  if (missing(package)) c(package, fun) %<-% parse_fun(fun)
+  test <- function (namespace) get(fun, namespace)
   call_with_namespace(package, version, test, quiet = quiet, ...)
 }
 
@@ -243,26 +243,27 @@ get_fn_at <- function (
 #'
 #' @examples
 #' \dontrun{
-#' get_help_at("clipr::write_clip", "0.1.1")
-#' get_help_at("clipr::write_clip", "0.2.0")
+#' help_at("clipr::write_clip", "0.1.1")
+#' help_at("clipr::write_clip", "0.2.0")
 #' }
-get_help_at <- function (
-        fn,
-        version = get_version_at_date(package, date),
+help_at <- function (
+        fun,
+        version = version_at_date(package, date),
         package,
         date    = NULL,
         quiet   = TRUE,
         ...
 ) {
-  if (missing(package)) c(package, fn) %<-% parse_fn(fn)
+  if (missing(package)) c(package, fun) %<-% parse_fun(fun)
   on.exit(unloadNamespace(package))
   package_dir <- cached_install(package, version, return = "path", quiet = quiet, ...)
-  utils::help((fn), package = (package), lib.loc = package_dir, help_type = "text")
+  # double brackets stop help looking for "fun" literally
+  utils::help((fun), package = (package), lib.loc = package_dir, help_type = "text")
 }
 
 #' Load a package namespace at a particular version and run an arbitrary function
 #'
-#' @inherit package_nofn_params_doc params
+#' @inherit package_nofun_params_doc params
 #' @inherit version_nodate_params_doc params
 #' @inherit params_doc params
 #' @param test    A one-argument function. See Details.
@@ -296,7 +297,7 @@ call_with_namespace  <- function (
 
 #' Return a package version's location or namespace, possibly installing it
 #'
-#' @inherit package_nofn_params_doc params
+#' @inherit package_nofun_params_doc params
 #' @inherit version_nodate_params_doc params
 #' @inherit params_doc params
 #' @param return  Return the file "path" to the installed package, or the "namespace" object?
@@ -405,7 +406,7 @@ get_current_ns <- function (package) {
   ns <- try(loadNamespace(package, partial = TRUE), silent = TRUE)
   if (class(ns) == "try-error") stop("Couldn't load current version of package.\n",
     "Do you have it installed? If not run `install.packages('", package, "')`.\n",
-    "Or, use `current_fn = get_fn_at(fn, package, version)` to compare to a version\n",
+    "Or, use `current_fun = fun_at(fun, package, version)` to compare to a version\n",
     " without doing a full install.")
   unloadNamespace(package)
 
@@ -426,7 +427,7 @@ loudly_unlink <- function (dir, error = paste0("Could not unlink package dir ", 
 mran_selected <- function () isTRUE(getOption("apicheck.use_mran", FALSE))
 
 
-parse_fn <- function (fn) {
-  if (! grepl("::", fn)) stop("No `package` specified or found in function name")
-  strsplit(fn, "::", fixed = TRUE)[[1]]
+parse_fun <- function (fun) {
+  if (! grepl("::", fun)) stop("No `package` specified or found in function name")
+  strsplit(fun, "::", fixed = TRUE)[[1]]
 }

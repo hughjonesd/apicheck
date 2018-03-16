@@ -18,7 +18,7 @@ NULL
 #' Compare function existence and APIs across package versions
 #'
 #' `when_api_same` reports package versions where the API of a function was the same as now (or
-#' the same as `current_fn`).
+#' the same as `current_fun`).
 #'
 #' @inherit params_doc params
 #' @inherit search_doc params details return
@@ -53,9 +53,9 @@ NULL
 #' when_api_same("read.dta", "foreign")
 #' }
 when_api_same <- function (
-        fn,
+        fun,
         package,
-        current_fn  = NULL,
+        current_fun  = NULL,
         search      = c("binary", "forward", "backward", "all", "parallel"),
         report      = c("full", "brief"),
         quiet       = TRUE,
@@ -66,12 +66,12 @@ when_api_same <- function (
       ) {
   search <- match.arg(search)
   report   <- match.arg(report)
-  if (missing(package)) c(package, fn) %<-% parse_fn(fn)
-  force(current_fn)
+  if (missing(package)) c(package, fun) %<-% parse_fun(fun)
+  force(current_fun)
 
   test <- wrap_test(
-    function (version) suppressWarnings(api_same_at(fn, package = package, version = version,
-          current_fn = current_fn, ...))
+    function (version) suppressWarnings(api_same_at(fun, package = package, version = version,
+          current_fun = current_fun, ...))
   )
   res <- run_search(package, test, search, progress, min_version, max_version)
 
@@ -83,17 +83,17 @@ when_api_same <- function (
 }
 
 
-#' `when_fn_exists` reports package versions where a function exists.
+#' `when_fun_exists` reports package versions where a function exists.
 #'
 #' @rdname when_api_same
 #' @export
 #'
 #' @examples
 #' \dontrun{
-#' when_fn_exists('read.dta', 'foreign')
+#' when_fun_exists('read.dta', 'foreign')
 #' }
-when_fn_exists <- function (
-          fn,
+when_fun_exists <- function (
+          fun,
           package,
           search      = c("binary", "forward", "backward", "all", "parallel"),
           report      = c("full", "brief"),
@@ -105,9 +105,9 @@ when_fn_exists <- function (
         ) {
   search <- match.arg(search)
   report   <- match.arg(report)
-  if (missing(package)) c(package, fn) %<-% parse_fn(fn)
+  if (missing(package)) c(package, fun) %<-% parse_fun(fun)
 
-  test <- wrap_test(function (version) fn_exists_at(fn, package = package, version = version, ...))
+  test <- wrap_test(function (version) fun_exists_at(fun, package = package, version = version, ...))
   res <- run_search(package, test, search, progress, min_version, max_version)
   res <- clean_up_result(res, package, report,
         labels = c("Known absent", "Assumed absent", "Unknown", "Assumed present", "Known present"),
@@ -117,9 +117,9 @@ when_fn_exists <- function (
 }
 
 
-wrap_test <- function (test_fn) {
+wrap_test <- function (test_fun) {
   function (version) {
-    res <- try(test_fn(version))
+    res <- try(test_fun(version))
     if (class(res) == 'try-error') {
       return(NA)
     }
@@ -214,7 +214,7 @@ search_versions <- function (versions, test, search) {
 
 
 search_all <- function (versions, test, search) {
-  lapply_fn <- if (search == "parallel") {
+  lapply_fun <- if (search == "parallel") {
     if (! requireNamespace('parallel', quietly = TRUE)) stop("Could not load `parallel` namespace")
     # only way to find out if a cluster is registered?
     x <- try(parallel::clusterApply(NULL, 1, identity), silent = TRUE)
@@ -237,7 +237,7 @@ search_all <- function (versions, test, search) {
     lapply
   }
 
-  res <- lapply_fn(versions, test)
+  res <- lapply_fun(versions, test)
   res <- as.logical(res)
   res <- ifelse(is.na(res), 0L, 4 * as.integer(res) - 2)
   # only stop a cluster if we made it ourselves:

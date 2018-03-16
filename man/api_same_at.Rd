@@ -4,11 +4,11 @@
 \alias{api_same_at}
 \title{Test if a function's API is unchanged at a given version}
 \usage{
-api_same_at(fn, version = get_version_at_date(package, date), package,
-  date = NULL, quiet = TRUE, current_fn = NULL, ...)
+api_same_at(fun, version = version_at_date(package, date), package,
+  date = NULL, quiet = TRUE, current_fun = NULL, ...)
 }
 \arguments{
-\item{fn}{Function name as a character string.}
+\item{fun}{Function name as a character string.}
 
 \item{version}{Version as a character string. If omitted, use the version available at \code{date}.}
 
@@ -18,10 +18,10 @@ api_same_at(fn, version = get_version_at_date(package, date), package,
 
 \item{quiet}{Logical. Try to minimize output from package installation. (Some output comes from \code{R CMD INSTALL} and may be unavoidable.)}
 
-\item{current_fn}{Current function for comparison. By default, \code{fn} in the current version of
+\item{current_fun}{Current function for comparison. By default, \code{fun} in the current version of
 the package (which is assumed to be available in a standard library location). If provided, this
 must be an actual function, not a character string. You can use
-\code{\link[=get_fn_at]{get_fn_at()}} for this.}
+\code{\link[=fun_at]{fun_at()}} for this.}
 
 \item{...}{Arguments passed to \code{\link[versions:install.versions]{versions::install.versions()}} or
 \code{\link[remotes:install_version]{remotes::install_version()}}, and thence to \code{\link[=install.packages]{install.packages()}}.}
@@ -33,7 +33,7 @@ must be an actual function, not a character string. You can use
 \code{api_same_at} reports whether a function had the same API at a previous version or date.
 }
 \details{
-If \code{fn} does not exist at \code{version}, \code{api_same_at} returns \code{FALSE} with a warning.
+If \code{fun} does not exist at \code{version}, \code{api_same_at} returns \code{FALSE} with a warning.
 }
 \examples{
 \dontrun{

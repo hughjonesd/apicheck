@@ -52,5 +52,5 @@ test_that("Can install versions when package already installed and loaded", {
 test_that("Multiple parallel remote installs", {
   skip_on_cran()
 
-  run_in_fresh_cache(cran = TRUE, when_fn_exists("clipr::dr_clipr", search = "parallel"))
+  run_in_fresh_cache(cran = TRUE, when_fun_exists("clipr::dr_clipr", search = "parallel"))
 })

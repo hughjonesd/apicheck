@@ -26,11 +26,11 @@ From [clipr](https://github.com/mdlincoln/clipr/)'s NEWS file:
 
 ``` r
 library(apicheck)
-fn_exists_at("clipr::dr_clipr", "0.4.0")
+fun_exists_at("clipr::dr_clipr", "0.4.0")
 #> [1] TRUE
-fn_exists_at("clipr::dr_clipr", "0.3.3")
+fun_exists_at("clipr::dr_clipr", "0.3.3")
 #> [1] FALSE
-when_fn_exists("clipr::dr_clipr", report = "brief") # binary search
+when_fun_exists("clipr::dr_clipr", report = "brief") # binary search
 #> [1] "0.4.0"
 ```
 
@@ -53,7 +53,7 @@ when_api_same("clipr::write_clip", report = "full", search = "all") # check all 
 #> 7   0.3.2 2017-01-09      Known same
 #> 8   0.3.3 2017-06-19      Known same
 #> 9   0.4.0 2017-11-03      Known same
-get_help_at("clipr::write_clip", "0.1.1") # see what's changed
+help_at("clipr::write_clip", "0.1.1") # see what's changed
 ```
 
 Performance

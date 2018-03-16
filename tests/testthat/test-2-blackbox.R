@@ -31,23 +31,23 @@ test_that("available_versions", {
 })
 
 
-test_that("get_version_at_date", {
-  expect_silent(d <- get_version_at_date("clipr", "2017-01-01"))
+test_that("version_at_date", {
+  expect_silent(d <- version_at_date("clipr", "2017-01-01"))
   expect_identical(d, "0.3.1")
-  expect_silent(d <- get_version_at_date("clipr", "2016-01-01"))
+  expect_silent(d <- version_at_date("clipr", "2016-01-01"))
   expect_identical(d, "0.2.0")
 })
 
 
 test_that("arguments passed to install.packages", {
   expect_error(cached_install("fortunes", "1.5-1", repos = "BROKEN"))
-  expect_error(fn_exists_at("fortunes::fortune", version = "1.5-0", repos = "BROKEN"))
-  fn <- base::as.character
-  expect_error(api_same_at("fortunes::fortune", version = "1.5-2", current_fn = fn, repos = "BROKEN"))
+  expect_error(fun_exists_at("fortunes::fortune", version = "1.5-0", repos = "BROKEN"))
+  fun <- base::as.character
+  expect_error(api_same_at("fortunes::fortune", version = "1.5-2", current_fun = fun, repos = "BROKEN"))
 
   skip("Skipping two tests where install.packages spews weird uncatchable errors")
-  expect_warning(when_fn_exists("fortunes::fortune", repos = "BROKEN"))
-  expect_warning(when_api_same("rbcb::get_currency", current_fn = fn, repos = "BROKEN"))
+  expect_warning(when_fun_exists("fortunes::fortune", repos = "BROKEN"))
+  expect_warning(when_api_same("rbcb::get_currency", current_fun = fun, repos = "BROKEN"))
 })
 
 
@@ -94,29 +94,29 @@ test_that("Can call functions with different calling conventions", {
 
   # expect_identical doesn't work for functions
   expect_equal(
-          get_fn_at("clipr::write_clip", version = "0.4.0"),
-          get_fn_at("write_clip", "clipr", version = "0.4.0")
+          fun_at("clipr::write_clip", version = "0.4.0"),
+          fun_at("write_clip", "clipr", version = "0.4.0")
         )
 })
 
 
-test_that("fn_exists_at", {
+test_that("fun_exists_at", {
   skip_on_cran()
 
-  expect_true(fn_exists_at("clipr::dr_clipr", version = "0.4.0"))
-  expect_false(fn_exists_at("clipr::dr_clipr", version = "0.2.0"))
+  expect_true(fun_exists_at("clipr::dr_clipr", version = "0.4.0"))
+  expect_false(fun_exists_at("clipr::dr_clipr", version = "0.2.0"))
 })
 
 
 test_that("api_same_at", {
   skip_on_cran()
 
-  wc4 <- get_fn_at("clipr::write_clip", version = "0.4.0")
-  wc011 <- get_fn_at("clipr::write_clip", version = "0.1.1")
-  expect_false(api_same_at("clipr::write_clip", version = "0.1.1", current_fn = wc4)) # gained an argument
-  dr_c <- get_fn_at("clipr::dr_clipr", version = "0.4.0")
+  wc4 <- fun_at("clipr::write_clip", version = "0.4.0")
+  wc011 <- fun_at("clipr::write_clip", version = "0.1.1")
+  expect_false(api_same_at("clipr::write_clip", version = "0.1.1", current_fun = wc4)) # gained an argument
+  dr_c <- fun_at("clipr::dr_clipr", version = "0.4.0")
   # should warn because dr_clipr didn't exist back then:
-  expect_warning(x <- api_same_at("clipr::dr_clipr",  version = "0.1.1", current_fn = dr_c))
+  expect_warning(x <- api_same_at("clipr::dr_clipr",  version = "0.1.1", current_fun = dr_c))
   expect_false(x)
 })
 
@@ -124,16 +124,16 @@ test_that("api_same_at", {
 test_that("when_api_same", {
   skip_on_cran()
 
-  dr_c <- get_fn_at("clipr::dr_clipr", version = "0.4.0")
-  wc   <- get_fn_at("clipr::write_clip", version = "0.4.0")
+  dr_c <- fun_at("clipr::dr_clipr", version = "0.4.0")
+  wc   <- fun_at("clipr::write_clip", version = "0.4.0")
 
-  expect_identical(suppressWarnings(when_api_same("clipr::dr_clipr", current_fn = dr_c,
+  expect_identical(suppressWarnings(when_api_same("clipr::dr_clipr", current_fun = dr_c,
         report = "brief")), "0.4.0") # new function, so we suppress warnings
 
   strategies <- c("binary", "forward", "backward", "all")
 
   for (search in strategies) {
-    expect_identical(when_api_same("clipr::write_clip", current_fn = wc, search = search, report = "brief"),
+    expect_identical(when_api_same("clipr::write_clip", current_fun = wc, search = search, report = "brief"),
           "0.2.0") # API change
   }
 
@@ -147,7 +147,7 @@ test_that("when_api_same", {
   )
   for (search in strategies) {
     info <- paste("Search strategy was:", search)
-    expect_error(res <- when_api_same("clipr::write_clip", current_fn = wc, search = search, report = "full"), NA,
+    expect_error(res <- when_api_same("clipr::write_clip", current_fun = wc, search = search, report = "full"), NA,
           info = info)
     expect_s3_class(res, "data.frame") # no info arg :-(
     expect_identical(names(res), c("version", "date", "result"), info = info)
@@ -157,10 +157,10 @@ test_that("when_api_same", {
 })
 
 
-test_that("when_fn_exists", {
+test_that("when_fun_exists", {
   skip_on_cran()
 
-  expect_equal(when_fn_exists("clipr::dr_clipr", report = "brief"), "0.4.0")
+  expect_equal(when_fun_exists("clipr::dr_clipr", report = "brief"), "0.4.0")
 
   strategies <- c("binary", "forward", "backward", "all")
   # we only test versions 0.1.1 and onwards because version 0.1.0 varies with use_mran
@@ -174,7 +174,7 @@ test_that("when_fn_exists", {
   )
   for (search in strategies) {
     info <- paste("Search strategy was:", search)
-    expect_error(res <- when_fn_exists("clipr::dr_clipr", search = search, report = "full"), NA, info = info)
+    expect_error(res <- when_fun_exists("clipr::dr_clipr", search = search, report = "full"), NA, info = info)
     expect_s3_class(res, "data.frame")
     expect_identical(names(res), c("version", "date", "result"), info = info)
     expect_identical(res$result[-1], results_wanted[[search]], info = info)
@@ -185,24 +185,24 @@ test_that("when_fn_exists", {
 test_that("parallel search with own cluster", {
   cl <- parallel::makeCluster(2L)
   parallel::setDefaultCluster(cl)
-  expect_silent(res <- when_fn_exists("clipr::dr_clipr", search = "parallel"))
+  expect_silent(res <- when_fun_exists("clipr::dr_clipr", search = "parallel"))
   parallel::stopCluster(cl)
 })
 
 
 test_that("min_version and max_version work", {
-  expect_error(res <- when_fn_exists("clipr::dr_clipr", search = "binary", min_version = "0.3.2", report = "full"), NA)
+  expect_error(res <- when_fun_exists("clipr::dr_clipr", search = "binary", min_version = "0.3.2", report = "full"), NA)
   expect_true(all(res$version >= as.package_version("0.3.2")))
 
-  expect_error(res <- when_fn_exists("clipr::dr_clipr", search = "binary", max_version = "0.2.0", report = "full"), NA)
+  expect_error(res <- when_fun_exists("clipr::dr_clipr", search = "binary", max_version = "0.2.0", report = "full"), NA)
   expect_true(all(res$version <= as.package_version("0.2.0")))
 })
 
 
-test_that("get_help_at", {
+test_that("help_at", {
   skip_on_cran()
 
-  expect_error(helpfile <- get_help_at("clipr::write_clip", "0.4.0"), NA)
+  expect_error(helpfile <- help_at("clipr::write_clip", "0.4.0"), NA)
   expect_s3_class(helpfile, "help_files_with_topic")
 })
 

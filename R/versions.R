@@ -9,7 +9,7 @@
 #' then only versions available on MRAN (i.e. after 2014-09-17) will be returned;
 #' otherwise older versions will be returned too.
 #'
-#' @inherit package_nofn_params_doc params
+#' @inherit package_nofun_params_doc params
 #'
 #' @section Speed:
 #' In my limited experience, metacran is much faster. YMMV.
@@ -70,7 +70,7 @@ current_version <- function (package) {
 #' Return the current version of a package at a given date
 #'
 #' @inherit params_doc params
-#' @inherit package_nofn_params_doc params
+#' @inherit package_nofun_params_doc params
 #'
 #' @return A version string.
 #'
@@ -78,9 +78,9 @@ current_version <- function (package) {
 #'
 #' @examples
 #' \dontrun{
-#' get_version_at_date("huxtable", "2017-01-01")
+#' version_at_date("huxtable", "2017-01-01")
 #' }
-get_version_at_date <- function (package, date) {
+version_at_date <- function (package, date) {
   vns_df <- available_versions(package)
   vns_df <- vns_df$version[vns_df$date <= date]
   latest <- vns_df[length(vns_df)]

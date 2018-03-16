@@ -2,9 +2,9 @@
 
 versions_report <- function (ns1, ns2, v1, v2) {
   suffs <- c("_x", "_y")
-  get_fns <- function (ns) Filter(function (x) is.function(get(x, ns)), getNamespaceExports(ns))
-  objs1 <- get_fns(ns1)
-  objs2 <- get_fns(ns2)
+  get_funs <- function (ns) Filter(function (x) is.function(get(x, ns)), getNamespaceExports(ns))
+  objs1 <- get_funs(ns1)
+  objs2 <- get_funs(ns2)
 
   report1 <- data.frame(f = objs1, f1 = objs1, stringsAsFactors = FALSE)
   report2 <- data.frame(f = objs2, f2 = objs2, stringsAsFactors = FALSE)

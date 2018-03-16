@@ -30,9 +30,9 @@ library(huxtable)
 
 options(repos = "https://cran.rstudio.com")
 
-make_test <- function(fn, search, min_version = NA) {
+make_test <- function(fun, search, min_version = NA) {
   if (is.na(min_version)) min_version <- NULL
-  bquote(when_fn_exists(.(fn), search = .(search), min_version = .(min_version), progress = FALSE))
+  bquote(when_fun_exists(.(fun), search = .(search), min_version = .(min_version), progress = FALSE))
 }
 
 print_results <- . %>% 
@@ -66,16 +66,16 @@ pretty_plot <- function (result) {
 dependencies.
 
 ```{r}
-fns <- c("clipr::dr_clipr", "mice::ampute") 
+funs <- c("clipr::dr_clipr", "mice::ampute") 
 min_versions <- c(NA, "2.20")
 args <- expand.grid(
-        fn          = fns,
+        fun          = funs,
         search      = c("binary", "forward", "backward", "all", "parallel"), 
         stringsAsFactors = FALSE
       )
-args$min_version <- min_versions[match(args$fn, fns)]
+args$min_version <- min_versions[match(args$fun, funs)]
 
-test_df <- args %>% rowwise %>% do(expr = make_test(.$fn, .$search, .$min_version)) %>% bind_cols(args) %>% mutate(label = paste(fn, search, sep = " / "))
+test_df <- args %>% rowwise %>% do(expr = make_test(.$fun, .$search, .$min_version)) %>% bind_cols(args) %>% mutate(label = paste(fun, search, sep = " / "))
 tests <- test_df$expr
 names(tests) <- test_df$label
 
@@ -88,9 +88,9 @@ Backward search should work well for both these functions.
 
 ```{r showresults}
 set_lib_dir(".apicheck")
-for (f in fns) {
+for (f in funs) {
   print(f)
-  print_results(when_fn_exists(f, search = "all", progress = FALSE))  
+  print_results(when_fun_exists(f, search = "all", progress = FALSE))  
 }
 
 ```
@@ -103,7 +103,7 @@ for (f in fns) {
   
 # cache packages:
 set_lib_dir(".apicheck")
-invisible(mapply(when_fn_exists, fn = fns, min_version = ifelse(is.na(min_versions), "0.0", min_versions), search = "all", progress = FALSE))
+invisible(mapply(when_fun_exists, fun = funs, min_version = ifelse(is.na(min_versions), "0.0", min_versions), search = "all", progress = FALSE))
 
 
 cached <- microbenchmark(
