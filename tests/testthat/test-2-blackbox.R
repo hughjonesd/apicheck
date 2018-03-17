@@ -124,8 +124,9 @@ test_that("fun_exists_at", {
 
 test_that("api_same_at", {
   # core packages
-  expect_true(api_same_at("base::debugonce", "3.4.0"))
-  expect_false(api_same_at("base::debugonce", "3.3.3"))
+  dbo <- fun_at("base::debugonce", "3.4.3", allow_core = TRUE)
+  expect_true(api_same_at("base::debugonce", "3.4.0", current_fun = dbo))
+  expect_false(api_same_at("base::debugonce", "3.3.3", current_fun = dbo))
   expect_warning(x <- api_same_at("base::strrep", "3.2.5"))
   expect_false(x)
 
@@ -151,12 +152,13 @@ test_that("when_api_same", {
         report = "brief")), "0.4.0") # new function, so we suppress warnings
 
   strategies <- c("binary", "forward", "backward", "all")
+  dbo <- fun_at("base::debugonce", "3.4.3", allow_core = TRUE)
 
   for (search in strategies) {
     expect_identical(when_api_same("clipr::write_clip", current_fun = wc, search = search, report = "brief"),
           "0.2.0") # API change
-    expect_identical(when_api_same("base::debugonce", search = search, report = "brief", max_version = "3.4.3"),
-          "3.4.0") # max_version to avoid being struck by new Rs in rcheology!
+    expect_identical(when_api_same("base::debugonce", search = search, report = "brief", max_version = "3.4.3",
+          current_fun = dbo), "3.4.0") # max_version to avoid being struck by new Rs in rcheology!
   }
 
   results_wanted <- list(
