@@ -1,8 +1,9 @@
 
-# functions for day-to-day use, but not nec. with "pretty" outpu
+# functions for day-to-day use, but not nec. with "pretty" output
 
 # TODO
 # deal with S4 methods; and test for that.
+# why rcheology won't install via github (corrupted rdb??) and why "no package called remotes" dammit
 # tests: maybe rather than pre-installed (OS X) versions, have pre-installed source
 # files and then mock install.versions
 # add function to check incremental burden of a dependency?

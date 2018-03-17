@@ -17,6 +17,7 @@ Imports:
     utils,
     withr,
     zeallot,
+    rcheology
 Suggests: 
     covr,
     rlang,
