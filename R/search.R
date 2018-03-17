@@ -1,4 +1,5 @@
 
+# functions that search through multiple versions
 
 #' @param search "binary", "forward", "backward", "all" or "parallel". See Search strategies.
 #' @param report "brief" or "full". See Value.
