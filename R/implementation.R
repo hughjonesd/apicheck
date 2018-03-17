@@ -144,18 +144,6 @@ cached_install <- function (
 }
 
 
-get_current_ns <- function (package) {
-  ns <- try(loadNamespace(package, partial = FALSE), silent = TRUE)
-  if (class(ns) == "try-error") stop("Couldn't load current version of package.\n",
-    "Do you have it installed? If not run `install.packages('", package, "')`.\n",
-    "Or, use `current_fun = fun_at(fun, package, version)` to compare to a version\n",
-    " without doing a full install.")
-  unloadNamespace(package)
-
-  return(ns)
-}
-
-
 loudly_unlink <- function (dir, error = paste0("Could not unlink package dir ", dir,
         " after failed installation.\n",
         "Please delete the directory yourself or run `clear_lib_dir()`",

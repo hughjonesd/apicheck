@@ -1,19 +1,24 @@
 
 # these functions should have nothing to do with versioning
 
+get_current_ns <- function (package) {
+  ns <- tryCatch(loadNamespace(package, partial = TRUE), error = function (e) {
+    stop("Couldn't load current version of package.\n",
+      "Do you have it installed? If not run `install.packages('", package, "')`.\n",
+      "Or, use `current_fun = fun_at(fun, package, version)` to compare to a version\n",
+      " without doing a full install.\n",
+      "Original error:", e$message, call. = FALSE)
+  })
+  unloadNamespace(package)
+
+  return(ns)
+}
+
 
 is_api_same <- function (fun1, fun2) {
   identical(formals(fun1), formals(fun2))
 }
 
-
-obj_exists_in_ns <- function (nm, ns) {
-  # this includes everything
-  # weaker would be ls("package:ns_name") which includes only exports;
-  # intermediate is ls("package:ns_name", all.names = TRUE) which includes stuff with a "."
-  # like the S3 methods table
-  nm %in% names(ns)
-}
 
 # here fun could be a S3 method
 get_fun_in_ns <- function (fun, ns) {

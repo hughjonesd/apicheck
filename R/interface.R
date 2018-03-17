@@ -34,7 +34,6 @@
 # > identical(ns2, ns3)
 # [1] TRUE
 #
-# Clean separate API: installing stuff in the package cache; querying it. Always two separate operations.
 # Mock objects for base packages, using rcheology.
 # Clean unloading and reloading of current packages; always leave the computer in the state it was in before.
 
