@@ -239,9 +239,9 @@ fun_at <- function (
   if (! allow_core) assert_not_core(package)
 
   if (is_core_package(package)) {
-    rch <- rcheology::rcheology
-    rch <- rch[rch$package == package & rch$name == fun & rch$Rversion == version, ]
-    if (nrow(rch) == 0L) stop("Could not find `", fun, "` in rcheology database of core R functions")
+    rch <- get_rcheology_rows(name = fun, package = package) # memoised for speed
+    rch <- rch[rch$Rversion == version,]
+    if (nrow(rch) == 0L) stop(FUNCTION_NOT_FOUND)
     stopifnot(nrow(rch) == 1L)
     fun_args <- rch$args
     if (is.na(fun_args)) stop("Could not determine arguments of `", fun, "` in rcheology database of core R functions")

@@ -21,13 +21,21 @@ test_that("available_versions", {
     withr::with_options(list(apicheck.use_mran = mran), {
       info <- paste("use_mran:", mran)
       expect_error(vns <- available_versions("longurl"), regexp = NA, info = info)
+      expect_identical(names(vns), c("version", "date"), info = info)
+      expect_identical(vns, vns[order(vns$date), ], info = info)
+      expect_identical(sapply(vns, class), c(version = "character", date = "Date"))
       # check caching:
       expect_error(vns2 <- available_versions("longurl"), regexp = NA, info = info)
       expect_identical(vns, vns2, info = info)
-      expect_identical(names(vns), c("version", "date"), info = info)
-      expect_identical(vns, vns[order(vns$date), ], info = info)
+
     })
   }
+
+  # core versions:
+  expect_silent(vns_core <- available_versions("base"))
+  expect_identical(names(vns_core), c("version", "date"))
+  expect_identical(vns_core, vns_core[order(vns_core$date), ])
+  expect_identical(sapply(vns_core, class), c(version = "character", date = "Date"))
 })
 
 
@@ -36,6 +44,9 @@ test_that("version_at_date", {
   expect_identical(d, "0.3.1")
   expect_silent(d <- version_at_date("clipr", "2016-01-01"))
   expect_identical(d, "0.2.0")
+  # core packages
+  expect_silent(d <- version_at_date("utils", "2017-01-01"))
+  expect_identical(d, "3.3.2")
 })
 
 
@@ -105,6 +116,9 @@ test_that("fun_exists_at", {
 
   expect_true(fun_exists_at("clipr::dr_clipr", version = "0.4.0"))
   expect_false(fun_exists_at("clipr::dr_clipr", version = "0.2.0"))
+  # core packages
+  expect_true(fun_exists_at("base::strrep", "3.3.0"))
+  expect_false(fun_exists_at("base::strrep", "3.2.5"))
 })
 
 
@@ -117,6 +131,12 @@ test_that("api_same_at", {
   dr_c <- fun_at("clipr::dr_clipr", version = "0.4.0")
   # should warn because dr_clipr didn't exist back then:
   expect_warning(x <- api_same_at("clipr::dr_clipr",  version = "0.1.1", current_fun = dr_c))
+  expect_false(x)
+
+  # core packages
+  expect_true(api_same_at("base::debugonce", "3.4.0"))
+  expect_false(api_same_at("base::debugonce", "3.3.3"))
+  expect_warning(x <- api_same_at("base::strrep", "3.2.5"))
   expect_false(x)
 })
 
@@ -135,6 +155,8 @@ test_that("when_api_same", {
   for (search in strategies) {
     expect_identical(when_api_same("clipr::write_clip", current_fun = wc, search = search, report = "brief"),
           "0.2.0") # API change
+    expect_identical(when_api_same("base::debugonce", search = search, report = "brief", max_version = "3.4.3"),
+          "3.4.0") # max_version to avoid being struck by new Rs in rcheology!
   }
 
   results_wanted <- list(
@@ -160,9 +182,16 @@ test_that("when_api_same", {
 test_that("when_fun_exists", {
   skip_on_cran()
 
-  expect_equal(when_fun_exists("clipr::dr_clipr", report = "brief"), "0.4.0")
-
   strategies <- c("binary", "forward", "backward", "all")
+
+  for (search in strategies) {
+    info <- paste("Search strategy was:", search)
+    expect_identical(when_fun_exists("clipr::dr_clipr", search = search, report = "brief"), "0.4.0")
+    # max_version to avoid being struck by new R versions in rcheology:
+    expect_identical(when_fun_exists("base::strrep", search = search, report = "brief", max_version = "3.4.3"), "3.3.0",
+          info = info)
+  }
+
   # we only test versions 0.1.1 and onwards because version 0.1.0 varies with use_mran
   # being TRUE or FALSE
   results_wanted <- list(
@@ -193,13 +222,18 @@ test_that("parallel search with own cluster", {
 test_that("min_version and max_version work", {
   expect_error(res <- when_fun_exists("clipr::dr_clipr", search = "binary", min_version = "0.3.2", report = "full"), NA)
   expect_true(all(res$version >= as.package_version("0.3.2")))
-
   expect_error(res <- when_fun_exists("clipr::dr_clipr", search = "binary", max_version = "0.2.0", report = "full"), NA)
   expect_true(all(res$version <= as.package_version("0.2.0")))
+
+  expect_error(res <- when_fun_exists("base::debugonce", search = "binary", min_version = "3.2.5", report = "full"), NA)
+  expect_true(all(res$version >= as.package_version("3.2.5")))
+  expect_error(res <- when_fun_exists("base::debugonce", search = "binary", max_version = "2.0.0", report = "full"), NA)
+  expect_true(all(res$version <= as.package_version("2.0.0")))
 })
 
 
 test_that("help_at", {
+  expect_error(help_at("utils::alarm"), "is a core package")
   skip_on_cran()
 
   expect_error(helpfile <- help_at("clipr::write_clip", "0.4.0"), NA)

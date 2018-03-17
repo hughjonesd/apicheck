@@ -5,6 +5,11 @@
 mran_selected <- function () isTRUE(getOption("apicheck.use_mran", FALSE))
 
 
+get_rcheology_rows <- memoise::memoise(function (name, package) {
+  rcheology::rcheology[rcheology::rcheology$name == name & rcheology::rcheology$package == package, ]
+})
+
+
 assert_package <- function (package) {
   if (! requireNamespace(package, quietly = TRUE)) {
     stop("Could not load the `", package, "` library.\n", "Try `install.packages(", package, ")`.")

@@ -32,6 +32,7 @@ available_versions <- memoise::memoise(
       vns_df$version <- R_system_version(vns_df$Rversion, strict = FALSE)
       vns_df <- vns_df[! is.na(vns_df$version), c("version", "date")]
       vns_df <- vns_df[vns_df$version >= min(as.package_version(rcheology::rcheology$Rversion)), ]
+      vns_df$version <- as.character(vns_df$version)
     } else {
       vns_df <- if (mran_selected()) av_mran(package) else av_metacran(package)
     }
