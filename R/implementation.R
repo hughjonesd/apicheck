@@ -1,6 +1,9 @@
 
 # functions for advanced use or private functions related to loading namespaces
 
+#' @importFrom remotes install_version
+NULL
+
 #' Load a package namespace at a particular version and run an arbitrary function
 #'
 #' @inherit package_nofun_params_doc params
@@ -100,7 +103,7 @@ cached_install <- function (
         versions::install.versions(package, versions = version, lib = package_dir,  ...)
       } else {
         withr::with_libpaths(package_dir,
-          remotes::install_version(package, version, lib = package_dir, type = "source", quiet = quiet, ...)
+          install_version(package, version, lib = package_dir, type = "source", quiet = quiet, ...)
         )
       }
     },

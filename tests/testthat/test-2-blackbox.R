@@ -123,6 +123,12 @@ test_that("fun_exists_at", {
 
 
 test_that("api_same_at", {
+  # core packages
+  expect_true(api_same_at("base::debugonce", "3.4.0"))
+  expect_false(api_same_at("base::debugonce", "3.3.3"))
+  expect_warning(x <- api_same_at("base::strrep", "3.2.5"))
+  expect_false(x)
+
   skip_on_cran()
 
   wc4 <- fun_at("clipr::write_clip", version = "0.4.0")
@@ -131,12 +137,6 @@ test_that("api_same_at", {
   dr_c <- fun_at("clipr::dr_clipr", version = "0.4.0")
   # should warn because dr_clipr didn't exist back then:
   expect_warning(x <- api_same_at("clipr::dr_clipr",  version = "0.1.1", current_fun = dr_c))
-  expect_false(x)
-
-  # core packages
-  expect_true(api_same_at("base::debugonce", "3.4.0"))
-  expect_false(api_same_at("base::debugonce", "3.3.3"))
-  expect_warning(x <- api_same_at("base::strrep", "3.2.5"))
   expect_false(x)
 })
 
