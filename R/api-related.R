@@ -15,3 +15,17 @@ obj_exists_in_ns <- function (nm, ns) {
   nm %in% names(ns)
 }
 
+# here fun could be a S3 method
+get_fun_in_ns <- function (fun, ns) {
+  x <- if (utils::isS3method(fun, envir = ns)) {
+    bits <- strsplit(fun, ".", fixed = TRUE)[[1]]
+    generic_fun <- paste(bits[-length(bits)], collapse = ".")
+    class <- bits[length(bits)]
+    utils::getS3method(generic_fun, class, envir = ns)
+  } else {
+    get(fun, ns)
+  }
+
+  return(x)
+}
+

@@ -8,7 +8,7 @@ fun_at(fun, version = version_at_date(package, date), package, date = NULL,
   quiet = TRUE, ...)
 }
 \arguments{
-\item{fun}{Function name as a character string.}
+\item{fun}{Function name as a character string. \code{fun} can be an S3 method; S4 methods aren't yet supported.}
 
 \item{version}{Version as a character string. If omitted, use the version available at \code{date}.}
 

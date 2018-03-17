@@ -8,7 +8,7 @@ fun_exists_at(fun, version = version_at_date(package, date), package,
   date = NULL, quiet = TRUE, ...)
 }
 \arguments{
-\item{fun}{Function name as a character string.}
+\item{fun}{Function name as a character string. \code{fun} can be an S3 method; S4 methods aren't yet supported.}
 
 \item{version}{Version as a character string. If omitted, use the version available at \code{date}.}
 
@@ -25,7 +25,8 @@ fun_exists_at(fun, version = version_at_date(package, date), package,
 \code{TRUE} or \code{FALSE}.
 }
 \description{
-\code{fun_exists_at} reports whether a function exists at a specific previous version or date.
+\code{fun_exists_at} reports whether a function exists (i.e. is exported) from a package at a specific previous version
+or date.
 }
 \examples{
 \dontrun{

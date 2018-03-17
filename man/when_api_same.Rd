@@ -16,7 +16,7 @@ when_fun_exists(fun, package, search = c("binary", "forward", "backward",
   max_version = NULL, ...)
 }
 \arguments{
-\item{fun}{Function name as a character string.}
+\item{fun}{Function name as a character string. \code{fun} can be an S3 method; S4 methods aren't yet supported.}
 
 \item{package}{Package. Alternatively, specify the function name as e.g. \code{"package::function"}.}
 

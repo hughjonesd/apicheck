@@ -187,7 +187,9 @@ na_binary_search <- function (l, r, test) {
   res <- test(m)
   if (isTRUE(res)) return(c(na_binary_search(l, m - 1, test), 2L, rep(1L, r - m)))
   if (isTRUE(! res)) return(c(rep(-1L, m - l), -2L, na_binary_search(m + 1, r, test)))
-  if (is.na(res)) return(c(na_binary_search(l, m - 1, test), 0L, na_binary_search(m + 1, r, test)))
+  if (is.na(res)) {
+    return(c(na_binary_search(l, m - 1, test), 0L, na_binary_search(m + 1, r, test)))
+  }
 }
 
 
@@ -215,7 +217,9 @@ search_versions <- function (versions, test, search) {
 
 
 search_all <- function (versions, test, search) {
-  lapply_fun <- if (search == "parallel") {
+  lapply_fun <- if (search != "parallel") {
+    lapply
+   } else {
     assert_package("parallel")
     # only way to find out if a cluster is registered?
     x <- try(parallel::clusterApply(NULL, 1, identity), silent = TRUE)
@@ -234,8 +238,6 @@ search_all <- function (versions, test, search) {
     parallel::clusterCall(cl, options, apicheck.use_mran = use_mran, repos = repos)
     parallel::clusterExport(cl, "LIB_DIR", envir = environment())
     function (x, fun) parallel::parLapplyLB(cl, x, fun)
-  } else {
-    lapply
   }
 
   res <- lapply_fun(versions, test)

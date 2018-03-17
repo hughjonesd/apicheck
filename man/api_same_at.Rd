@@ -8,7 +8,7 @@ api_same_at(fun, version = version_at_date(package, date), package,
   date = NULL, quiet = TRUE, current_fun = NULL, ...)
 }
 \arguments{
-\item{fun}{Function name as a character string.}
+\item{fun}{Function name as a character string. \code{fun} can be an S3 method; S4 methods aren't yet supported.}
 
 \item{version}{Version as a character string. If omitted, use the version available at \code{date}.}
 
@@ -33,7 +33,7 @@ must be an actual function, not a character string. You can use
 \code{api_same_at} reports whether a function had the same API at a previous version or date.
 }
 \details{
-If \code{fun} does not exist at \code{version}, \code{api_same_at} returns \code{FALSE} with a warning.
+If \code{fun} is not exported at \code{version}, \code{api_same_at} returns \code{FALSE} with a warning.
 }
 \examples{
 \dontrun{

@@ -33,11 +33,7 @@
 # [1] FALSE
 # > identical(ns2, ns3)
 # [1] TRUE
-#  - and more variation:
 #
-# parallelize binary and other methods
-#  - Should bring big speedups
-# if we have partial, can we load methods? CHECK.
 # Clean separate API: installing stuff in the package cache; querying it. Always two separate operations.
 # Mock objects for base packages, using rcheology.
 # Clean unloading and reloading of current packages; always leave the computer in the state it was in before.
@@ -88,7 +84,7 @@ NULL
 NULL
 
 
-#' @param fun Function name as a character string.
+#' @param fun Function name as a character string. `fun` can be an S3 method; S4 methods aren't yet supported.
 #' @param version Version as a character string. If omitted, use the version available at `date`.
 #' @param package Package. Alternatively, specify the function name as e.g. `"package::function"`.
 #' @param date Date, as a character string that can be read by [as.Date()] e.g. "2016-01-01".
@@ -122,7 +118,7 @@ NULL
 #' @inherit params_doc params
 #'
 #' @details
-#' If `fun` does not exist at `version`, `api_same_at` returns `FALSE` with a warning.
+#' If `fun` is not exported at `version`, `api_same_at` returns `FALSE` with a warning.
 #' @inherit same_api_doc details
 #'
 #' @return `TRUE` or `FALSE`.
@@ -148,11 +144,11 @@ api_same_at <- function (
   if (missing(package)) c(package, fun) %<-% parse_fun(fun)
   if (is.null(current_fun)) {
     cur_ns <- get_current_ns(package)
-    current_fun <- get(fun, cur_ns)
+    current_fun <- get_fun_in_ns(fun, cur_ns)
   }
   test <- function (namespace) {
     g <- tryCatch(
-      get(fun, namespace),
+      get_fun_in_ns(fun, namespace),
       error = function (e) {warning(e$message); return(NULL)}
     )
     if (is.null(g)) return(FALSE)
@@ -165,7 +161,8 @@ api_same_at <- function (
 
 #' Test if a function exists at a given version
 #'
-#' `fun_exists_at` reports whether a function exists at a specific previous version or date.
+#' `fun_exists_at` reports whether a function exists (i.e. is exported) from a package at a specific previous version
+#' or date.
 #'
 #' @inherit params_doc params
 #'
@@ -188,7 +185,10 @@ fun_exists_at <- function (
   ...
 ) {
   if (missing(package)) c(package, fun) %<-% parse_fun(fun)
-  test <- function (ns) obj_exists_in_ns(fun, ns)
+  test <- function (ns) {
+    res <- try(get_fun_in_ns(fun, ns), silent = TRUE)
+    return(class(res) != "try-error")
+  }
   call_with_namespace(package, version, test, quiet = quiet, ...)
 }
 
@@ -214,7 +214,7 @@ fun_at <- function (
   ...
 ) {
   if (missing(package)) c(package, fun) %<-% parse_fun(fun)
-  test <- function (namespace) get(fun, namespace)
+  test <- function (namespace) get_fun_in_ns(fun, namespace)
   call_with_namespace(package, version, test, quiet = quiet, ...)
 }
 
