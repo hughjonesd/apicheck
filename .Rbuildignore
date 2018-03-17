@@ -9,4 +9,4 @@
 ^tests/testthat/test_lib_dir/
 .DS_Store
 ^\.apicheck/
-^/docs/
+^docs/
