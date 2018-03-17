@@ -53,6 +53,14 @@ the same as \code{current_fun}).
 \details{
 "Same API" means having the same function arguments, as reported by \code{\link[=formals]{formals()}}.
 }
+\section{Speed}{
+
+This function may download and install multiple versions from MRAN, so it is likely to be slow
+when first used (and even afterwards if library loading is slow). Using \code{search = "parallel"}
+may help, but not if the network is the bottleneck: see
+\href{here}{https://hughjonesd.github.io/apicheck/performance2.html} for details.
+}
+
 \section{Search strategies}{
 
 \itemize{
@@ -73,14 +81,6 @@ cluster by using \code{\link[parallel:setDefaultCluster]{parallel::setDefaultClu
 \code{getOption("cl.cores")} cores if that is set. If you
 set up your own cluster, it will not be stopped automatically (see
 \code{\link[parallel:stopCluster]{parallel::stopCluster()}}).
-}
-
-\section{Speed}{
-
-This function may download and install multiple versions from MRAN, so it is likely to be slow
-when first used (and even afterwards if library loading is slow). Using \code{search = "parallel"}
-may help, but not if the network is the bottleneck: see
-(here)\link{https://hughjonesd.github.io/apicheck/performance2.html} for details.
 }
 
 \examples{

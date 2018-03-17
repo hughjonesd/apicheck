@@ -53,7 +53,7 @@ NULL
 #'
 #' By default, `apicheck`` uses the `remotes`
 #' package to install source versions from CRAN. Alternatively, it can use the `versions`` package to install different versions of a package
-#' from [MRAN]{https://mran.microsoft.com/}. To do this set `options(apicheck.use_mran = TRUE)`.
+#' from \href{MRAN}{https://mran.microsoft.com/}. To do this set `options(apicheck.use_mran = TRUE)`.
 #'
 #' Be aware that functions can take a long time to return, as different versions of a package are
 #' installed and/or loaded.
@@ -71,15 +71,6 @@ NULL
 #' @details
 #' "Same API" means having the same function arguments, as reported by [formals()].
 #' @name same_api_doc
-NULL
-
-
-#' @section Speed:
-#' This function may download and install multiple versions from MRAN, so it is likely to be slow
-#' when first used (and even afterwards if library loading is slow). Using `search = "parallel"`
-#' may help, but not if the network is the bottleneck: see
-#' (here)[https://hughjonesd.github.io/apicheck/performance2.html] for details.
-#' @name slow_warning_doc
 NULL
 
 

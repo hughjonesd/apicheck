@@ -13,7 +13,7 @@ Packages are cached within a session. To cache packages across sessions, use
 \code{\link[=set_lib_dir]{set_lib_dir()}} to point to a persistent directory.
 
 By default, \code{apicheck`` uses the}remotes\code{package to install source versions from CRAN. Alternatively, it can use the}versions`` package to install different versions of a package
-from \link{MRAN}{https://mran.microsoft.com/}. To do this set \code{options(apicheck.use_mran = TRUE)}.
+from \href{MRAN}{https://mran.microsoft.com/}. To do this set \code{options(apicheck.use_mran = TRUE)}.
 
 Be aware that functions can take a long time to return, as different versions of a package are
 installed and/or loaded.

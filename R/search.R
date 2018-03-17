@@ -25,7 +25,12 @@ NULL
 #' @inherit search_doc params details return
 #'
 #' @inherit same_api_doc details
-#' @inheritSection slow_warning_doc Speed
+#'
+#' @section Speed:
+#' This function may download and install multiple versions from MRAN, so it is likely to be slow
+#' when first used (and even afterwards if library loading is slow). Using `search = "parallel"`
+#' may help, but not if the network is the bottleneck: see
+#' \href{here}{https://hughjonesd.github.io/apicheck/performance2.html} for details.
 #'
 #' @section Search strategies:
 #' \itemize{
