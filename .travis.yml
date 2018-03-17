@@ -9,9 +9,6 @@ r:
   - release
   - devel
 
-r_github_packages:
-  - hughjonesd/rcheology
-
 after_success:
   - Rscript -e 'covr::codecov(function_exclusions = "\\.onLoad")'
 
