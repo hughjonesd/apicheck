@@ -127,7 +127,8 @@ test_that("api_same_at", {
   dbo <- fun_at("base::debugonce", "3.4.3", allow_core = TRUE)
   expect_true(api_same_at("base::debugonce", "3.4.0", current_fun = dbo))
   expect_false(api_same_at("base::debugonce", "3.3.3", current_fun = dbo))
-  expect_warning(x <- api_same_at("base::strrep", "3.2.5"))
+  expect_warning(x <- api_same_at("base::strrep", "3.2.5", current_fun = fun_at("base::strrep", "3.4.3",
+        allow_core = TRUE)))
   expect_false(x)
 
   skip_on_cran()
