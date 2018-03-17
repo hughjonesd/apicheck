@@ -5,7 +5,7 @@
 \title{Retrieve a function from a particular package version}
 \usage{
 fun_at(fun, version = version_at_date(package, date), package, date = NULL,
-  quiet = TRUE, ...)
+  quiet = TRUE, allow_core = FALSE, ...)
 }
 \arguments{
 \item{fun}{Function name as a character string. \code{fun} can be an S3 method; S4 methods aren't yet supported.}
@@ -18,6 +18,8 @@ fun_at(fun, version = version_at_date(package, date), package, date = NULL,
 
 \item{quiet}{Logical. Try to minimize output from package installation. (Some output comes from \code{R CMD INSTALL} and may be unavoidable.)}
 
+\item{allow_core}{See below.}
+
 \item{...}{Arguments passed to \code{\link[versions:install.versions]{versions::install.versions()}} or
 \code{\link[remotes:install_version]{remotes::install_version()}}, and thence to \code{\link[=install.packages]{install.packages()}}.}
 }
@@ -26,6 +28,12 @@ The function itself.
 }
 \description{
 Retrieve a function from a particular package version
+}
+\details{
+By default, you cannot get functions from previous versions of R core packages, which are not available
+on CRAN/MRAN. If \code{allow_core} is \code{TRUE}, then a function will be returned from the
+\href{https://github.com/hughjonesd/rcheology}{rcheology} dataset, with a null body but the same formal
+arguments as the historical function.
 }
 \examples{
 \dontrun{

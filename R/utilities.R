@@ -12,6 +12,10 @@ assert_package <- function (package) {
 }
 
 
+assert_not_core <- function (package) {
+  if (is_core_package(package)) stop("`", package, "` is a core package and cannot be downloaded from CRAN or MRAN.")
+}
+
 parse_fun <- function (fun) {
   if (! grepl("::", fun)) stop("No `package` specified or found in function name")
   strsplit(fun, "::", fixed = TRUE)[[1]]

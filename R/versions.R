@@ -4,9 +4,10 @@
 #' Report available versions
 #'
 #' This returns packages ordered by date, using either \href{https://mran.microsoft.com}{MRAN} or
-#' \href{http://crandb.r-pkg.org}{metacran}.
+#' \href{http://crandb.r-pkg.org}{metacran} (or \href{https::/github.com/hughjonesd/rcheology}{rcheology}
+#' for R core packages).
 #' Results are cached so as to
-#' relieve pressure on the server. If `options("apicheck.use_mran")` is `TRUE`,
+#' relieve pressure on the server. If `options("apicheck.use_mran")` is `TRUE` (and `package` is non-core),
 #' then only versions available on MRAN (i.e. after 2014-09-17) will be returned;
 #' otherwise older versions will be returned too.
 #'
@@ -26,11 +27,18 @@
 #'
 available_versions <- memoise::memoise(
   function (package) {
-    vns_df <- if (mran_selected()) av_mran(package) else av_metacran(package)
+    if (is_core_package(package)) {
+      vns_df <- rcheology::Rversions
+      vns_df$version <- R_system_version(vns_df$Rversion, strict = FALSE)
+      vns_df <- vns_df[! is.na(vns_df$version), c("version", "date")]
+      vns_df <- vns_df[vns_df$version >= min(as.package_version(rcheology::rcheology$Rversion)), ]
+    } else {
+      vns_df <- if (mran_selected()) av_mran(package) else av_metacran(package)
+    }
     if (nrow(vns_df) == 0L) stop(sprintf("Could not find any available versions for '%s'", package))
     vns_df$date <- as.Date(vns_df$date)
     vns_df <- vns_df[order(vns_df$date), ]
-    if (mran_selected()) vns_df <- vns_df[vns_df$Date >= "2014-09-17", ]
+    if (mran_selected() && ! is_core_package(package)) vns_df <- vns_df[vns_df$Date >= "2014-09-17", ]
 
     return(vns_df)
   }

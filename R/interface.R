@@ -34,7 +34,7 @@
 # > identical(ns2, ns3)
 # [1] TRUE
 #
-# Mock objects for base packages, using rcheology.
+# Tests for base package rcheology fakery.
 # Clean unloading and reloading of current packages; always leave the computer in the state it was in before.
 
 
@@ -142,19 +142,27 @@ api_same_at <- function (
 ) {
   if (missing(package)) c(package, fun) %<-% parse_fun(fun)
   if (is.null(current_fun)) {
-    cur_ns <- get_current_ns(package)
-    current_fun <- get_fun_in_ns(fun, cur_ns)
-  }
-  test <- function (namespace) {
-    g <- tryCatch(
-      get_fun_in_ns(fun, namespace),
-      error = function (e) {warning(e$message); return(NULL)}
-    )
-    if (is.null(g)) return(FALSE)
-    is_api_same(current_fun, g)
+    current_fun <- if (is_core_package(package)) {
+      fun_at(fun, version = as.character(getRversion()), package = package, allow_core = TRUE)
+    } else {
+      get_fun_in_ns(fun, get_current_ns(package))
+    }
   }
 
-  call_with_namespace(package, version, test, quiet = quiet, ...)
+  g <- tryCatch(
+    fun_at(fun, version = version, package = package, allow_core = TRUE, quiet = quiet, ...),
+    error = function (e) {
+      if (grepl(FUNCTION_NOT_FOUND, e$message, fixed = TRUE)) {
+        warning(e$mesage)
+        return(NULL)
+      } else {
+        stop(e$message)
+      }
+    }
+  )
+
+  if (is.null(g)) return(FALSE)
+  return(is_api_same(current_fun, g))
 }
 
 
@@ -184,17 +192,31 @@ fun_exists_at <- function (
   ...
 ) {
   if (missing(package)) c(package, fun) %<-% parse_fun(fun)
-  test <- function (ns) {
-    res <- try(get_fun_in_ns(fun, ns), silent = TRUE)
-    return(class(res) != "try-error")
-  }
-  call_with_namespace(package, version, test, quiet = quiet, ...)
+  g <- tryCatch(
+    fun_at(fun, version = version, package = package, allow_core = TRUE, quiet = quiet, ...),
+    error = function (e) {
+      if (grepl(FUNCTION_NOT_FOUND, e$message, fixed = TRUE)) {
+        return(NULL)
+      } else {
+        stop(e$message)
+      }
+    }
+  )
+
+  return(! is.null(g))
 }
 
 
 #' Retrieve a function from a particular package version
 #'
 #' @inherit params_doc params
+#' @param allow_core See below.
+#'
+#' @details
+#' By default, you cannot get functions from previous versions of R core packages, which are not available
+#' on CRAN/MRAN. If `allow_core` is `TRUE`, then a function will be returned from the
+#' [rcheology](https://github.com/hughjonesd/rcheology) dataset, with a null body but the same formal
+#' arguments as the historical function.
 #'
 #' @return The function itself.
 #'
@@ -208,11 +230,26 @@ fun_at <- function (
   fun,
   version = version_at_date(package, date),
   package,
-  date    = NULL,
-  quiet   = TRUE,
+  date       = NULL,
+  quiet      = TRUE,
+  allow_core = FALSE,
   ...
 ) {
   if (missing(package)) c(package, fun) %<-% parse_fun(fun)
+  if (! allow_core) assert_not_core(package)
+
+  if (is_core_package(package)) {
+    rch <- rcheology::rcheology
+    rch <- rch[rch$package == package & rch$name == fun & rch$Rversion == version, ]
+    if (nrow(rch) == 0L) stop("Could not find `", fun, "` in rcheology database of core R functions")
+    stopifnot(nrow(rch) == 1L)
+    fun_args <- rch$args
+    if (is.na(fun_args)) stop("Could not determine arguments of `", fun, "` in rcheology database of core R functions")
+    fake_fun <- paste("function", fun_args, "NULL")
+    fake_fun <- eval(parse(text = fake_fun))
+    return (fake_fun)
+  }
+
   test <- function (namespace) get_fun_in_ns(fun, namespace)
   call_with_namespace(package, version, test, quiet = quiet, ...)
 }
@@ -242,6 +279,8 @@ help_at <- function (
   ...
 ) {
   if (missing(package)) c(package, fun) %<-% parse_fun(fun)
+  assert_not_core(package)
+
   on.exit(unloadNamespace(package))
   package_dir <- cached_install(package, version, return = "path", quiet = quiet, ...)
   # double brackets stop help looking for "fun" literally

@@ -26,3 +26,4 @@ Suggests:
     versions
 VignetteBuilder: knitr
 Roxygen: list(markdown = TRUE)
+Remotes: hughjonesd/rcheology
