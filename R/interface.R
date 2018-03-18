@@ -3,7 +3,6 @@
 
 # TODO
 # deal with S4 methods; and test for that.
-# why rcheology won't install via github (corrupted rdb??) and why "no package called remotes" dammit
 # tests: maybe rather than pre-installed (OS X) versions, have pre-installed source
 # files and then mock install.versions
 # add function to check incremental burden of a dependency?
@@ -35,7 +34,6 @@
 # > identical(ns2, ns3)
 # [1] TRUE
 #
-# Tests for base package rcheology fakery.
 # Clean unloading and reloading of current packages; always leave the computer in the state it was in before.
 
 
@@ -43,9 +41,9 @@
 NULL
 
 
-#' Basic details about the package
+#' apicheck: check function APIs in different versions of packages
 #'
-#' This is a small package to check when functions were introduced in packages and/or APIs changed.
+#' This is a small package to check when functions were introduced and/or APIs changed in packages.
 #' It automatically installs different versions of a package in a separate directory and loads them
 #' without attaching them.
 #'

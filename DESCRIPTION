@@ -4,27 +4,28 @@ Version: 0.1.0.9000
 Authors@R: person("David", "Hugh-Jones", email = "davidhughjones@gmail.com", role = c("aut", "cre"))
 Description: Check when functions were introduced and/or APIs changed in packages, using the 'MRAN' service.
 License: MIT + file LICENSE
-Encoding: UTF-8
-LazyData: true
-RoxygenNote: 6.0.1
-Depends: R (>= 3.3.0)
-Imports:
+Depends: 
+    R (>= 3.3.0)
+Imports: 
     httr,
     jsonlite,
     memoise,
     parallel,
+    rcheology,
     remotes,
     utils,
     withr,
-    zeallot,
-    rcheology
+    zeallot
 Suggests: 
     covr,
-    rlang,
-    testthat (>= 2.0.0),
     knitr,
+    rlang,
     rmarkdown,
+    testthat (>= 2.0.0),
     versions
 VignetteBuilder: knitr
-Roxygen: list(markdown = TRUE)
+Encoding: UTF-8
+LazyData: true
 Remotes: hughjonesd/rcheology
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 6.0.1

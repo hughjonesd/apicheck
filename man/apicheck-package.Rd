@@ -2,9 +2,9 @@
 % Please edit documentation in R/interface.R
 \name{apicheck-package}
 \alias{apicheck-package}
-\title{Basic details about the package}
+\title{apicheck: check function APIs in different versions of packages}
 \description{
-This is a small package to check when functions were introduced in packages and/or APIs changed.
+This is a small package to check when functions were introduced and/or APIs changed in packages.
 It automatically installs different versions of a package in a separate directory and loads them
 without attaching them.
 }

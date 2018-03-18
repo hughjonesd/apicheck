@@ -42,10 +42,14 @@ get_fun_in_ns <- function (fun, ns) {
 }
 
 
-is_core_package <- memoise::memoise( function (package) {
+core_packages <- function () {
   ip <- as.data.frame(installed.packages())
-  res <- package %in% ip$Package[ip$Priority == "base"]
+  ip <- dplyr::filter(ip, Priority == "base")
+  as.character(ip$Package)
+}
 
-  return(res)
+
+is_core_package <- memoise::memoise( function (package) {
+  return(package %in% core_packages())
 })
 
