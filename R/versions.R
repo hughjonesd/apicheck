@@ -1,6 +1,7 @@
 
 # functions for version discovery
 
+
 #' Report available versions
 #'
 #' This returns packages ordered by date, using either \href{https://mran.microsoft.com}{MRAN} or

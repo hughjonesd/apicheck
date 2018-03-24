@@ -255,3 +255,17 @@ test_that("Can set lib_dir", {
   if (class(prepare) == "try-error") skip("Couldn't download package for testing")
   expect_true(dir.exists(file.path(tempdir, "clipr-0.4.0", "clipr")))
 })
+
+
+test_that("package_report", {
+  skip_on_cran()
+  skip_on_travis()
+
+  # produces invisible warnings, but seems to work
+  expect_error(pr <- package_report("clipr-source", progress = FALSE), NA)
+  expect_s3_class(pr, "data.frame")
+  expect_identical(names(pr), c("package", "version", "funs"))
+  # leaves only utils
+  expect_error(pr2 <- package_report("clipr-source", exclude = c("base", "rstudioapi"), progress = FALSE), NA)
+  expect_error(pr <- package_report("clipr-source", parallel = TRUE, exclude = "base"), NA)
+})

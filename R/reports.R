@@ -97,17 +97,22 @@ get_api_desc <- function(fun) {
 #' Report on backwards compatibility of a source package
 #'
 #' @param path Path to the root of an R package.
-#' @param include Packages to include. By default, all are included except core packages and calls within the package itself.
+#' @param include Packages to include. By default, all are included except core packages and the package at
+#'   `path` itself.
 #' @param exclude Packages to exclude from checking. Overrides `include`.
 #' @param cutoff_date Don't check versions before this date (default: 2 years ago). Set to `NULL` for no cutoff.
-#' @param max_versions Check at most this number of previous versions. Set to `NULL` for no limit.
+#' @param max_n_versions Check at most this number of previous versions. Set to `NULL` for no limit.
+#' @param parallel Run in parallel.
+#' @param progress Show a progress bar.
 #' @param ... Arguments passed to [call_with_namespace()].
 #'
 #' @details
 #' This function lists the external function calls from a source package using [pkgapi::map_package()].
 #' It then checks back-compatibility of each call us
-#' Only function calls which are qualified with `::` will be detected, so e.g. `dplyr::filter`
-#' will be
+#' Only function calls which are qualified with `::` will be detected, so e.g. `purrr::quietly`
+#' will be checked, but `quietly` on its own won't be.
+#'
+#' @inheritSection parallel_doc Parallelism
 #'
 #' @return A data frame with three rows:
 #' * `package` for the external package
@@ -116,18 +121,26 @@ get_api_desc <- function(fun) {
 #' @export
 #'
 #' @examples
+#' \dontrun{
+#' package_report(".")
+#' # to include base packages also:
+#' package_report(".", exclude = character(0))
+#' }
 package_report <- function (
-        path = ".",
+        path           = ".",
         include,
-        exclude = core_packages(),
-        cutoff_date  = Sys.Date() - 2 * 365,
-        max_versions = NULL,
+        exclude        = core_packages(),
+        cutoff_date    = Sys.Date() - 2 * 365,
+        max_n_versions = NULL,
+        parallel       = FALSE,
+        progress       = ! parallel,
         ...
       ) {
   callees <- package_callees(path, include, exclude)
   packages <- unique(callees$package)
-
-  results <- lapply(packages, function (package) {
+  if (progress) pb <- txtProgressBar(style = 3)
+  c(lapply_fun, cl) %<-% make_lapply_fun(parallel = parallel, max_ncores = length(packages))
+  results <- lapply_fun(packages, function (package) {
     fun_names <- callees$fun[callees$package == package]
     current_funs <- lapply(fun_names,
             possibly(get_fun_in_ns, otherwise = NA, quiet = FALSE),
@@ -139,27 +152,26 @@ package_report <- function (
     versions <- available_versions(package)
     versions <- arrange(versions, desc(date))
     if (! is.null(cutoff_date)) versions <- filter(versions, date >= cutoff_date)
-    if (! is.null(max_versions)) versions <- slice(versions, seq_len(max_versions))
-    are_apis_same <- function (ns) {
-      funs <- lapply(fun_names, possibly(get_fun_in_ns, otherwise = NA), ns)
-      nn <- ! is.na(funs)
-      funs[nn] <- map2_lgl(funs[nn], current_funs[nn], is_api_same)
-    }
+    if (! is.null(max_n_versions)) versions <- slice(versions, seq_len(max_n_versions))
+
     problem_funs <- character(0)
     problem_version <- NA_character_
     for (vn in seq_len(nrow(versions))) {
       version <- versions$version[vn]
-      apis_same <- call_with_namespace(package, version, test = are_apis_same, ...)
+      funs <- funs_at(fun_names, version, package)
+      apis_same <- map2_lgl(funs, current_funs, is_api_same)
       problem_funs <- fun_names[! apis_same]
       if (length(problem_funs) > 0) {
         problem_version <- version
         break
       }
     }
+    if (progress) setTxtProgressBar(pb, getTxtProgressBar(pb) + 1/length(packages))
     return(list(version = problem_version, funs = problem_funs))
   })
   names(results) <- packages
 
+  if (parallel) maybe_stop_cluster(cl)
   report <- tibble::tibble(
     package = packages,
     version = map_chr(results, "version"),
@@ -170,7 +182,7 @@ package_report <- function (
 }
 
 
-package_callees <- function(path, include, exclude) {
+package_callees <- function(path, include, exclude = character(0)) {
   assert_package("pkgapi")
 
   fun_map <- pkgapi::map_package(path)
@@ -180,7 +192,7 @@ package_callees <- function(path, include, exclude) {
   itself <- desc::desc_get("Package", path)
   # "NA" is dynamically created; "" is local:
   # "NA" can also be an external function that is imported :-(
-  exclude <- c("", itself, exclude)
+  exclude <- c("", itself, exclude, "NA")
   callees <- filter(callees, ! package %in% exclude)
 
   callees <- callees         %>%

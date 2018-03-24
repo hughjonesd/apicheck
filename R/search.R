@@ -1,12 +1,14 @@
 
 # functions that search through multiple versions
 
+#' @importFrom zeallot %<-%
+NULL
+
 #' @param search "binary", "forward", "backward", "all" or "parallel". See Search strategies.
 #' @param report "brief" or "full". See Value.
 #' @param progress Print a progress bar.
 #' @param min_version Lowest version to check.
 #' @param max_version Highest version to check.
-#'
 #'
 #' @return
 #' If `report` is "brief", the earliest "known good" version.
@@ -15,6 +17,16 @@
 #' @name search_doc
 NULL
 
+
+#' @section Parallelism:
+#' For parallel search, you can set up your own parallel
+#' cluster by using [parallel::setDefaultCluster()]; otherwise one will be created, using
+#' `getOption("cl.cores")` cores if that is set. If you
+#' set up your own cluster, it will not be stopped automatically (see
+#' [parallel::stopCluster()]).
+#'
+#' @name parallel_doc
+NULL
 
 #' Compare function existence and APIs across package versions
 #'
@@ -46,12 +58,9 @@ NULL
 #'   \item `"all"` searches every version.
 #'   \item `"parallel"` searches every version in parallel using [parallel::parLapply()].
 #' }
-#' For parallel search, you can set up your own parallel
-#' cluster by using [parallel::setDefaultCluster()]; otherwise one will be created, using
-#' `getOption("cl.cores")` cores if that is set. If you
-#' set up your own cluster, it will not be stopped automatically (see
-#' [parallel::stopCluster()]).
-
+#'
+#' @inheritSection parallel_doc Parallelism
+#'
 #' @export
 #'
 #' @examples
@@ -222,34 +231,13 @@ search_versions <- function (versions, test, search) {
 
 
 search_all <- function (versions, test, search) {
-  lapply_fun <- if (search != "parallel") {
-    lapply
-   } else {
-    assert_package("parallel")
-    # only way to find out if a cluster is registered?
-    x <- try(parallel::clusterApply(NULL, 1, identity), silent = TRUE)
-    cl <- if (class(x) == "try-error") {
-      ncores <- getOption("mc.cores")
-      if (is.null(ncores)) ncores <- min(parallel::detectCores() - 1, length(versions))
-      if (is.na(ncores)) ncores <- 2
-      parallel::makeCluster(ncores)
-    } else {
-      NULL
-    }
-
-    parallel::clusterEvalQ(cl, library(apicheck))
-    use_mran <- mran_selected()
-    repos <- getOption("repos", "https://cloud.r-project.org")
-    parallel::clusterCall(cl, options, apicheck.use_mran = use_mran, repos = repos)
-    parallel::clusterExport(cl, "LIB_DIR", envir = environment())
-    function (x, fun) parallel::parLapplyLB(cl, x, fun)
-  }
+  parallel <- search == "parallel"
+  c(lapply_fun, cl) %<-% make_lapply_fun(parallel = parallel, max_ncores = length(versions))
 
   res <- lapply_fun(versions, test)
   res <- as.logical(res)
-  res <- ifelse(is.na(res), 0L, 4 * as.integer(res) - 2)
-  # only stop a cluster if we made it ourselves:
-  if (search == "parallel" && ! is.null(cl)) parallel::stopCluster(cl)
+  res <- ifelse(is.na(res), 0L, 4L * as.integer(res) - 2L)
+  if (parallel) maybe_stop_cluster(cl)
 
   return(res)
 }

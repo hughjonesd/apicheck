@@ -1,0 +1,70 @@
+# Determine system type
+sys_type <- function() {
+  return(Sys.info()["sysname"])
+}
+
+#' Is the system clipboard available?
+#'
+#' Checks to see if the system clipboard is write-able/read-able. This may be
+#' useful if you are developing a package that relies on \link{clipr} and need
+#' to ensure that it will skip tests on machines (e.g. CRAN, Travis) where
+#' the system clipboard may not be available.
+#'
+#' @return \code{clipr_available} returns a boolean value.
+#'
+#' @examples
+#' \dontrun{
+#' # When using testthat:
+#' library(testthat)
+#' skip_if_not(clipr_available())
+#' }
+#'
+#' @export
+clipr_available <- function() {
+  clipr_results_check(clipr_available_handler())
+}
+
+#' @rdname clipr_available
+#'
+#' @return \code{dr_clipr} prints an informative message to the console with
+#'   software and system configuration requirements if clipr is not available
+#'   (invisibly returns the same string)
+#'
+#' @export
+dr_clipr <- function() {
+  res <- clipr_available_handler()
+
+  if (clipr_results_check(res)) {
+    msg <- msg_clipr_available()
+  } else {
+    msg <- attr(res$write, which = "condition", exact = TRUE)$message
+  }
+
+  message(msg)
+  invisible(msg)
+}
+
+clipr_available_handler <- function() {
+  suppressWarnings({
+    read_attempt <- try(read_clip(), silent = TRUE)
+    write_attempt <- try(write_clip(read_attempt), silent = TRUE)
+  })
+  return(list(read = read_attempt, write = write_attempt))
+}
+
+clipr_results_check <- function(res) {
+  if (inherits(res$read, "try-error")) {
+    return(FALSE)
+  }
+
+  if (inherits(res$write, "try-error")) {
+    return(FALSE)
+  }
+  TRUE
+}
+
+msg_clipr_available <- function() "clipr has read/write access to the system clipboard!"
+
+msg_no_clipboard <- function() "Clipboard on X11 requires 'xclip' (recommended) or 'xsel'."
+
+msg_no_display <- function() "Clipboard on X11 requires that the DISPLAY envvar be configured."

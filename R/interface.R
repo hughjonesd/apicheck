@@ -97,11 +97,7 @@ api_same_at <- function (
 ) {
   if (missing(package)) c(package, fun) %<-% parse_fun(fun)
   if (is.null(current_fun)) {
-    current_fun <- if (is_core_package(package)) {
-      fun_at(fun, version = as.character(getRversion()), package = package, allow_core = TRUE)
-    } else {
-      get_fun_in_ns(fun, get_current_ns(package))
-    }
+    current_fun <- get_fun_in_ns(fun, get_current_ns(package))
   }
 
   g <- tryCatch(
@@ -193,20 +189,9 @@ fun_at <- function (
   if (missing(package)) c(package, fun) %<-% parse_fun(fun)
   if (! allow_core) assert_not_core(package)
 
-  if (is_core_package(package)) {
-    rch <- get_rcheology_rows(name = fun, package = package) # memoised for speed
-    rch <- rch[rch$Rversion == version,]
-    if (nrow(rch) == 0L) stop(FUNCTION_NOT_FOUND)
-    stopifnot(nrow(rch) == 1L)
-    fun_args <- rch$args
-    if (is.na(fun_args)) stop("Could not determine arguments of `", fun, "` in rcheology database of core R functions")
-    fake_fun <- paste("function", fun_args, "NULL")
-    fake_fun <- eval(parse(text = fake_fun))
-    return (fake_fun)
-  }
+  fun_list <- funs_at(list(fun), version, package, quiet, ...)
 
-  test <- function (namespace) get_fun_in_ns(fun, namespace)
-  call_with_namespace(package, version, test, quiet = quiet, ...)
+  return(fun_list[[1]])
 }
 
 
@@ -236,7 +221,7 @@ help_at <- function (
   if (missing(package)) c(package, fun) %<-% parse_fun(fun)
   assert_not_core(package)
 
-  on.exit(unloadNamespace(package))
+  on.exit(unload_noncore_namespace(package))
   package_dir <- cached_install(package, version, return = "path", quiet = quiet, ...)
   # double brackets stop help looking for "fun" literally
   utils::help((fun), package = (package), lib.loc = package_dir, help_type = "text")

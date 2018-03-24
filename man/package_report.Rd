@@ -4,14 +4,25 @@
 \alias{package_report}
 \title{Report on backwards compatibility of a source package}
 \usage{
-package_report(path = ".", include, exclude = core_packages(), ...)
+package_report(path = ".", include, exclude = core_packages(),
+  cutoff_date = Sys.Date() - 2 * 365, max_n_versions = NULL,
+  parallel = FALSE, progress = !parallel, ...)
 }
 \arguments{
 \item{path}{Path to the root of an R package.}
 
-\item{include}{Packages to include. By default, all are included except core packages and calls within the package itself.}
+\item{include}{Packages to include. By default, all are included except core packages and the package at
+\code{path} itself.}
 
 \item{exclude}{Packages to exclude from checking. Overrides \code{include}.}
+
+\item{cutoff_date}{Don't check versions before this date (default: 2 years ago). Set to \code{NULL} for no cutoff.}
+
+\item{max_n_versions}{Check at most this number of previous versions. Set to \code{NULL} for no limit.}
+
+\item{parallel}{Run in parallel.}
+
+\item{progress}{Show a progress bar.}
 
 \item{...}{Arguments passed to \code{\link[=call_with_namespace]{call_with_namespace()}}.}
 }
@@ -29,6 +40,13 @@ Report on backwards compatibility of a source package
 \details{
 This function lists the external function calls from a source package using \code{\link[pkgapi:map_package]{pkgapi::map_package()}}.
 It then checks back-compatibility of each call us
-Only function calls which are qualified with \code{::} will be detected, so e.g. \code{dplyr::filter}
-will be
+Only function calls which are qualified with \code{::} will be detected, so e.g. \code{purrr::quietly}
+will be checked, but \code{quietly} on its own won't be.
+}
+\examples{
+\dontrun{
+package_report(".")
+# to include base packages also:
+package_report(".", exclude = character(0))
+}
 }

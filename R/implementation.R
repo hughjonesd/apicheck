@@ -29,11 +29,11 @@ call_with_namespace  <- function (
         package,
         version,
         test,
-        quiet = TRUE,
+        quiet      = TRUE,
         ...
       ) {
   namespace <- cached_install(package, version, return = "namespace", quiet = quiet, ...)
-  on.exit(unloadNamespace(package))
+  on.exit(unload_noncore_namespace(package))
   test(namespace)
 }
 
@@ -68,16 +68,19 @@ call_with_namespace  <- function (
 cached_install <- function (
         package,
         version,
-        return  = c("namespace", "path"),
-        cache   = TRUE,
-        quiet   = TRUE,
-        partial = TRUE,
+        return     = c("namespace", "path"),
+        cache      = TRUE,
+        quiet      = TRUE,
+        partial    = TRUE,
         ...
       ) {
   ret <- match.arg(return)
+  assert_not_core(package)
+
   if (isNamespaceLoaded(package)) {
-    warning(package, " namespace is already loaded. Attempting to unload.")
-    unloadNamespace(package)
+    warning(package, " namespace is already loaded. Trying to unload; will try to reload later.")
+    unload_noncore_namespace(package)
+    on.exit(loadNamespace(package))
   }
 
   force(version)
@@ -143,6 +146,26 @@ cached_install <- function (
   )
 
   res <- if (ret == "namespace") namespace else package_dir
+  return(res)
+}
+
+
+funs_at <- function (
+  funs,
+  version,
+  package,
+  quiet      = TRUE,
+  ...
+) {
+  res <- if (is_core_package(package)) {
+    lapply(funs, get_stub_fun_in_core, package, version)
+  } else {
+    test <- function (namespace) {
+      lapply(funs, get_fun_in_ns, namespace)
+    }
+    call_with_namespace(package, version, test, quiet = quiet, ...)
+  }
+
   return(res)
 }
 

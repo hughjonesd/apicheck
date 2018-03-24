@@ -9,7 +9,7 @@ get_current_ns <- function (package) {
       " without doing a full install.\n",
       "Original error:", e$message, call. = FALSE)
   })
-  unloadNamespace(package)
+  unload_noncore_namespace(package)
 
   return(ns)
 }
@@ -22,7 +22,7 @@ is_api_same <- function (fun1, fun2) {
 
 FUNCTION_NOT_FOUND <- "Could not find function in namespace"
 
-# here fun could be a S3 method
+
 get_fun_in_ns <- function (fun, ns) {
   tryCatch({
       x <- if (utils::isS3method(fun, envir = ns)) {
@@ -41,6 +41,21 @@ get_fun_in_ns <- function (fun, ns) {
   return(x)
 }
 
+
+get_stub_fun_in_core <- function (fun, package, version) {
+  stopifnot(is_core_package(package))
+
+  rch <- get_rcheology_rows(name = fun, package = package) # memoised for speed
+  rch <- rch[rch$Rversion == version,]
+  if (nrow(rch) == 0L) stop(FUNCTION_NOT_FOUND)
+  stopifnot(nrow(rch) == 1L)
+  fun_args <- rch$args
+  if (is.na(fun_args)) stop("Could not determine arguments of `", fun, "` in rcheology database of core R functions")
+  fake_fun <- paste("function", fun_args, "NULL")
+  fake_fun <- eval(parse(text = fake_fun))
+
+  return (fake_fun)
+}
 
 core_packages <- function () {
   ip <- as.data.frame(installed.packages())
