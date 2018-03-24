@@ -7,10 +7,12 @@ License: MIT + file LICENSE
 Depends: 
     R (>= 3.3.0)
 Imports: 
+    dplyr,
     httr,
     jsonlite,
     memoise,
     parallel,
+    purrr,
     rcheology,
     remotes,
     utils,
