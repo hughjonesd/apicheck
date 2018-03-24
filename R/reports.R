@@ -60,7 +60,7 @@ versions_report <- function (ns1, ns2, v1, v2) {
   api_changed <- sapply(report[both_there, 1, drop = TRUE], function (x){
     f1 <- get_fun_in_ns(x, ns1)
     f2 <- get_fun_in_ns(x, ns2)
-    is_api_same(f1, f2)
+    ! is_api_same(f1, f2)
   })
   api_ch_str <- "API changed"
   report$change[both_there] <- ifelse(api_changed, api_ch_str, NA_character_)
