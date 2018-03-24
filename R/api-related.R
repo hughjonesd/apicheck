@@ -16,7 +16,8 @@ get_current_ns <- function (package) {
 
 
 is_api_same <- function (fun1, fun2) {
-  identical(formals(fun1), formals(fun2))
+  # we use args because it can cope with Primitive functions, see ?formals
+  identical(formals(args(fun1)), formals(args(fun2)))
 }
 
 
