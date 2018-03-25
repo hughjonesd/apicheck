@@ -95,11 +95,8 @@ cached_install <- function (
     # RStudio cat()s warnings of install.packages; so they aren't caught in tryCatch. The solution is to
     # cat everything in tryCatch and then to capture.output twice.
     here <- environment()
-    capture_all <- function (expr) {
-      msg <- utils::capture.output(out <- utils::capture.output(eval(substitute(expr, here))), type = "message")
-      return(list(msg = msg, out = out))
-    }
-    output <- capture_all(tryCatch({
+    maybe_capture <- if (quiet) really_quietly(here) else identity
+    output <- maybe_capture(tryCatch({
       if (mran_selected()) {
         assert_package("versions")
         versions::install.versions(package, versions = version, lib = package_dir,  ...)
@@ -121,10 +118,6 @@ cached_install <- function (
         loudly_unlink(package_dir)
         stop(e$message, call. = FALSE)
       }))
-    if (! quiet) {
-      message(output$msg)
-      cat(output$out)
-    }
   }
 
   tryCatch(

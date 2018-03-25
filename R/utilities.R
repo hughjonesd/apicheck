@@ -68,3 +68,12 @@ parse_fun <- function (fun, single = TRUE) {
 }
 
 
+really_quietly <- function (env) {
+  function (expr) {
+    msg <- utils::capture.output(out <- utils::capture.output(eval(substitute(expr, env))), type = "message")
+    return(list(msg = msg, out = out))
+  }
+}
+
+
+say <- function (...) cat(..., "\n")
