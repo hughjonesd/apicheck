@@ -46,9 +46,9 @@ compare_versions <- function (
 
 versions_report <- function (ns1, ns2, v1, v2, package) {
   suffs <- c("_1", "_2")
-  get_funs <- function (ns) Filter(function (x) is.function(get(x, ns)), getNamespaceExports(ns))
-  objs1 <- get_funs(ns1)
-  objs2 <- get_funs(ns2)
+
+  objs1 <- fun_names_in_ns(ns1)
+  objs2 <- fun_names_in_ns(ns2)
 
   report1 <- tibble::tibble(f = objs1, f1 = objs1)
   report2 <- tibble::tibble(f = objs2, f2 = objs2)
