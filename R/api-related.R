@@ -1,15 +1,24 @@
 
-# these functions should have nothing to do with versioning
+# these functions should have nothing to do with versioning or downloads
 
 get_current_ns <- function (package) {
-  ns <- tryCatch(loadNamespace(package, partial = FALSE), error = function (e) {
-    stop("Couldn't load current version of package.\n",
-      "Do you have it installed? If not run `install.packages('", package, "')`.\n",
-      "Or, use `current_fun = fun_at(fun, package, version)` to compare to a version\n",
-      " without doing a full install.\n",
-      "Original error:", e$message, call. = FALSE)
-  })
-  unload_noncore_namespace(package)
+  ns <- tryCatch(
+    loadNamespace(package, partial = FALSE),
+    error = function (e) {
+      stop("Couldn't load current version of package.\n",
+        "Do you have it installed? If not run `install.packages('", package, "')`.\n",
+        "Or, use `current_fun = fun_at(fun, package, version)` to compare to a version\n",
+        " without doing a full install.\n",
+        "Original error:", e$message, call. = FALSE)
+    }
+  )
+  tryCatch(
+    unload_noncore_namespace(package),
+    error = function (e) {
+      warning("Could not unload namespace of '", package, "' after loading.\n",
+            "You may want to unload it yourself. Original error:\n", e$message)
+    }
+  )
 
   return(ns)
 }
@@ -23,6 +32,7 @@ is_api_same <- function (fun1, fun2) {
 
 get_fun_in_ns <- function (fun, ns) {
   tryCatch({
+      # possibly this whole if- section is unnecessary and we could just do get() always
       x <- if (utils::isS3method(fun, envir = ns)) {
         bits <- strsplit(fun, ".", fixed = TRUE)[[1]]
         generic_fun <- paste(bits[ -length(bits) ], collapse = ".")
@@ -39,6 +49,17 @@ get_fun_in_ns <- function (fun, ns) {
   return(x)
 }
 
+
+fun_names_in_ns <- function (ns) {
+  # getNamespaceExports may include re-exported functions from other packages; we don't want these
+  # but ls(ns) will include non-exported functions; we don't want these
+  res <- getNamespaceExports(ns)
+  imports <- unlist(getNamespaceImports(ns))
+  res <- setdiff(res, imports)
+  res <- purrr::keep(res, ~ is.function(get(.x, ns)))
+
+  return(res)
+}
 
 get_stub_fun_in_core <- function (fun, package, version) {
   stopifnot(is_core_package(package))
