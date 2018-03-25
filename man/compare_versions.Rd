@@ -25,6 +25,8 @@ from \code{R CMD INSTALL} and may be unavoidable.)}
 
 \item{...}{Arguments passed to \code{\link[versions:install.versions]{versions::install.versions()}} or
 \code{\link[remotes:install_version]{remotes::install_version()}}, and thence to \code{\link[=install.packages]{install.packages()}}. \code{Ncpus} may be useful.}
+
+\item{x, object}{An object of class \code{versions_report}.}
 }
 \value{
 \code{compare_versions} returns a data frame of class \code{versions_report},

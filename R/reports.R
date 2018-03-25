@@ -81,6 +81,7 @@ versions_report <- function (ns1, ns2, v1, v2, package) {
 
 #' @rdname compare_versions
 #'
+#' @param x,object An object of class `versions_report`.
 #' @export
 print.versions_report <- function (x, ...) {
   vs <- attr(x, "versions")
