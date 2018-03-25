@@ -21,14 +21,11 @@ is_api_same <- function (fun1, fun2) {
 }
 
 
-FUNCTION_NOT_FOUND <- "Could not find function in namespace"
-
-
 get_fun_in_ns <- function (fun, ns) {
   tryCatch({
       x <- if (utils::isS3method(fun, envir = ns)) {
         bits <- strsplit(fun, ".", fixed = TRUE)[[1]]
-        generic_fun <- paste(bits[-length(bits)], collapse = ".")
+        generic_fun <- paste(bits[ -length(bits) ], collapse = ".")
         class <- bits[length(bits)]
         utils::getS3method(generic_fun, class, envir = ns)
       } else {
@@ -36,7 +33,7 @@ get_fun_in_ns <- function (fun, ns) {
       }
     },
     # a uniform error message can be caught upstream
-    error = function (e) stop(FUNCTION_NOT_FOUND)
+    error = function (e) stop_fun_not_found(fun, ns)
   )
 
   return(x)
@@ -48,7 +45,7 @@ get_stub_fun_in_core <- function (fun, package, version) {
 
   rch <- get_rcheology_rows(name = fun, package = package) # memoised for speed
   rch <- rch[rch$Rversion == version,]
-  if (nrow(rch) == 0L) stop(FUNCTION_NOT_FOUND)
+  if (nrow(rch) == 0L) stop_fun_not_found(fun, package, version)
   stopifnot(nrow(rch) == 1L)
   fun_args <- rch$args
   if (is.na(fun_args)) stop("Could not determine arguments of `", fun, "` in rcheology database of core R functions")
@@ -68,4 +65,18 @@ core_packages <- function () {
 is_core_package <- memoise::memoise( function (package) {
   return(package %in% core_packages())
 })
+
+# used elsewhere to check for this error
+FUNCTION_NOT_FOUND <- "Could not find function in namespace"
+
+
+stop_fun_not_found <- function (fun, ns_or_package, version) {
+  if (is.environment(ns_or_package)) {
+    package <- getNamespaceName(ns_or_package)
+    version <- getNamespaceVersion(ns_or_package)
+  } else {
+    package <- ns_or_package
+  }
+  stop(FUNCTION_NOT_FOUND, ": ", fun, " in ", package, " version ", version)
+}
 
