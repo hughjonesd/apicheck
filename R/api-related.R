@@ -12,13 +12,8 @@ get_current_ns <- function (package) {
         "Original error:", e$message, call. = FALSE)
     }
   )
-  tryCatch(
-    unload_noncore_namespace(package),
-    error = function (e) {
-      warning("Could not unload namespace of '", package, "' after loading.\n",
-            "You may want to unload it yourself. Original error:\n", e$message)
-    }
-  )
+  unload_noncore_namespace(package)
+
 
   return(ns)
 }

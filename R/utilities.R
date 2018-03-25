@@ -44,18 +44,28 @@ get_rcheology_rows <- memoise::memoise(function (name, package) {
 
 assert_package <- function (package) {
   if (! requireNamespace(package, quietly = TRUE)) {
-    stop("Could not load the `", package, "` library.\n", "Try `install.packages(\"", package, "\")`.")
+    stop("Could not load the `", package, "` library.\n",
+          "Try `install.packages(\"", package, "\")`.")
   }
 }
 
 
 assert_not_core <- function (package) {
-  if (is_core_package(package)) stop("`", package, "` is a core package and cannot be downloaded from CRAN or MRAN.")
+  if (is_core_package(package)) stop("`", package,
+        "` is a core package and cannot be downloaded from CRAN or MRAN.")
 }
 
 
 unload_noncore_namespace <- function (package) {
-  if (! is_core_package(package)) unloadNamespace(package)
+  if (! is_core_package(package)) {
+    tryCatch(
+      unloadNamespace(package),
+      error = function (e) {
+        warning("Could not unload package ", package,
+              ", you may want to do it manually. Original error:\n", e$message)
+      }
+    )
+  }
 }
 
 
@@ -70,7 +80,8 @@ parse_fun <- function (fun, single = TRUE) {
 
 really_quietly <- function (env) {
   function (expr) {
-    msg <- utils::capture.output(out <- utils::capture.output(eval(substitute(expr, env))), type = "message")
+    msg <- utils::capture.output(out <- utils::capture.output(eval(substitute(expr, env))),
+          type = "message")
     return(list(msg = msg, out = out))
   }
 }

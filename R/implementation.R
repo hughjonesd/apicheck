@@ -78,23 +78,23 @@ cached_install <- function (
   assert_not_core(package)
 
   if (isNamespaceLoaded(package)) {
-    warning(package, " namespace is already loaded. Trying to unload; will try to reload later.")
+    warning(package, " namespace is already loaded. Trying to unload.")
     unload_noncore_namespace(package)
-    on.exit(loadNamespace(package))
   }
 
   force(version)
   lib_dir <- get_lib_dir()
   package_dir <- file.path(lib_dir, paste(package, version, sep = "-"))
-  if (! cache) loudly_unlink(package_dir, paste0("Could not delete old package directory '", package_dir, "'"))
+  if (! cache) loudly_unlink(package_dir,
+        glue("Could not delete old package directory '{package_dir}'"))
 
   if (! cache || ! dir.exists(package_dir)) {
     dir.create(package_dir, recursive = TRUE)
     if (! dir.exists(package_dir)) stop("Could not create ", package_dir)
     # install.packages spews to stderr, but not via
-    # message. So we can't use tryCatch for messages, have to use capture.output. This gets message() output too.
-    # RStudio cat()s warnings of install.packages; so they aren't caught in tryCatch. The solution is to
-    # cat everything in tryCatch and then to capture.output twice.
+    # message. So we can't use tryCatch for messages, have to use capture.output. This gets
+    # message() output too. RStudio cat()s warnings of install.packages; so they aren't caught in
+    # tryCatch. The solution is to cat everything in tryCatch, then to capture.output twice.
     here <- environment()
     maybe_capture <- if (quiet) really_quietly(here) else identity
     output <- maybe_capture(tryCatch({
@@ -125,9 +125,9 @@ cached_install <- function (
     namespace <- loadNamespace(package, lib.loc = package_dir, partial = partial),
     error = function (e) {
       loudly_unlink(package_dir)
-      stop(
-              "Failed to load the namespace of '", package, "' version '", version, "'.\n",
-              "Maybe something went silently wrong during installation.",
+      stop(glue(
+              "Failed to load the namespace of {package} version {version}.\n",
+              "Maybe something went silently wrong during installation."),
               if (quiet && exists("output")) paste0(
                 "\nOutput from install.packages is below:",
                 "\n==========\nMessages:\n", output$msg,
@@ -138,6 +138,10 @@ cached_install <- function (
     }
   )
 
+  nsv <- getNamespaceVersion(ns)
+  if (! nsv == version) stop(glue(
+        "Failed to load version {version} of package {package}; got version {nsv} instead. ",
+        "This may happen because an already-loaded package could not be unloaded."))
   res <- if (ret == "namespace") namespace else package_dir
   return(res)
 }
@@ -164,8 +168,8 @@ funs_at <- function (
 }
 
 
-loudly_unlink <- function (dir, error = paste0("Could not unlink package dir ", dir,
-        " after failed installation.\n",
+loudly_unlink <- function (dir, error = glue(
+        "Could not unlink package dir {dir} after failed installation.\n",
         "Please delete the directory yourself or run `clear_lib_dir()`",
         "to delete all directories")) {
   if (dir.exists(dir) && ! identical(unlink(dir, recursive = TRUE), 0L)) stop(error)
