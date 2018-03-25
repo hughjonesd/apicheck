@@ -7,7 +7,6 @@
 ^TODO\.md$
 ^appveyor\.yml$
 ^codecov\.yml$
-^tests/testthat/testing_lib_dir/
 .DS_Store
 ^\.apicheck/
 ^docs/
