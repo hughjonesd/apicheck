@@ -2,17 +2,23 @@
 % Please edit documentation in R/reports.R
 \name{compare_versions}
 \alias{compare_versions}
+\alias{print.versions_report}
+\alias{summary.versions_report}
 \title{Compare versions of a package}
 \usage{
-compare_versions(package, version = previous_version(package),
-  version2 = NULL, quiet = TRUE, ...)
+compare_versions(package, version = previous_version(package), version2,
+  quiet = TRUE, ...)
+
+\method{print}{versions_report}(x, ...)
+
+\method{summary}{versions_report}(object, ...)
 }
 \arguments{
 \item{package}{Package name.}
 
-\item{version}{First version to compare. If \code{NULL}, use the previous available version.}
+\item{version}{First version to compare. By default, the previous available version.}
 
-\item{version2}{Second version to compare. If \code{NULL}, use the current version as installed.}
+\item{version2}{Second version to compare. By default, the current installed version.}
 
 \item{quiet}{Logical. Try to minimize output from package installation. (Some output comes from \code{R CMD INSTALL} and may be unavoidable.)}
 
@@ -20,8 +26,12 @@ compare_versions(package, version = previous_version(package),
 \code{\link[remotes:install_version]{remotes::install_version()}}, and thence to \code{\link[=install.packages]{install.packages()}}.}
 }
 \value{
-A data frame reporting functions that have been "Added", "Removed" or had "API changed",
-and details of function arguments.
+\code{compare_versions} returns a data frame of class \code{versions_report},
+reporting functions that have been "Added", "Removed" or had "API changed",
+and details of function arguments. Extra information is in the \code{"package"} and \code{"versions"}
+attributes.
+
+\code{summary} prints the arguments of changed functions as a string.
 }
 \description{
 \code{compare_versions} reports how functions and APIs changed between versions of a package.

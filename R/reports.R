@@ -9,13 +9,15 @@ NULL
 #'
 #' `compare_versions` reports how functions and APIs changed between versions of a package.
 #'
-#' @param version  First version to compare. If `NULL`, use the previous available version.
-#' @param version2 Second version to compare. If `NULL`, use the current version as installed.
+#' @param version  First version to compare. By default, the previous available version.
+#' @param version2 Second version to compare. By default, the current installed version.
 #' @inherit package_nofun_params_doc params
 #' @inherit params_doc params
 #'
-#' @return A data frame reporting functions that have been "Added", "Removed" or had "API changed",
-#'   and details of function arguments.
+#' @return `compare_versions` returns a data frame of class `versions_report`,
+#'   reporting functions that have been "Added", "Removed" or had "API changed",
+#'   and details of function arguments. Extra information is in the `"package"` and `"versions"`
+#'   attributes.
 #' @export
 #'
 #' @examples
@@ -25,7 +27,7 @@ NULL
 compare_versions <- function (
   package,
   version  = previous_version(package),
-  version2 = NULL,
+  version2,
   quiet    = TRUE,
   ...
 ) {
@@ -36,13 +38,13 @@ compare_versions <- function (
     ns2 <- cached_install(package, version2, return = "namespace", partial = FALSE)
   }
 
-  test <- function (ns) versions_report(ns, ns2, version, version2)
+  test <- function (ns) versions_report(ns, ns2, version, version2, package)
 
   call_with_namespace(package, version, test, quiet = quiet, partial = FALSE, ...)
 }
 
 
-versions_report <- function (ns1, ns2, v1, v2) {
+versions_report <- function (ns1, ns2, v1, v2, package) {
   suffs <- c("_1", "_2")
   get_funs <- function (ns) Filter(function (x) is.function(get(x, ns)), getNamespaceExports(ns))
   objs1 <- get_funs(ns1)
@@ -53,9 +55,8 @@ versions_report <- function (ns1, ns2, v1, v2) {
   report <- full_join(report1, report2, all = TRUE, suffix = suffs, by = "f")
   report <- report[, 2:3]
   names(report) <- paste0("function", suffs)
-  report$change <- NA_character_
-  report$api_1  <- NA_character_
-  report$api_2  <- NA_character_
+  report$change <- rep(NA_character_, nrow(report))
+  report$api_2  <- report$api_1 <- vector(mode = "list", length = nrow(report))
   report$change[is.na(report$function_1)] <- "Added"
   report$change[is.na(report$function_2)] <- "Removed"
   both_there <- is.na(report$change)
@@ -65,14 +66,37 @@ versions_report <- function (ns1, ns2, v1, v2) {
     f2 <- get_fun_in_ns(x, ns2)
     if (! is_api_same(f1, f2)) {
       report[both_there, ][idx, "change"] <- "API changed"
-      report[both_there, ][idx, "api_1"] <- as.list(formals(f1))
-      report[both_there, ][idx, "api_2"] <- as.list(formals(f2))
+      report[both_there, ][[idx, "api_1"]] <- as.list(formals(f1))
+      report[both_there, ][[idx, "api_2"]] <- as.list(formals(f2))
     }
   })
 
   report <- report[! is.na(report$change), ]
   class(report) <- c("versions_report", class(report))
+  attr(report, "versions") <- c(v1 = v1, v2 = v2)
+  attr(report, "package") <- package
   return(report)
+}
+
+
+#' @rdname compare_versions
+#'
+#' @export
+print.versions_report <- function (x, ...) {
+  vs <- attr(x, "versions")
+  say("Version 1:", vs["v1"])
+  say("Version 2:", vs["v2"])
+  NextMethod()
+}
+
+#' @rdname compare_versions
+#'
+#' @return `summary` prints the arguments of changed functions as a string.
+#' @export
+summary.versions_report <- function (object, ...) {
+  object$api_1 <- map_chr(object$api_1, paste, collapse = ", ")
+  object$api_2 <- map_chr(object$api_2, paste, collapse = ", ")
+  return(object)
 }
 
 
