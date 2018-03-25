@@ -43,6 +43,15 @@ It then checks back-compatibility of each call us
 Only function calls which are qualified with \code{::} will be detected, so e.g. \code{purrr::quietly}
 will be checked, but \code{quietly} on its own won't be.
 }
+\section{Parallelism}{
+
+For parallel search, you can set up your own parallel
+cluster by using \code{\link[parallel:setDefaultCluster]{parallel::setDefaultCluster()}}; otherwise one will be created, using
+\code{getOption("cl.cores")} cores if that is set. If you
+set up your own cluster, it will not be stopped automatically (see
+\code{\link[parallel:stopCluster]{parallel::stopCluster()}}).
+}
+
 \examples{
 \dontrun{
 package_report(".")

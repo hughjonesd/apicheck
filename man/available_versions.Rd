@@ -14,7 +14,7 @@ A data frame with columns "version" and "date".
 }
 \description{
 This returns packages ordered by date, using either \href{https://mran.microsoft.com}{MRAN} or
-\href{http://crandb.r-pkg.org}{metacran} (or \href{https::/github.com/hughjonesd/rcheology}{rcheology}
+\href{http://crandb.r-pkg.org}{metacran} (or \href{https://github.com/hughjonesd/rcheology}{rcheology}
 for R core packages).
 Results are cached so as to
 relieve pressure on the server. If \code{options("apicheck.use_mran")} is \code{TRUE} (and \code{package} is non-core),

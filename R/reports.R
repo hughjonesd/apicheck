@@ -22,12 +22,11 @@ NULL
 #' }
 compare_versions <- function (
   package,
-  version = previous_version(package),
+  version  = previous_version(package),
   version2 = NULL,
   quiet    = TRUE,
   ...
 ) {
-  # if NULL, version2 is latest and version is previous
   if (missing(version2) || is.null(version2)) {
     ns2 <- get_current_ns(package)
     version2 <- current_version(package)
@@ -42,7 +41,7 @@ compare_versions <- function (
 
 
 versions_report <- function (ns1, ns2, v1, v2) {
-  suffs <- c("_x", "_y")
+  suffs <- c("_1", "_2")
   get_funs <- function (ns) Filter(function (x) is.function(get(x, ns)), getNamespaceExports(ns))
   objs1 <- get_funs(ns1)
   objs2 <- get_funs(ns2)
@@ -53,44 +52,25 @@ versions_report <- function (ns1, ns2, v1, v2) {
   report <- report[, 2:3]
   names(report) <- paste0("function", suffs)
   report$change <- NA_character_
-  report$change[is.na(report$function_x)] <- "Added"
-  report$change[is.na(report$function_y)] <- "Removed"
+  report$api_1  <- NA_character_
+  report$api_2  <- NA_character_
+  report$change[is.na(report$function_1)] <- "Added"
+  report$change[is.na(report$function_2)] <- "Removed"
   both_there <- is.na(report$change)
 
-  api_changed <- sapply(report[both_there, 1, drop = TRUE], function (x){
+  iwalk(report[both_there, 1, drop = TRUE], function (x, idx) {
     f1 <- get_fun_in_ns(x, ns1)
     f2 <- get_fun_in_ns(x, ns2)
-    ! is_api_same(f1, f2)
+    if (! is_api_same(f1, f2)) {
+      report[both_there, ][idx, "change"] <- "API changed"
+      report[both_there, ][idx, "api_1"] <- as.list(formals(f1))
+      report[both_there, ][idx, "api_2"] <- as.list(formals(f2))
+    }
   })
-  api_ch_str <- "API changed"
-  report$change[both_there] <- ifelse(api_changed, api_ch_str, NA_character_)
+
   report <- report[! is.na(report$change), ]
-
-  report[, paste0("api", suffs)] <- NA_character_
-  needs_api <- report$change == api_ch_str
-  report$api_x[needs_api] <- sapply(report$function_x[needs_api], function (x) get_api_desc(get(x, ns1)))
-  report$api_y[needs_api] <- sapply(report$function_y[needs_api], function (x) get_api_desc(get(x, ns2)))
-
-  names(report) <- gsub("x$", v1, names(report))
-  names(report) <- gsub("y$", v2, names(report))
   class(report) <- c("versions_report", class(report))
   return(report)
-}
-
-
-# a nice description of a function's formals
-get_api_desc <- function(fun) {
-  desc <- deparse(args(fun))
-  desc <- desc[ -length(desc) ]
-  desc <- paste(desc, collapse = "")
-  desc <- trimws(desc)
-  desc <- sub("^function\\s+", "", desc)
-  if (nchar(desc, "width") > 40) {
-    desc <- strtrim(desc, 40)
-    substr(desc, 37, 40) <- " ..."
-  }
-
-  return(desc)
 }
 
 

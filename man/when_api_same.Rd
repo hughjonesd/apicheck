@@ -78,6 +78,15 @@ it will stay so in future versions. This allows them to stop before searching ev
 }
 }
 
+\section{Parallelism}{
+
+For parallel search, you can set up your own parallel
+cluster by using \code{\link[parallel:setDefaultCluster]{parallel::setDefaultCluster()}}; otherwise one will be created, using
+\code{getOption("cl.cores")} cores if that is set. If you
+set up your own cluster, it will not be stopped automatically (see
+\code{\link[parallel:stopCluster]{parallel::stopCluster()}}).
+}
+
 \examples{
 \dontrun{
 when_api_same("read.dta", "foreign")
