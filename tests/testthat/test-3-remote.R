@@ -54,3 +54,18 @@ test_that("Multiple parallel remote installs", {
 
   run_in_fresh_cache(mran = FALSE, when_fun_exists("clipr::dr_clipr", search = "parallel"))
 })
+
+
+test_that("Can set lib_dir", {
+  skip_on_cran()
+  skip_on_travis() # slow
+
+  tempdir <- tempfile(pattern = "testing", tmpdir = normalizePath(tempdir()))
+  dir.create(tempdir)
+  old_ld <- set_lib_dir(tempdir)
+  on.exit(set_lib_dir(old_ld))
+  prepare <- try(cached_install("clipr", "0.4.0"))
+  if (class(prepare) == "try-error") skip("Couldn't download package for testing")
+  expect_true(dir.exists(file.path(tempdir, "clipr-0.4.0", "clipr")))
+})
+

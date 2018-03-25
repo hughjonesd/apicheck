@@ -250,7 +250,8 @@ test_that("Can set lib_dir", {
 
   tempdir <- tempfile(pattern = "testing", tmpdir = normalizePath(tempdir()))
   dir.create(tempdir)
-  set_lib_dir(tempdir)
+  old_ld <- set_lib_dir(tempdir)
+  on.exit(set_lib_dir(old_ld))
   prepare <- try(cached_install("clipr", "0.4.0"))
   if (class(prepare) == "try-error") skip("Couldn't download package for testing")
   expect_true(dir.exists(file.path(tempdir, "clipr-0.4.0", "clipr")))
@@ -268,7 +269,6 @@ test_that("compare_versions", {
 
 test_that("package_report", {
   skip_on_cran()
-  skip_on_travis()
 
   # produces invisible warnings, but seems to work
   expect_error(pr <- package_report("clipr-source", progress = FALSE), NA)
