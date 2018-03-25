@@ -1,6 +1,8 @@
 
 # utilities, bits and bobs, not tied to other specific parts of the package
 
+#' @importFrom glue glue
+NULL
 
 # returns a lapply-like function and a possibly NULL cluster object
 make_lapply_fun <- function (parallel, max_ncores) {
@@ -44,15 +46,14 @@ get_rcheology_rows <- memoise::memoise(function (name, package) {
 
 assert_package <- function (package) {
   if (! requireNamespace(package, quietly = TRUE)) {
-    stop("Could not load the `", package, "` library.\n",
-          "Try `install.packages(\"", package, "\")`.")
+    stop(glue("Could not load the '{package}' library. Try:\n  install.packages('{package}')."))
   }
 }
 
 
 assert_not_core <- function (package) {
-  if (is_core_package(package)) stop("`", package,
-        "` is a core package and cannot be downloaded from CRAN or MRAN.")
+  if (is_core_package(package)) stop(
+        glue("'{package}' is a core package and cannot be downloaded from CRAN or MRAN."))
 }
 
 
@@ -61,8 +62,8 @@ unload_noncore_namespace <- function (package) {
     tryCatch(
       unloadNamespace(package),
       error = function (e) {
-        warning("Could not unload package ", package,
-              ", you may want to do it manually. Original error:\n", e$message)
+        warning(glue("Could not unload package {package}, you may want to do it manually."),
+            "Original error:\n", e$message)
       }
     )
   }
