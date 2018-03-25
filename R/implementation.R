@@ -2,6 +2,7 @@
 # functions for advanced use or private functions related to loading namespaces
 
 #' @importFrom remotes install_version
+#' @importFrom glue glue
 NULL
 
 #' Load a package namespace and pass it to a function

@@ -9,6 +9,7 @@ Depends:
 Imports: 
     desc,
     dplyr,
+    glue,
     httr,
     jsonlite,
     memoise,
