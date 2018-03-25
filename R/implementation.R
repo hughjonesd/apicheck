@@ -138,9 +138,9 @@ cached_install <- function (
     }
   )
 
-  nsv <- getNamespaceVersion(ns)
+  nsv <- getNamespaceVersion(namespace)
   if (! nsv == version) stop(glue(
-        "Failed to load version {version} of package {package}; got version {nsv} instead. ",
+        "Failed to load version {version} of package '{package}'; got version {nsv} instead.\n",
         "This may happen because an already-loaded package could not be unloaded."))
   res <- if (ret == "namespace") namespace else package_dir
   return(res)

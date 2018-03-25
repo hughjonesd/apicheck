@@ -4,16 +4,11 @@ TODO
 * tests: maybe rather than pre-installed (OS X) versions, have pre-installed source
   files and then mock install.versions
 * BUG: can't unload dependencies of apicheck itself, causing problems when checking tidyverse packages
-* BUG: compare_versions fails silently when installed library is used (namespace unloading?)
-* BUG: compare_versions seems to overreport API changes, e.g. try `reprex`
-  - One underlying reason is that `x <- loadNamespace(..., partial = TRUE)``
-    can result in no exports from `getNamespaceExports(x)`; but not if the namespace has
-    previously been loaded with partial = FALSE. And this applies even if the namespaces
-    are separate objects.
-  - Be aware especially that if the user has previously loaded a package (even indirectly
-    via a dependency) then getNamespaceExports will return stuff from partial = TRUE; if
-    not, not.
-  - Relevant example:
+* BUG: in console, with quiet = TRUE, you don't get asked to select CRAN mirror
+* Should compare_versions (optionally) report about unexported methods, e.g. crayon::start.crayon?
+  - Note that e.g. `get_fun_in_ns('start.crayon', getNamespace('crayon'))` will work;
+  - Possibly `fun_names_in_ns` should report the same.
+* Check that partial defaults are sensible. Consider the following:
   
 ```
 > ns <- loadNamespace("clipr", partial = TRUE)
@@ -34,6 +29,3 @@ character(0)
 > identical(ns2, ns3)
 [1] TRUE
 ```
-
-* Clean unloading and reloading of current packages; always leave the computer in the state it was in before.
-* Print method for versions_report using get_api_desc?

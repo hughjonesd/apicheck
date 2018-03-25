@@ -43,14 +43,13 @@ NULL
 #' @param package Package. Alternatively, specify the function name as e.g. `"package::function"`.
 #' @param date Date, as a character string that can be read by [as.Date()] e.g. "2016-01-01".
 #' @param current_fun Current function for comparison. By default, `fun` in the current version of
-#'   the package (which is assumed to be available in a standard library location). If provided, this
-#'   must be an actual function, not a character string. You can use
-#'   [fun_at()] for this.
-#' @param test    A one-argument function. See Details.
-#' @param current_fun Current function
-#' @param quiet Logical. Try to minimize output from package installation. (Some output comes from `R CMD INSTALL` and may be unavoidable.)
+#'   the package (which is assumed to be already installed). This
+#'   must be an actual function, not the name of one: use [fun_at()].
+#' @param test  A one-argument function. See Details.
+#' @param quiet Logical. Try to minimize output from package installation. (Some output comes
+#'   from `R CMD INSTALL` and may be unavoidable.)
 #' @param ... Arguments passed to [versions::install.versions()] or
-#'   [remotes::install_version()], and thence to [install.packages()].
+#'   [remotes::install_version()], and thence to [install.packages()]. `Ncpus` may be useful.
 #' @name params_doc
 NULL
 
