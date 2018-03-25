@@ -2,7 +2,7 @@
 % Please edit documentation in R/interface.R
 \name{api_same_at}
 \alias{api_same_at}
-\title{Test if a function's API is unchanged at a given version}
+\title{Test if a function's API is unchanged}
 \usage{
 api_same_at(fun, version = version_at_date(package, date), package,
   date = NULL, quiet = TRUE, current_fun = NULL, ...)

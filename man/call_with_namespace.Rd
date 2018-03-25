@@ -2,7 +2,7 @@
 % Please edit documentation in R/implementation.R
 \name{call_with_namespace}
 \alias{call_with_namespace}
-\title{Load a package namespace at a particular version and run an arbitrary function}
+\title{Load a package namespace and pass it to a function}
 \usage{
 call_with_namespace(package, version, test, quiet = TRUE, ...)
 }
@@ -11,7 +11,7 @@ call_with_namespace(package, version, test, quiet = TRUE, ...)
 
 \item{version}{Version as a character string.}
 
-\item{test}{A one-argument function. See Details.}
+\item{test}{A one-argument function.}
 
 \item{quiet}{Logical. Try to minimize output from package installation. (Some output comes from \code{R CMD INSTALL} and may be unavoidable.)}
 
@@ -22,12 +22,9 @@ call_with_namespace(package, version, test, quiet = TRUE, ...)
 The value returned by \code{test}.
 }
 \description{
-Load a package namespace at a particular version and run an arbitrary function
-}
-\details{
-The package is downloaded and installed if necessary, and its namespace is loaded. Then the
+The package is downloaded and installed if necessary, and its namespace is loaded. Then
 \code{test(ns)} is called with the namespace object, and its value is returned. On exit, the
-namespace is unloaded, hopefully leaving your environment clean.
+namespace is unloaded.
 }
 \examples{
 \dontrun{

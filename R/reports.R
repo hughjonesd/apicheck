@@ -5,7 +5,9 @@
 #' @import dplyr
 NULL
 
-#' Compare versions of a package and report changed functions and APIs
+#' Compare versions of a package
+#'
+#' `compare_versions` reports how functions and APIs changed between versions of a package.
 #'
 #' @param version  First version to compare. If `NULL`, use the previous available version.
 #' @param version2 Second version to compare. If `NULL`, use the current version as installed.
@@ -76,7 +78,11 @@ versions_report <- function (ns1, ns2, v1, v2) {
 
 #' Report on backwards compatibility of a source package
 #'
-#' @param path Path to the root of an R package.
+#' `package_report` lists all external function calls from a source package
+#' using [pkgapi::map_package()].
+#' It then checks backward-compatibility of each call with previous versions.
+#'
+#' @param path Path to the root of an R source package.
 #' @param include Packages to include. By default, all are included except core packages and the package at
 #'   `path` itself.
 #' @param exclude Packages to exclude from checking. Overrides `include`.
@@ -85,12 +91,6 @@ versions_report <- function (ns1, ns2, v1, v2) {
 #' @param parallel Run in parallel.
 #' @param progress Show a progress bar.
 #' @param ... Arguments passed to [call_with_namespace()].
-#'
-#' @details
-#' This function lists the external function calls from a source package using [pkgapi::map_package()].
-#' It then checks back-compatibility of each call us
-#' Only function calls which are qualified with `::` will be detected, so e.g. `purrr::quietly`
-#' will be checked, but `quietly` on its own won't be.
 #'
 #' @inheritSection parallel_doc Parallelism
 #'

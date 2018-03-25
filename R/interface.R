@@ -65,7 +65,7 @@ NULL
 NULL
 
 
-#' Test if a function's API is unchanged at a given version
+#' Test if a function's API is unchanged
 #'
 #' `api_same_at` reports whether a function had the same API at a previous version or date.
 #'
@@ -117,7 +117,7 @@ api_same_at <- function (
 }
 
 
-#' Test if a function exists at a given version
+#' Test if a function exists at a given package version
 #'
 #' `fun_exists_at` reports whether a function exists (i.e. is exported) from a package at a specific previous version
 #' or date.
@@ -158,7 +158,7 @@ fun_exists_at <- function (
 }
 
 
-#' Retrieve a function from a particular package version
+#' Retrieve a function from a package version
 #'
 #' @inherit params_doc params
 #' @param allow_core See below.

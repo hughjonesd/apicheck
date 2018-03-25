@@ -14,7 +14,7 @@ LIB_DIR <- NULL
 }
 
 
-#' Specify library location
+#' Location of the package cache
 #'
 #' `set_lib_dir()` specifies where packages will be downloaded to. `get_lib_dir()` returns this
 #' directory. `clear_lib_dir()` deletes all downloaded packages.

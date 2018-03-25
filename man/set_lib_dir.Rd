@@ -4,7 +4,7 @@
 \alias{set_lib_dir}
 \alias{get_lib_dir}
 \alias{clear_lib_dir}
-\title{Specify library location}
+\title{Location of the package cache}
 \usage{
 set_lib_dir(lib_dir, create = FALSE)
 

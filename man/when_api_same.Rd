@@ -3,7 +3,7 @@
 \name{when_api_same}
 \alias{when_api_same}
 \alias{when_fun_exists}
-\title{Compare function existence and APIs across package versions}
+\title{Compare APIs across package versions}
 \usage{
 when_api_same(fun, package, current_fun = NULL, search = c("binary",
   "forward", "backward", "all", "parallel"), report = c("full", "brief"),

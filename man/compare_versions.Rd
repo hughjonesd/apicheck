@@ -2,7 +2,7 @@
 % Please edit documentation in R/reports.R
 \name{compare_versions}
 \alias{compare_versions}
-\title{Compare versions of a package and report changed functions and APIs}
+\title{Compare versions of a package}
 \usage{
 compare_versions(package, version = previous_version(package),
   version2 = NULL, quiet = TRUE, ...)
@@ -24,7 +24,7 @@ A data frame reporting functions that have been "Added", "Removed" or had "API c
 and details of function arguments.
 }
 \description{
-Compare versions of a package and report changed functions and APIs
+\code{compare_versions} reports how functions and APIs changed between versions of a package.
 }
 \examples{
 \dontrun{

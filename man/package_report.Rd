@@ -9,7 +9,7 @@ package_report(path = ".", include, exclude = core_packages(),
   parallel = FALSE, progress = !parallel, ...)
 }
 \arguments{
-\item{path}{Path to the root of an R package.}
+\item{path}{Path to the root of an R source package.}
 
 \item{include}{Packages to include. By default, all are included except core packages and the package at
 \code{path} itself.}
@@ -35,13 +35,9 @@ A data frame with three rows:
 }
 }
 \description{
-Report on backwards compatibility of a source package
-}
-\details{
-This function lists the external function calls from a source package using \code{\link[pkgapi:map_package]{pkgapi::map_package()}}.
-It then checks back-compatibility of each call us
-Only function calls which are qualified with \code{::} will be detected, so e.g. \code{purrr::quietly}
-will be checked, but \code{quietly} on its own won't be.
+\code{package_report} lists all external function calls from a source package
+using \code{\link[pkgapi:map_package]{pkgapi::map_package()}}.
+It then checks backward-compatibility of each call with previous versions.
 }
 \section{Parallelism}{
 

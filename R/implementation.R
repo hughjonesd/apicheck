@@ -4,17 +4,16 @@
 #' @importFrom remotes install_version
 NULL
 
-#' Load a package namespace at a particular version and run an arbitrary function
+#' Load a package namespace and pass it to a function
+#'
+#' The package is downloaded and installed if necessary, and its namespace is loaded. Then
+#' `test(ns)` is called with the namespace object, and its value is returned. On exit, the
+#' namespace is unloaded.
 #'
 #' @inherit package_nofun_params_doc params
 #' @inherit version_nodate_params_doc params
 #' @inherit params_doc params
-#' @param test    A one-argument function. See Details.
-#'
-#' @details
-#' The package is downloaded and installed if necessary, and its namespace is loaded. Then the
-#' `test(ns)` is called with the namespace object, and its value is returned. On exit, the
-#' namespace is unloaded, hopefully leaving your environment clean.
+#' @param test    A one-argument function.
 #'
 #' @return The value returned by `test`.
 #'
@@ -38,7 +37,10 @@ call_with_namespace  <- function (
 }
 
 
-#' Return a package version's location or namespace, possibly installing it
+#' Install and/or load a version of a package
+#'
+#' `cached_install` checks the package cache, installs the specified version if it is not
+#' already installed, and loads the versioned package namespace.
 #'
 #' @inherit package_nofun_params_doc params
 #' @inherit version_nodate_params_doc params
@@ -48,9 +50,6 @@ call_with_namespace  <- function (
 #' @param partial Default `TRUE`. Passed to [loadNamespace()].
 #'
 #' @details
-#' If the package is not found in the package cache, it will be downloaded and
-#' installed there.
-#'
 #' If the package is already loaded, `cached_install` will first attempt
 #' to unload it with a warning. This may not always work!
 #'

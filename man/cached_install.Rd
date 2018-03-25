@@ -2,7 +2,7 @@
 % Please edit documentation in R/implementation.R
 \name{cached_install}
 \alias{cached_install}
-\title{Return a package version's location or namespace, possibly installing it}
+\title{Install and/or load a version of a package}
 \usage{
 cached_install(package, version, return = c("namespace", "path"),
   cache = TRUE, quiet = TRUE, partial = TRUE, ...)
@@ -27,12 +27,10 @@ cached_install(package, version, return = c("namespace", "path"),
 The namespace object or directory where the package is installed.
 }
 \description{
-Return a package version's location or namespace, possibly installing it
+\code{cached_install} checks the package cache, installs the specified version if it is not
+already installed, and loads the versioned package namespace.
 }
 \details{
-If the package is not found in the package cache, it will be downloaded and
-installed there.
-
 If the package is already loaded, \code{cached_install} will first attempt
 to unload it with a warning. This may not always work!
 

@@ -2,7 +2,7 @@
 % Please edit documentation in R/interface.R
 \name{fun_exists_at}
 \alias{fun_exists_at}
-\title{Test if a function exists at a given version}
+\title{Test if a function exists at a given package version}
 \usage{
 fun_exists_at(fun, version = version_at_date(package, date), package,
   date = NULL, quiet = TRUE, ...)

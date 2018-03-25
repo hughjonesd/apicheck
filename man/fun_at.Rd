@@ -2,7 +2,7 @@
 % Please edit documentation in R/interface.R
 \name{fun_at}
 \alias{fun_at}
-\title{Retrieve a function from a particular package version}
+\title{Retrieve a function from a package version}
 \usage{
 fun_at(fun, version = version_at_date(package, date), package, date = NULL,
   quiet = TRUE, allow_core = FALSE, ...)
@@ -27,7 +27,7 @@ fun_at(fun, version = version_at_date(package, date), package, date = NULL,
 The function itself.
 }
 \description{
-Retrieve a function from a particular package version
+Retrieve a function from a package version
 }
 \details{
 By default, you cannot get functions from previous versions of R core packages, which are not available

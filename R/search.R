@@ -28,7 +28,7 @@ NULL
 #' @name parallel_doc
 NULL
 
-#' Compare function existence and APIs across package versions
+#' Compare APIs across package versions
 #'
 #' `when_api_same` reports package versions where the API of a function was the same as now (or
 #' the same as `current_fun`).
