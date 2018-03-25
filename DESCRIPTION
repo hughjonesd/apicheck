@@ -1,5 +1,5 @@
 Package: apicheck
-Title: Explore the Historical API of Functions in CRAN Packages
+Title: Explore the Historical API of R Packages
 Version: 0.1.0.9000
 Authors@R: person("David", "Hugh-Jones", email = "davidhughjones@gmail.com", role = c("aut", "cre"))
 Description: Check when functions were introduced and/or APIs changed in packages, using the 'MRAN' service.
@@ -7,6 +7,7 @@ License: MIT + file LICENSE
 Depends: 
     R (>= 3.3.0)
 Imports: 
+    desc,
     dplyr,
     httr,
     jsonlite,
@@ -15,12 +16,14 @@ Imports:
     purrr,
     rcheology,
     remotes,
+    tibble,
     utils,
     withr,
     zeallot
 Suggests: 
     covr,
     knitr,
+    pkgapi,
     rlang,
     rmarkdown,
     testthat (>= 2.0.0),
@@ -28,6 +31,8 @@ Suggests:
 VignetteBuilder: knitr
 Encoding: UTF-8
 LazyData: true
-Remotes: hughjonesd/rcheology
+Remotes: 
+    hughjonesd/rcheology,
+    r-lib/pkgapi
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 6.0.1

@@ -4,9 +4,10 @@
 ^\.lintr*$
 ^README\.Rmd$
 ^LICENSE\.md$
+^TODO\.md$
 ^appveyor\.yml$
 ^codecov\.yml$
-^tests/testthat/test_lib_dir/
+^tests/testthat/testing_lib_dir/
 .DS_Store
 ^\.apicheck/
 ^docs/
