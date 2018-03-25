@@ -156,6 +156,7 @@ package_report <- function (
   names(results) <- packages
 
   if (parallel) maybe_stop_cluster(cl)
+  if (progress) close(pb)
   report <- tibble::tibble(
     package = packages,
     version = map_chr(results, "version"),

@@ -177,7 +177,7 @@ run_search <- function (package, test, search, progress, min_version, max_versio
   )
   if (! is.null(pb)) {
     utils::setTxtProgressBar(pb, 1)
-    cat("\n")
+    close(pb)
   }
 
   return(res)
