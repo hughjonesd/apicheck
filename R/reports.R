@@ -118,7 +118,7 @@ package_report <- function (
       ) {
   callees <- package_callees(path, include, exclude)
   packages <- unique(callees$package)
-  if (progress) pb <- txtProgressBar(style = 3)
+  if (progress) pb <- utils::txtProgressBar(style = 3)
   c(lapply_fun, cl) %<-% make_lapply_fun(parallel = parallel, max_ncores = length(packages))
   results <- lapply_fun(packages, function (package) {
     fun_names <- callees$fun[callees$package == package]
@@ -146,7 +146,7 @@ package_report <- function (
         break
       }
     }
-    if (progress) setTxtProgressBar(pb, getTxtProgressBar(pb) + 1/length(packages))
+    if (progress) utils::setTxtProgressBar(pb, getTxtProgressBar(pb) + 1/length(packages))
     return(list(version = problem_version, funs = problem_funs))
   })
   names(results) <- packages

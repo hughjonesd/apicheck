@@ -59,7 +59,7 @@ get_stub_fun_in_core <- function (fun, package, version) {
 }
 
 core_packages <- function () {
-  ip <- as.data.frame(installed.packages())
+  ip <- as.data.frame(utils::installed.packages())
   ip <- dplyr::filter(ip, Priority == "base")
   as.character(ip$Package)
 }
