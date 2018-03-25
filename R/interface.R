@@ -223,5 +223,5 @@ help_at <- function (
   on.exit(unload_noncore_namespace(package))
   package_dir <- cached_install(package, version, return = "path", quiet = quiet, ...)
   # double brackets stop help looking for "fun" literally
-  utils::help((fun), package = (package), lib.loc = package_dir, help_type = "text")
+  utils::help( (fun), package = (package), lib.loc = package_dir, help_type = "text")
 }

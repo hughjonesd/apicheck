@@ -1,2 +1,2 @@
 # use lintr::lint_package() to run this
-linters: with_defaults(line_length_linter(120), single_quotes_linter=NULL)
+linters: with_defaults(line_length_linter(100))

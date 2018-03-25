@@ -45,7 +45,8 @@ LIB_DIR <- NULL
 set_lib_dir <- function (lib_dir, create = FALSE) {
   notthere <- ! is.null(lib_dir) && ! dir.exists(lib_dir)
   if (notthere && create) notthere <- ! dir.create(lib_dir, recursive = TRUE)
-  if (notthere) stop("Directory '", lib_dir, "' does not exist", if (create) " and could not be created")
+  if (notthere) stop(glue("Directory '{lib_dir}' does not exist"),
+        if (create) " and could not be created")
 
   if (! is.null(lib_dir)) lib_dir <- normalizePath(lib_dir)
   x <- options('apicheck.lib_dir' = lib_dir)

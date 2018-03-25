@@ -21,15 +21,15 @@ when_fun_exists(fun, package, search = c("binary", "forward", "backward",
 \item{package}{Package. Alternatively, specify the function name as e.g. \code{"package::function"}.}
 
 \item{current_fun}{Current function for comparison. By default, \code{fun} in the current version of
-the package (which is assumed to be available in a standard library location). If provided, this
-must be an actual function, not a character string. You can use
-\code{\link[=fun_at]{fun_at()}} for this.}
+the package (which is assumed to be already installed). This
+must be an actual function, not the name of one: use \code{\link[=fun_at]{fun_at()}}.}
 
 \item{search}{"binary", "forward", "backward", "all" or "parallel". See Search strategies.}
 
 \item{report}{"brief" or "full". See Value.}
 
-\item{quiet}{Logical. Try to minimize output from package installation. (Some output comes from \code{R CMD INSTALL} and may be unavoidable.)}
+\item{quiet}{Logical. Try to minimize output from package installation. (Some output comes
+from \code{R CMD INSTALL} and may be unavoidable.)}
 
 \item{progress}{Print a progress bar.}
 
@@ -38,7 +38,7 @@ must be an actual function, not a character string. You can use
 \item{max_version}{Highest version to check.}
 
 \item{...}{Arguments passed to \code{\link[versions:install.versions]{versions::install.versions()}} or
-\code{\link[remotes:install_version]{remotes::install_version()}}, and thence to \code{\link[=install.packages]{install.packages()}}.}
+\code{\link[remotes:install_version]{remotes::install_version()}}, and thence to \code{\link[=install.packages]{install.packages()}}. \code{Ncpus} may be useful.}
 }
 \value{
 If \code{report} is "brief", the earliest "known good" version.

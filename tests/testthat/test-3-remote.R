@@ -23,7 +23,7 @@ install_early_late <- function (package) {
 }
 
 
-test_that("Can install early and current versions using `remotes`, and early versions using `versions`", {
+test_that("Can install early/current versions using `remotes`, and early versions using `versions`", {
   skip_on_cran()
 
   install_early_late("clipr") # no compilation
@@ -68,4 +68,3 @@ test_that("Can set lib_dir", {
   if (class(prepare) == "try-error") skip("Couldn't download package for testing")
   expect_true(dir.exists(file.path(tempdir, "clipr-0.4.0", "clipr")))
 })
-

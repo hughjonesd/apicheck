@@ -158,7 +158,7 @@ run_search <- function (package, test, search, progress, min_version, max_versio
   pb <- NULL
   if (progress && ! search == "parallel") {
     pb <- utils::txtProgressBar(style = 3)
-    inc <- 1/length(versions)
+    inc <- 1 / length(versions)
     test_inner <- test
     test <- function (x) {
       res <- test_inner(x)
@@ -197,7 +197,7 @@ binary_search_versions <- function(versions, test) {
 
 na_binary_search <- function (l, r, test) {
   if (l > r) return(integer(0)) # this can happen e.g. after l = 2, r = 3
-  m <- as.integer(floor((l + r)/2))
+  m <- as.integer(floor((l + r) / 2))
   res <- test(m)
   if (isTRUE(res)) return(c(na_binary_search(l, m - 1, test), 2L, rep(1L, r - m)))
   if (isTRUE(! res)) return(c(rep(-1L, m - l), -2L, na_binary_search(m + 1, r, test)))

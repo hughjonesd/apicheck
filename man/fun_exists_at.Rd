@@ -16,10 +16,11 @@ fun_exists_at(fun, version = version_at_date(package, date), package,
 
 \item{date}{Date, as a character string that can be read by \code{\link[=as.Date]{as.Date()}} e.g. "2016-01-01".}
 
-\item{quiet}{Logical. Try to minimize output from package installation. (Some output comes from \code{R CMD INSTALL} and may be unavoidable.)}
+\item{quiet}{Logical. Try to minimize output from package installation. (Some output comes
+from \code{R CMD INSTALL} and may be unavoidable.)}
 
 \item{...}{Arguments passed to \code{\link[versions:install.versions]{versions::install.versions()}} or
-\code{\link[remotes:install_version]{remotes::install_version()}}, and thence to \code{\link[=install.packages]{install.packages()}}.}
+\code{\link[remotes:install_version]{remotes::install_version()}}, and thence to \code{\link[=install.packages]{install.packages()}}. \code{Ncpus} may be useful.}
 }
 \value{
 \code{TRUE} or \code{FALSE}.

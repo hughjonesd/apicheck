@@ -20,10 +20,11 @@ compare_versions(package, version = previous_version(package), version2,
 
 \item{version2}{Second version to compare. By default, the current installed version.}
 
-\item{quiet}{Logical. Try to minimize output from package installation. (Some output comes from \code{R CMD INSTALL} and may be unavoidable.)}
+\item{quiet}{Logical. Try to minimize output from package installation. (Some output comes
+from \code{R CMD INSTALL} and may be unavoidable.)}
 
 \item{...}{Arguments passed to \code{\link[versions:install.versions]{versions::install.versions()}} or
-\code{\link[remotes:install_version]{remotes::install_version()}}, and thence to \code{\link[=install.packages]{install.packages()}}.}
+\code{\link[remotes:install_version]{remotes::install_version()}}, and thence to \code{\link[=install.packages]{install.packages()}}. \code{Ncpus} may be useful.}
 }
 \value{
 \code{compare_versions} returns a data frame of class \code{versions_report},

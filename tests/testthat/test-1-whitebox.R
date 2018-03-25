@@ -31,8 +31,7 @@ test_that("Failure to install a file does not leave a directory on disk", {
   fail <- function (...) stop("Some crazy failure")
   with_mock(
     `versions::install.versions` = fail,
-    `remotes::install_version`   = fail,
-  {
+    `remotes::install_version`   = fail, {
     expect_error(fun_at("expand_urls", "longurl", "0.3.0"), "Some crazy failure")
     expect_false(dir.exists(file.path(tempdir, "longurl")))
   })

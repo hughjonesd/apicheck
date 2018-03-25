@@ -60,11 +60,12 @@ get_stub_fun_in_core <- function (fun, package, version) {
   stopifnot(is_core_package(package))
 
   rch <- get_rcheology_rows(name = fun, package = package) # memoised for speed
-  rch <- rch[rch$Rversion == version,]
+  rch <- rch[rch$Rversion == version, ]
   if (nrow(rch) == 0L) stop_fun_not_found(fun, package, version)
   stopifnot(nrow(rch) == 1L)
   fun_args <- rch$args
-  if (is.na(fun_args)) stop("Could not determine arguments of `", fun, "` in rcheology database of core R functions")
+  if (is.na(fun_args)) stop(glue("Could not determine arguments of '{fun}' in rcheology database ",
+        "of core R functions"))
   fake_fun <- paste("function", fun_args, "NULL")
   fake_fun <- eval(parse(text = fake_fun))
 
@@ -99,4 +100,3 @@ stop_fun_not_found <- function (fun, ns_or_package, version) {
   }
   stop(FUNCTION_NOT_FOUND, ": ", fun, " in ", package, " version ", version)
 }
-

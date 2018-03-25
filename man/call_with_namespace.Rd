@@ -13,10 +13,11 @@ call_with_namespace(package, version, test, quiet = TRUE, ...)
 
 \item{test}{A one-argument function.}
 
-\item{quiet}{Logical. Try to minimize output from package installation. (Some output comes from \code{R CMD INSTALL} and may be unavoidable.)}
+\item{quiet}{Logical. Try to minimize output from package installation. (Some output comes
+from \code{R CMD INSTALL} and may be unavoidable.)}
 
 \item{...}{Arguments passed to \code{\link[versions:install.versions]{versions::install.versions()}} or
-\code{\link[remotes:install_version]{remotes::install_version()}}, and thence to \code{\link[=install.packages]{install.packages()}}.}
+\code{\link[remotes:install_version]{remotes::install_version()}}, and thence to \code{\link[=install.packages]{install.packages()}}. \code{Ncpus} may be useful.}
 }
 \value{
 The value returned by \code{test}.

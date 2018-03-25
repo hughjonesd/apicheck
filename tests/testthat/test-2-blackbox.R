@@ -4,7 +4,8 @@ old_lib_dir <- NULL
 old_opts <- NULL
 
 setup({
-  old_opts <<- options(apicheck.use_mran = FALSE, repos = "https://cloud.r-project.org", mc.cores = 2)
+  old_opts <<- options(apicheck.use_mran = FALSE, repos = "https://cloud.r-project.org",
+        mc.cores = 2)
   old_lib_dir <<- set_lib_dir(if (Sys.info()["sysname"] != "Windows") "testing_lib_dir" else NULL)
 })
 
@@ -54,7 +55,8 @@ test_that("arguments passed to install.packages", {
   expect_error(cached_install("fortunes", "1.5-1", repos = "BROKEN"))
   expect_error(fun_exists_at("fortunes::fortune", version = "1.5-0", repos = "BROKEN"))
   fun <- base::as.character
-  expect_error(api_same_at("fortunes::fortune", version = "1.5-2", current_fun = fun, repos = "BROKEN"))
+  expect_error(api_same_at("fortunes::fortune", version = "1.5-2", current_fun = fun,
+        repos = "BROKEN"))
 
   skip("Skipping two tests where install.packages spews weird uncatchable errors")
   expect_warning(when_fun_exists("fortunes::fortune", repos = "BROKEN"))
@@ -127,15 +129,16 @@ test_that("api_same_at", {
   dbo <- fun_at("base::debugonce", "3.4.3", allow_core = TRUE)
   expect_true(api_same_at("base::debugonce", "3.4.0", current_fun = dbo))
   expect_false(api_same_at("base::debugonce", "3.3.3", current_fun = dbo))
-  expect_warning(x <- api_same_at("base::strrep", "3.2.5", current_fun = fun_at("base::strrep", "3.4.3",
-        allow_core = TRUE)))
+  expect_warning(x <- api_same_at("base::strrep", "3.2.5", current_fun =
+        fun_at("base::strrep", "3.4.3", allow_core = TRUE)))
   expect_false(x)
 
   skip_on_cran()
 
   wc4 <- fun_at("clipr::write_clip", version = "0.4.0")
   wc011 <- fun_at("clipr::write_clip", version = "0.1.1")
-  expect_false(api_same_at("clipr::write_clip", version = "0.1.1", current_fun = wc4)) # gained an argument
+  # gained an argument:
+  expect_false(api_same_at("clipr::write_clip", version = "0.1.1", current_fun = wc4))
   dr_c <- fun_at("clipr::dr_clipr", version = "0.4.0")
   # should warn because dr_clipr didn't exist back then:
   expect_warning(x <- api_same_at("clipr::dr_clipr",  version = "0.1.1", current_fun = dr_c))
@@ -156,10 +159,11 @@ test_that("when_api_same", {
   dbo <- fun_at("base::debugonce", "3.4.3", allow_core = TRUE)
 
   for (search in strategies) {
-    expect_identical(when_api_same("clipr::write_clip", current_fun = wc, search = search, report = "brief"),
-          "0.2.0") # API change
-    expect_identical(when_api_same("base::debugonce", search = search, report = "brief", max_version = "3.4.3",
-          current_fun = dbo), "3.4.0") # max_version to avoid being struck by new Rs in rcheology!
+    expect_identical(when_api_same("clipr::write_clip", current_fun = wc, search = search,
+          report = "brief"), "0.2.0") # API change
+    # max_version to avoid being struck by new Rs in rcheology!
+    expect_identical(when_api_same("base::debugonce", search = search, report = "brief",
+          max_version = "3.4.3", current_fun = dbo), "3.4.0")
   }
 
   results_wanted <- list(
@@ -172,8 +176,8 @@ test_that("when_api_same", {
   )
   for (search in strategies) {
     info <- paste("Search strategy was:", search)
-    expect_error(res <- when_api_same("clipr::write_clip", current_fun = wc, search = search, report = "full"), NA,
-          info = info)
+    expect_error(res <- when_api_same("clipr::write_clip", current_fun = wc, search = search,
+          report = "full"), NA, info = info)
     expect_s3_class(res, "data.frame") # no info arg :-(
     expect_identical(names(res), c("version", "date", "result"), info = info)
     # see below re clipr 0.1.0
@@ -191,14 +195,15 @@ test_that("when_fun_exists", {
     info <- paste("Search strategy was:", search)
     expect_identical(when_fun_exists("clipr::dr_clipr", search = search, report = "brief"), "0.4.0")
     # max_version to avoid being struck by new R versions in rcheology:
-    expect_identical(when_fun_exists("base::strrep", search = search, report = "brief", max_version = "3.4.3"), "3.3.0",
-          info = info)
+    expect_identical(when_fun_exists("base::strrep", search = search, report = "brief",
+          max_version = "3.4.3"), "3.3.0", info = info)
   }
 
   # we only test versions 0.1.1 and onwards because version 0.1.0 varies with use_mran
   # being TRUE or FALSE
   results_wanted <- list(
-    binary   = c(rep("Assumed absent", 3), "Known absent", "Assumed absent", rep("Known absent", 2), "Known present"),
+    binary   = c(rep("Assumed absent", 3), "Known absent", "Assumed absent", rep("Known absent", 2),
+          "Known present"),
     forward  = c(rep("Known absent", 7), "Known present"),
     backward = c(rep("Assumed absent", 6), "Known absent", "Known present"),
     all      = c(rep("Known absent", 7), "Known present"),
@@ -206,7 +211,8 @@ test_that("when_fun_exists", {
   )
   for (search in strategies) {
     info <- paste("Search strategy was:", search)
-    expect_error(res <- when_fun_exists("clipr::dr_clipr", search = search, report = "full"), NA, info = info)
+    expect_error(res <- when_fun_exists("clipr::dr_clipr", search = search, report = "full"), NA,
+          info = info)
     expect_s3_class(res, "data.frame")
     expect_identical(names(res), c("version", "date", "result"), info = info)
     expect_identical(res$result[-1], results_wanted[[search]], info = info)
@@ -223,14 +229,18 @@ test_that("parallel search with own cluster", {
 
 
 test_that("min_version and max_version work", {
-  expect_error(res <- when_fun_exists("clipr::dr_clipr", search = "binary", min_version = "0.3.2", report = "full"), NA)
+  expect_error(res <- when_fun_exists("clipr::dr_clipr", search = "binary", min_version = "0.3.2",
+        report = "full"), NA)
   expect_true(all(res$version >= as.package_version("0.3.2")))
-  expect_error(res <- when_fun_exists("clipr::dr_clipr", search = "binary", max_version = "0.2.0", report = "full"), NA)
+  expect_error(res <- when_fun_exists("clipr::dr_clipr", search = "binary", max_version = "0.2.0",
+        report = "full"), NA)
   expect_true(all(res$version <= as.package_version("0.2.0")))
 
-  expect_error(res <- when_fun_exists("base::debugonce", search = "binary", min_version = "3.2.5", report = "full"), NA)
+  expect_error(res <- when_fun_exists("base::debugonce", search = "binary", min_version = "3.2.5",
+        report = "full"), NA)
   expect_true(all(res$version >= as.package_version("3.2.5")))
-  expect_error(res <- when_fun_exists("base::debugonce", search = "binary", max_version = "2.0.0", report = "full"), NA)
+  expect_error(res <- when_fun_exists("base::debugonce", search = "binary", max_version = "2.0.0",
+        report = "full"), NA)
   expect_true(all(res$version <= as.package_version("2.0.0")))
 })
 
@@ -261,6 +271,7 @@ test_that("package_report", {
   expect_s3_class(pr, "data.frame")
   expect_identical(names(pr), c("package", "version", "funs"))
   # leaves only utils
-  expect_error(pr2 <- package_report("clipr-source", exclude = c("base", "rstudioapi"), progress = FALSE), NA)
+  expect_error(pr2 <- package_report("clipr-source", exclude = c("base", "rstudioapi"),
+        progress = FALSE), NA)
   expect_error(pr <- package_report("clipr-source", parallel = TRUE, exclude = "base"), NA)
 })
