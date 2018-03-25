@@ -147,6 +147,7 @@ package_report <- function (
       }
     }
     if (progress) utils::setTxtProgressBar(pb, utils::getTxtProgressBar(pb) + 1/length(packages))
+
     return(list(version = problem_version, funs = problem_funs))
   })
   names(results) <- packages
