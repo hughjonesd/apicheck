@@ -5,7 +5,7 @@
 #' Report available versions
 #'
 #' This returns packages ordered by date, using either \href{https://mran.microsoft.com}{MRAN} or
-#' \href{http://crandb.r-pkg.org}{metacran} (or \href{https::/github.com/hughjonesd/rcheology}{rcheology}
+#' \href{http://crandb.r-pkg.org}{metacran} (or \href{https://github.com/hughjonesd/rcheology}{rcheology}
 #' for R core packages).
 #' Results are cached so as to
 #' relieve pressure on the server. If `options("apicheck.use_mran")` is `TRUE` (and `package` is non-core),

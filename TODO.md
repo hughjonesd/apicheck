@@ -1,8 +1,9 @@
 TODO
+
 * deal with S4 methods; and test for that.
 * tests: maybe rather than pre-installed (OS X) versions, have pre-installed source
   files and then mock install.versions
-* add function to check incremental burden of a dependency?
+* BUG: can't unload dependencies of apicheck itself, causing problems when checking tidyverse packages
 * BUG: compare_versions fails silently when installed library is used (namespace unloading?)
 * BUG: compare_versions seems to overreport API changes, e.g. try `reprex`
   - One underlying reason is that `x <- loadNamespace(..., partial = TRUE)``
@@ -13,6 +14,7 @@ TODO
     via a dependency) then getNamespaceExports will return stuff from partial = TRUE; if
     not, not.
   - Relevant example:
+  
 ```
 > ns <- loadNamespace("clipr", partial = TRUE)
 > getNamespaceExports(ns)
@@ -32,4 +34,6 @@ character(0)
 > identical(ns2, ns3)
 [1] TRUE
 ```
-Clean unloading and reloading of current packages; always leave the computer in the state it was in before
+
+* Clean unloading and reloading of current packages; always leave the computer in the state it was in before.
+* Print method for versions_report using get_api_desc?

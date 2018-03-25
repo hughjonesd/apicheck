@@ -260,7 +260,10 @@ test_that("Can set lib_dir", {
 test_that("compare_versions", {
   expect_error(vr <- compare_versions("clipr", "0.2.1", "0.3.0"), NA)
   expect_s3_class(vr, "data.frame")
-  expect_identical(ncol(vr), 5)
+  expect_identical(ncol(vr), 5L)
+  expect_identical(nrow(vr), 1L)
+  expect_identical(vr[[1, 2]], "clipr_available")
+  expect_identical(vr[[1, 3]], "Added")
 })
 
 test_that("package_report", {
