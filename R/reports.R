@@ -165,7 +165,7 @@ package_report <- function (
 }
 
 
-utils::globalVariables(c("to", "package", "fun")
+utils::globalVariables(c("to", "package", "fun"))
 
 package_callees <- function(path, include, exclude = character(0)) {
   assert_package("pkgapi")
