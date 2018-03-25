@@ -230,6 +230,8 @@ search_versions <- function (versions, test, search) {
 }
 
 
+utils::globalVariables(c("lapply_fun", "cl"))
+
 search_all <- function (versions, test, search) {
   parallel <- search == "parallel"
   c(lapply_fun, cl) %<-% make_lapply_fun(parallel = parallel, max_ncores = length(versions))

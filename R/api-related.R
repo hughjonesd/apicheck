@@ -55,6 +55,9 @@ get_stub_fun_in_core <- function (fun, package, version) {
   return (fake_fun)
 }
 
+
+utils::globalVariables("Priority")
+
 core_packages <- function () {
   ip <- as.data.frame(utils::installed.packages())
   ip <- dplyr::filter(ip, Priority == "base")

@@ -76,6 +76,8 @@ versions_report <- function (ns1, ns2, v1, v2) {
 }
 
 
+utils::globalVariables(c("lapply_fun", "cl"))
+
 #' Report on backwards compatibility of a source package
 #'
 #' `package_report` lists all external function calls from a source package
@@ -162,6 +164,8 @@ package_report <- function (
   return(report)
 }
 
+
+utils::globalVariables(c("to", "package", "fun")
 
 package_callees <- function(path, include, exclude = character(0)) {
   assert_package("pkgapi")
