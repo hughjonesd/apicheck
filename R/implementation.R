@@ -154,14 +154,15 @@ funs_at <- function (
   version,
   package,
   quiet      = TRUE,
+  forgiving  = FALSE,
   ...
 ) {
+  forgivingly <- function (f) if (forgiving) purrr::possibly(f, otherwise = NA) else f
+
   res <- if (is_core_package(package)) {
-    lapply(funs, get_stub_fun_in_core, package, version)
+    lapply(funs, forgivingly(get_stub_fun_in_core), package, version)
   } else {
-    test <- function (namespace) {
-      lapply(funs, get_fun_in_ns, namespace)
-    }
+    test <- function (namespace) lapply(funs, forgivingly(get_fun_in_ns), namespace)
     call_with_namespace(package, version, test, quiet = quiet, ...)
   }
 

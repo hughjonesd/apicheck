@@ -140,8 +140,9 @@ package_report <- function (
     problem_version <- NA_character_
     for (vn in seq_len(nrow(versions))) {
       version <- versions$version[vn]
-      funs <- funs_at(fun_names, version, package)
-      apis_same <- map2_lgl(funs, current_funs, is_api_same)
+      # returns NA in the list if function is not found:
+      funs <- funs_at(fun_names, version, package, forgiving = TRUE)
+      apis_same <- map2_lgl(funs, current_funs, function (x, y) is.function(x) && is_api_same(x, y))
       problem_funs <- fun_names[! apis_same]
       if (length(problem_funs) > 0) {
         problem_version <- version

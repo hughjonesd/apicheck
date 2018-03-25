@@ -69,6 +69,7 @@ is_core_package <- memoise::memoise( function (package) {
   return(package %in% core_packages())
 })
 
+
 # used elsewhere to check for this error
 FUNCTION_NOT_FOUND <- "Could not find function in namespace"
 
