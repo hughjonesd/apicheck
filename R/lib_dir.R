@@ -71,7 +71,7 @@ get_lib_dir <- function () {
 
 
 
-#' @return `clear_lib_dir` returns TRUE if all files and directories could be removed, FALSE otherwise.
+#' @return `clear_lib_dir` invisibly returns TRUE if all files and directories could be removed, FALSE otherwise.
 #'
 #' @family utility functions
 #'
@@ -91,5 +91,5 @@ clear_lib_dir <- function() {
     if (file.exists(obj)) ok <- ok && file.remove(obj)
   }
 
-  return(ok)
+  return(invisible(ok))
 }
