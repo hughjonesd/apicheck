@@ -38,7 +38,7 @@ get_fun_in_ns <- function (fun, ns) {
 fun_names_in_ns <- function (ns, methods) {
   # getNamespaceExports may include re-exported functions from other packages; we don't want these
   # but ls(ns) will include non-exported functions; we don't want these
-  res <- if (methods) as.character(lsf.str(envir = ns)) else getNamespaceExports(ns)
+  res <- if (methods) as.character(utils::lsf.str(envir = ns)) else getNamespaceExports(ns)
 
   imports <- unlist(getNamespaceImports(ns))
   res <- setdiff(res, imports)
