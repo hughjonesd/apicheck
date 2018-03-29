@@ -22,7 +22,7 @@ clear_lib_dir()
 
 \code{get_lib_dir} returns the actual library location, whether or not an option has been set.
 
-\code{clear_lib_dir} returns TRUE if all files and directories could be removed, FALSE otherwise.
+\code{clear_lib_dir} invisibly returns TRUE if all files and directories could be removed, FALSE otherwise.
 }
 \description{
 \code{set_lib_dir()} specifies where packages will be downloaded to. \code{get_lib_dir()} returns this

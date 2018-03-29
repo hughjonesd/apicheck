@@ -6,8 +6,8 @@
 \alias{summary.versions_report}
 \title{Compare versions of a package}
 \usage{
-compare_versions(package, version = previous_version(package), version2,
-  quiet = TRUE, ...)
+compare_versions(package, version = previous_version(package, version2),
+  version2, methods = FALSE, quiet = TRUE, ...)
 
 \method{print}{versions_report}(x, ...)
 
@@ -16,9 +16,12 @@ compare_versions(package, version = previous_version(package), version2,
 \arguments{
 \item{package}{Package name.}
 
-\item{version}{First version to compare. By default, the previous available version.}
+\item{version}{First version to compare. By default, the previous version to that currently
+installed.}
 
 \item{version2}{Second version to compare. By default, the current installed version.}
+
+\item{methods}{Logical: include non-exported S3 methods?}
 
 \item{quiet}{Logical. Try to minimize output from package installation. (Some output comes
 from \code{R CMD INSTALL} and may be unavoidable.)}

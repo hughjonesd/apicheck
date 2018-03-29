@@ -26,8 +26,7 @@ is_api_same <- function (fun1, fun2) {
 
 get_fun_in_ns <- function (fun, ns) {
   tryCatch(
-      x <- get(fun, ns, inherits = FALSE)
-    ,
+      x <- get(fun, ns, inherits = FALSE),
     # a uniform error message can be caught upstream
     error = function (e) stop_fun_not_found(fun, ns)
   )

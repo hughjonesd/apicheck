@@ -9,7 +9,8 @@ NULL
 #'
 #' `compare_versions` reports how functions and APIs changed between versions of a package.
 #'
-#' @param version  First version to compare. By default, the previous available version.
+#' @param version  First version to compare. By default, the previous version to that currently
+#'   installed.
 #' @param version2 Second version to compare. By default, the current installed version.
 #' @param methods Logical: include non-exported S3 methods?
 #' @inherit package_nofun_params_doc params
@@ -27,7 +28,7 @@ NULL
 #' }
 compare_versions <- function (
   package,
-  version  = previous_version(package),
+  version  = previous_version(package, version2),
   version2,
   methods  = FALSE,
   quiet    = TRUE,

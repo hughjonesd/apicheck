@@ -1,6 +1,8 @@
 
 # functions for version discovery
 
+#' @importFrom glue glue
+NULL
 
 #' Report available versions
 #'
@@ -67,9 +69,12 @@ av_metacran <- function (package) {
 }
 
 
-previous_version <- function (package) {
+previous_version <- function (package, version) {
   vns_df <- available_versions(package)
-  return(vns_df$version[nrow(vns_df) - 1])
+  version_row <- match(version, vns_df$version)
+  if (is.na(version_row)) stop(
+        glue("Version {version} was not found in available versions of '{package}'"))
+  return(vns_df$version[version_row - 1])
 }
 
 
