@@ -8,7 +8,8 @@ TODO
 * Should compare_versions (optionally) report about unexported methods, e.g. crayon::start.crayon?
   - Note that e.g. `get_fun_in_ns('start.crayon', getNamespace('crayon'))` will work;
   - Possibly `fun_names_in_ns` should report the same.
-* Check that partial defaults are sensible. Consider the following:
+  - e.g. for `effects` package, you miss API changes if you ignore methods
+* Check that `partial` defaults are sensible. Consider the following:
   
 ```
 > ns <- loadNamespace("clipr", partial = TRUE)

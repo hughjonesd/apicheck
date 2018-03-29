@@ -14,7 +14,6 @@ get_current_ns <- function (package) {
   )
   unload_noncore_namespace(package)
 
-
   return(ns)
 }
 
@@ -26,17 +25,9 @@ is_api_same <- function (fun1, fun2) {
 
 
 get_fun_in_ns <- function (fun, ns) {
-  tryCatch({
-      # possibly this whole if- section is unnecessary and we could just do get() always
-      x <- if (utils::isS3method(fun, envir = ns)) {
-        bits <- strsplit(fun, ".", fixed = TRUE)[[1]]
-        generic_fun <- paste(bits[ -length(bits) ], collapse = ".")
-        class <- bits[length(bits)]
-        utils::getS3method(generic_fun, class, envir = ns)
-      } else {
-        get(fun, ns, inherits = FALSE)
-      }
-    },
+  tryCatch(
+      x <- get(fun, ns, inherits = FALSE)
+    ,
     # a uniform error message can be caught upstream
     error = function (e) stop_fun_not_found(fun, ns)
   )
@@ -45,10 +36,11 @@ get_fun_in_ns <- function (fun, ns) {
 }
 
 
-fun_names_in_ns <- function (ns) {
+fun_names_in_ns <- function (ns, methods) {
   # getNamespaceExports may include re-exported functions from other packages; we don't want these
   # but ls(ns) will include non-exported functions; we don't want these
-  res <- getNamespaceExports(ns)
+  res <- if (methods) as.character(lsf.str(envir = ns)) else getNamespaceExports(ns)
+
   imports <- unlist(getNamespaceImports(ns))
   res <- setdiff(res, imports)
   res <- purrr::keep(res, ~ is.function(get(.x, ns)))

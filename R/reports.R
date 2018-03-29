@@ -11,6 +11,7 @@ NULL
 #'
 #' @param version  First version to compare. By default, the previous available version.
 #' @param version2 Second version to compare. By default, the current installed version.
+#' @param methods Logical: include non-exported S3 methods?
 #' @inherit package_nofun_params_doc params
 #' @inherit params_doc params
 #'
@@ -28,6 +29,7 @@ compare_versions <- function (
   package,
   version  = previous_version(package),
   version2,
+  methods  = FALSE,
   quiet    = TRUE,
   ...
 ) {
@@ -38,17 +40,17 @@ compare_versions <- function (
     ns2 <- cached_install(package, version2, return = "namespace", partial = FALSE)
   }
 
-  test <- function (ns) versions_report(ns, ns2, version, version2, package)
+  test <- function (ns) versions_report(ns, ns2, version, version2, methods, package)
 
   call_with_namespace(package, version, test, quiet = quiet, partial = FALSE, ...)
 }
 
 
-versions_report <- function (ns1, ns2, v1, v2, package) {
+versions_report <- function (ns1, ns2, v1, v2, methods, package) {
   suffs <- c("_1", "_2")
 
-  objs1 <- fun_names_in_ns(ns1)
-  objs2 <- fun_names_in_ns(ns2)
+  objs1 <- fun_names_in_ns(ns1, methods)
+  objs2 <- fun_names_in_ns(ns2, methods)
 
   report1 <- tibble::tibble(f = objs1, f1 = objs1)
   report2 <- tibble::tibble(f = objs2, f2 = objs2)
