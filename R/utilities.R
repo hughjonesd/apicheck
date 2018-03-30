@@ -88,4 +88,10 @@ really_quietly <- function (env) {
 }
 
 
+maybe_unsink <- function () {
+  if (sink.number() > 0) sink()
+  if (sink.number("message") != 2) sink(type = "message")
+}
+
+
 say <- function (...) cat(..., "\n")

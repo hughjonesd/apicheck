@@ -109,6 +109,7 @@ cached_install <- function (
     },
       warning = function (w) {
         if (grepl("non-zero exit", w$message)) {
+          maybe_unsink()
           loudly_unlink(package_dir)
           stop("Failed to install version ", version)
         } else {
@@ -116,6 +117,7 @@ cached_install <- function (
         }
       },
       error = function (e) {
+        maybe_unsink()
         loudly_unlink(package_dir)
         stop(e$message, call. = FALSE)
       }))

@@ -38,11 +38,17 @@ get_fun_in_ns <- function (fun, ns) {
 fun_names_in_ns <- function (ns, methods) {
   # getNamespaceExports may include re-exported functions from other packages; we don't want these
   # but ls(ns) will include non-exported functions; we don't want these
-  res <- if (methods) as.character(utils::lsf.str(envir = ns)) else getNamespaceExports(ns)
-
+  res <- getNamespaceExports(ns)
+  res <- purrr::keep(res, ~ is.function(get(.x, ns)))
+  if (methods) {
+    # unlike utils::isS3method, this works even when the generic is not on the search path
+    # e.g. with knit_print.flextable when knitr is not attached
+    my_is_s3_method <- function (name) name %in% ns[[".__NAMESPACE__."]][["S3methods"]][, 3]
+    S3methods <- purrr::keep(ls(envir = ns), my_is_s3_method)
+    res <- unique(c(res, S3methods))
+  }
   imports <- unlist(getNamespaceImports(ns))
   res <- setdiff(res, imports)
-  res <- purrr::keep(res, ~ is.function(get(.x, ns)))
 
   return(res)
 }
