@@ -75,6 +75,7 @@ versions_report <- function (ns1, ns2, v1, v2, methods, package) {
   })
 
   report <- report[! is.na(report$change), ]
+  report <- arrange(report,  factor(report$change, c("Added", "Removed", "API changed")))
   class(report) <- c("versions_report", class(report))
   attr(report, "versions") <- c(v1 = v1, v2 = v2)
   attr(report, "package") <- package
