@@ -111,7 +111,7 @@ cached_install <- function (
         if (grepl("non-zero exit", w$message)) {
           maybe_unsink()
           loudly_unlink(package_dir)
-          stop("Failed to install version ", version)
+          stop(glue("Failed to install version {version} of {package}. Error:\n{w$message}"))
         } else {
           cat(w$message)
         }
