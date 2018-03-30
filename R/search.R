@@ -135,7 +135,7 @@ when_fun_exists <- function (
 wrap_test <- function (test_fun) {
   function (version) {
     res <- try(test_fun(version))
-    if (class(res) == 'try-error') {
+    if (class(res) == "try-error") {
       return(NA)
     }
     return(res)
@@ -197,7 +197,7 @@ binary_search_versions <- function(versions, test) {
 
 na_binary_search <- function (l, r, test) {
   if (l > r) return(integer(0)) # this can happen e.g. after l = 2, r = 3
-  m <- as.integer(floor((l + r) / 2))
+  m <- as.integer(floor( (l + r) / 2 ))
   res <- test(m)
   if (isTRUE(res)) return(c(na_binary_search(l, m - 1, test), 2L, rep(1L, r - m)))
   if (isTRUE(! res)) return(c(rep(-1L, m - l), -2L, na_binary_search(m + 1, r, test)))

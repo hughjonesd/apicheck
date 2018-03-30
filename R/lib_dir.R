@@ -6,7 +6,7 @@ LIB_DIR <- NULL
 .onLoad <- function (lib, pkg) {
   tf <- tempfile(pattern = "apicheck", tmpdir = normalizePath(tempdir()))
   dir.create(tf)
-  LIB_DIR <<- getOption('apicheck.lib_dir', tf)
+  LIB_DIR <<- getOption("apicheck.lib_dir", tf)
   if (LIB_DIR == tf && ! dir.exists(tf)) {
     warning("Could not create temporary directory for package caching",
       "Package download won't work. To workaround, use `set_lib_dir()` manually.")
@@ -49,7 +49,7 @@ set_lib_dir <- function (lib_dir, create = FALSE) {
         if (create) " and could not be created")
 
   if (! is.null(lib_dir)) lib_dir <- normalizePath(lib_dir)
-  x <- options('apicheck.lib_dir' = lib_dir)
+  x <- options("apicheck.lib_dir" = lib_dir)
 
   return(invisible(x$apicheck.lib_dir))
 }
@@ -66,7 +66,7 @@ set_lib_dir <- function (lib_dir, create = FALSE) {
 #' @examples
 #' get_lib_dir()
 get_lib_dir <- function () {
-  getOption('apicheck.lib_dir', LIB_DIR)
+  getOption("apicheck.lib_dir", LIB_DIR)
 }
 
 
