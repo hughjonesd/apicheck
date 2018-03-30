@@ -68,9 +68,9 @@ versions_report <- function (ns1, ns2, v1, v2, methods, package) {
     f1 <- get_fun_in_ns(x, ns1)
     f2 <- get_fun_in_ns(x, ns2)
     if (! is_api_same(f1, f2)) {
-      report[both_there, ][idx, "change"] <- "API changed"
-      report[both_there, ][[idx, "api_1"]] <- as.list(formals(f1))
-      report[both_there, ][[idx, "api_2"]] <- as.list(formals(f2))
+      report[both_there, ][idx, "change"]  <<- "API changed"
+      report[both_there, ][[idx, "api_1"]] <<- as.list(formals(f1))
+      report[both_there, ][[idx, "api_2"]] <<- as.list(formals(f2))
     }
   })
 
@@ -95,11 +95,15 @@ print.versions_report <- function (x, ...) {
 
 #' @rdname compare_versions
 #'
-#' @return `summary` prints the arguments of changed functions as a string.
+#' @return `summary` returns a string representation of changed function arguments.
 #' @export
 summary.versions_report <- function (object, ...) {
-  object$api_1 <- map_chr(object$api_1, paste, collapse = ", ")
-  object$api_2 <- map_chr(object$api_2, paste, collapse = ", ")
+  list_to_chr <- function (x) {
+    seps <- ifelse(map_lgl(x, is.name), "", " = ")
+    paste0(names(x), seps, x,  collapse = ", ")
+  }
+  object$api_1 <- map_chr(object$api_1, list_to_chr)
+  object$api_2 <- map_chr(object$api_2, list_to_chr)
   return(object)
 }
 
