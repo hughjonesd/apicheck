@@ -3,6 +3,7 @@ TODO
 * deal with S4 methods; and test for that.
 * tests: maybe rather than pre-installed (OS X) versions, have pre-installed source
   files and then mock install.versions
+* Use `match.call` in `package_report` to check when functions will keep working.
 * BUG: can't unload dependencies of apicheck itself, causing problems when checking tidyverse packages
 * BUG: in console, with quiet = TRUE, you don't get asked to select CRAN mirror
 * Should compare_versions (optionally) report about unexported methods, e.g. crayon::start.crayon?
