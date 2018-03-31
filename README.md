@@ -14,7 +14,11 @@ Installation
 
 ``` r
 install.packages("remotes") 
-remotes::install_github("apicheck")
+# You'll need these:
+remotes::install_github("hughjonesd/rcheology")
+remotes::install_github("r-lib/pkgapi")
+
+remotes::install_github("hughjonesd/apicheck")
 ```
 
 Example
@@ -34,7 +38,7 @@ when_fun_exists("clipr::dr_clipr", report = "brief") # binary search
 #> [1] "0.4.0"
 ```
 
-`clipr 0.2.0`: several changes to `write_clip`.
+`clipr 0.2.0` : several changes to `write_clip`.
 
 ``` r
 
@@ -53,7 +57,33 @@ when_api_same("clipr::write_clip", report = "full", search = "all") # check all 
 #> 7   0.3.2 2017-01-09      Known same
 #> 8   0.3.3 2017-06-19      Known same
 #> 9   0.4.0 2017-11-03      Known same
-help_at("clipr::write_clip", "0.1.1") # see what's changed
+```
+
+To dig more deeply:
+
+``` r
+args(fun_at("clipr::write_clip", "0.1.1"))
+#> function (content, sep = NULL, eos = NULL) 
+#> NULL
+args(fun_at("clipr::write_clip", "0.2.0"))
+#> function (content, object_type = c("auto", "character", "table"), 
+#>     breaks = NULL, eos = NULL, return_new = TRUE, ...) 
+#> NULL
+help_at("clipr::write_clip", "0.1.1") 
+```
+
+To see all changes between two versions, use `compare_versions`:
+
+``` r
+cv <- compare_versions("clipr", "0.1.1", "0.2.0")
+summary(cv)
+#> Version 1: 0.1.1 
+#> Version 2: 0.2.0 
+#> # A tibble: 2 x 5
+#>   function_1 function_2 change      api_1                           api_2 
+#>   <chr>      <chr>      <chr>       <chr>                           <chr> 
+#> 1 <NA>       clear_clip Added       ""                              ""    
+#> 2 write_clip write_clip API changed content, sep = NULL, eos = NULL "cont…
 ```
 
 Performance

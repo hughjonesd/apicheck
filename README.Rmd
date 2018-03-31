@@ -29,7 +29,11 @@ It is designed to help you work out minimum version requirements for packages me
 
 ```{r, eval = FALSE}
 install.packages("remotes") 
-remotes::install_github("apicheck")
+# You'll need these:
+remotes::install_github("hughjonesd/rcheology")
+remotes::install_github("r-lib/pkgapi")
+
+remotes::install_github("hughjonesd/apicheck")
 ```
 
 
@@ -52,14 +56,29 @@ fun_exists_at("clipr::dr_clipr", "0.3.3")
 when_fun_exists("clipr::dr_clipr", report = "brief") # binary search
 ```
 
-`clipr 0.2.0`: several changes to `write_clip`.
+`clipr 0.2.0` : several changes to `write_clip`.
 
 ```{r example2, warning = FALSE}
 
 api_same_at("clipr::write_clip", "0.2.0")
 api_same_at("clipr::write_clip", "0.1.1")
 when_api_same("clipr::write_clip", report = "full", search = "all") # check all versions
-help_at("clipr::write_clip", "0.1.1") # see what's changed
+```
+
+To dig more deeply:
+
+```{r fun-example}
+args(fun_at("clipr::write_clip", "0.1.1"))
+args(fun_at("clipr::write_clip", "0.2.0"))
+help_at("clipr::write_clip", "0.1.1") 
+```
+
+
+To see all changes between two versions, use `compare_versions`:
+
+```{r compare-example, warning = FALSE}
+cv <- compare_versions("clipr", "0.1.1", "0.2.0")
+summary(cv)
 ```
 
 # Performance
