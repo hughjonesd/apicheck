@@ -81,6 +81,13 @@ cv <- compare_versions("clipr", "0.1.1", "0.2.0")
 summary(cv)
 ```
 
+You can also check base packages, using the info from [rcheology](../rcheology):
+
+```{r base}
+fun_exists_at("base::paste0", "2.14.0")
+fun_exists_at("base::paste0", "2.15.0")
+```
+
 # Performance
 
 [Performance tests](https://hughjonesd.github.io/apicheck/performance2.html).

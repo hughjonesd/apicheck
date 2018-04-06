@@ -86,6 +86,15 @@ summary(cv)
 #> 2 write_clip write_clip API changed content, sep = NULL, eos = NULL "cont…
 ```
 
+You can also check base packages, using the info from [rcheology](../rcheology):
+
+``` r
+fun_exists_at("base::paste0", "2.14.0")
+#> [1] FALSE
+fun_exists_at("base::paste0", "2.15.0")
+#> [1] TRUE
+```
+
 Performance
 ===========
 
