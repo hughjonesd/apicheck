@@ -115,3 +115,60 @@ test_that("clear_lib_dir", {
   clear_lib_dir()
   expect_length(list.files(ld), 0)
 })
+
+
+test_that("get_current_ns", {
+  expect_silent(ns <- apicheck:::get_current_ns("desc"))
+  expect_is(ns, "environment")
+  expect_equivalent(getNamespaceName(ns), "desc")
+  expect_error(apicheck:::get_current_ns("nonexistentpackage"))
+})
+
+
+test_that("args_match", {
+  fun_named <- function (a) NULL
+  fun_named_default <- function (a = 1) NULL
+  fun_2names_default <- function (a = 1, b = 2) NULL
+  fun_dots <- function (...) NULL
+  fun_named_dots <- function (a, ...) NULL
+
+  am <- apicheck:::args_match
+  expect_true(am(fun_named, a = 1))
+  expect_true(am(fun_named, 1))
+  expect_true(am(fun_named)) # can be called even though might fail due to lacking arguments
+  expect_false(am(fun_named, b = 1))
+
+  expect_true(am(fun_named_default, a = 1))
+  expect_true(am(fun_named_default, 1))
+  expect_true(am(fun_named_default))
+  expect_false(am(fun_named_default, b = 1))
+
+  expect_true(am(fun_2names_default, a = 1, b = 2))
+  expect_true(am(fun_2names_default, 1, b = 2))
+  expect_true(am(fun_2names_default, b = 1, a = 2))
+  expect_true(am(fun_2names_default, b = 1, 2))
+  expect_true(am(fun_2names_default, a = 1))
+  expect_true(am(fun_2names_default, b = 1))
+  expect_true(am(fun_2names_default))
+
+  expect_true(am(fun_dots))
+  expect_true(am(fun_dots, 1))
+  expect_true(am(fun_dots, 1, 2))
+  expect_true(am(fun_dots, bar = 1, 2, baz = 3))
+
+  expect_true(am(fun_named_dots, 1))
+  expect_true(am(fun_named_dots, a = 1))
+  expect_true(am(fun_named_dots, a = 1, 2))
+  expect_true(am(fun_named_dots, 2, a = 1))
+  expect_true(am(fun_named_dots, b = 1)) # again this is ok
+})
+
+
+test_that("fun_names_in_ns", {
+  expect_silent(desc_funs <- apicheck:::fun_names_in_ns(getNamespace("desc"), FALSE))
+  expect_true("desc" %in% desc_funs)
+  expect_false("format.DescriptionRemotes" %in% desc_funs)
+  expect_silent(desc_fun_methods <- apicheck:::fun_names_in_ns(getNamespace("desc"), TRUE))
+  expect_true("desc" %in% desc_fun_methods)
+  expect_true("format.DescriptionRemotes" %in% desc_fun_methods)
+})
