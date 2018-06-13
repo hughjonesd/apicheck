@@ -72,14 +72,10 @@ get_stub_fun_in_core <- function (fun, package, version) {
 
 args_match <- function (fun, ...) {
   fun_name <- deparse(substitute(fun))
-  tryCatch(
-    match.call(fun, do.call(call, list(fun_name, ...))),
-    error = {
-      browser()
-      return(FALSE)
-    }
-  )
-  return(TRUE)
+  safe_mc <- purrr::safely(match.call)
+  x <- safe_mc(fun, do.call(call, list(fun_name, ...)))
+
+  return(is.null(x$error))
 }
 
 
