@@ -37,7 +37,7 @@ reporting functions that have been "Added", "Removed" or had "API changed",
 and details of function arguments. Extra information is in the \code{"package"} and \code{"versions"}
 attributes.
 
-\code{summary} prints the arguments of changed functions as a string.
+\code{summary} returns a string representation of changed function arguments.
 }
 \description{
 \code{compare_versions} reports how functions and APIs changed between versions of a package.

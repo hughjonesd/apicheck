@@ -258,6 +258,9 @@ test_that("help_at", {
 test_that("compare_versions", {
   expect_error(vr <- compare_versions("clipr", "0.2.1", "0.3.0"), NA)
   expect_s3_class(vr, "data.frame")
+  expect_s3_class(vr, "versions_report")
+  expect_output(print(vr), regexp = "0\\.2\\.1.*0\\.3\\.0")
+  expect_silent(summary(vr)) # nothing more specific yet
   expect_identical(ncol(vr), 5L)
   expect_identical(nrow(vr), 1L)
   expect_identical(vr[[1, 2]], "clipr_available")
@@ -275,4 +278,10 @@ test_that("package_report", {
   expect_error(pr2 <- package_report("clipr-source", exclude = c("base", "rstudioapi"),
         progress = FALSE), NA)
   expect_error(pr <- package_report("clipr-source", parallel = TRUE, exclude = "base"), NA)
+})
+
+
+test_that("set_lib_dir", {
+  expect_error(set_lib_dir("nonexistent", create = FALSE), "not exist")
+  expect_error(set_lib_dir("/nonexistent_at_root", create = TRUE), "not be created")
 })
