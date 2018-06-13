@@ -269,7 +269,7 @@ test_that("compare_versions", {
 
 test_that("package_report", {
   skip_on_cran()
-
+  if (! requireNamespace("pkgapi", quietly = TRUE)) skip("pkgapi not installed")
   # produces invisible warnings, but seems to work
   expect_error(pr <- package_report("clipr-source", progress = FALSE), NA)
   expect_s3_class(pr, "data.frame")
@@ -283,5 +283,6 @@ test_that("package_report", {
 
 test_that("set_lib_dir", {
   expect_error(set_lib_dir("nonexistent", create = FALSE), "not exist")
+  skip_on_appveyor()
   expect_error(set_lib_dir("/nonexistent_at_root", create = TRUE), "not be created")
 })
