@@ -172,3 +172,15 @@ test_that("fun_names_in_ns", {
   expect_true("desc" %in% desc_fun_methods)
   expect_true("format.DescriptionRemotes" %in% desc_fun_methods)
 })
+
+
+test_that("previous_version", {
+  expect_equivalent(apicheck:::previous_version("clipr", "0.4.0"), "0.3.3")
+  expect_equivalent(apicheck:::previous_version("clipr", "0.3.1"), "0.3.0")
+})
+
+
+test_that("current_version", {
+  # vioplot: last updated on CRAN in 2005 :-D
+  expect_equivalent(apicheck:::current_version("vioplot"), "0.2")
+})
