@@ -179,6 +179,7 @@ test_that("when_api_same", {
     info <- paste("Search strategy was:", search)
     expect_error(res <- when_api_same("clipr::write_clip", current_fun = wc, search = search,
           report = "full"), NA, info = info)
+    res <- res[as.package_version(res$version) <= "0.4.0", ] # avoid probs when clipr updates
     expect_s3_class(res, "data.frame") # no info arg :-(
     expect_identical(names(res), c("version", "date", "result"), info = info)
     # see below re clipr 0.1.0
@@ -200,10 +201,8 @@ test_that("when_fun_exists", {
           max_version = "3.4.3"), "3.3.0", info = info)
   }
 
-  # we only test versions 0.1.1 and onwards because version 0.1.0 varies with use_mran
-  # being TRUE or FALSE
   results_wanted <- list(
-    binary   = c(rep("Assumed absent", 3), "Known absent", "Assumed absent", rep("Known absent", 2),
+    binary   = c(rep("Assumed absent", 3), "Known absent", rep("Assumed absent", 2), "Known absent",
           "Known present"),
     forward  = c(rep("Known absent", 7), "Known present"),
     backward = c(rep("Assumed absent", 6), "Known absent", "Known present"),
@@ -215,8 +214,10 @@ test_that("when_fun_exists", {
     expect_error(res <- when_fun_exists("clipr::dr_clipr", search = search, report = "full"), NA,
           info = info)
     expect_s3_class(res, "data.frame")
+    res <- res[as.package_version(res$version) <= "0.4.0", ] # avoid probs when clipr updates
+    res <- res[as.package_version(res$version) >= "0.1.1", ] # version 0.1.0 different on MRAN (?)
     expect_identical(names(res), c("version", "date", "result"), info = info)
-    expect_identical(res$result[-1], results_wanted[[search]], info = info)
+    expect_identical(res$result, results_wanted[[search]], info = info)
   }
 })
 
