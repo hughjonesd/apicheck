@@ -161,7 +161,7 @@ test_that("when_api_same", {
 
   for (search in strategies) {
     expect_identical(when_api_same("clipr::write_clip", current_fun = wc, search = search,
-          report = "brief"), "0.2.0") # API change
+          report = "brief", max_version = "0.4.1"), "0.2.0") # API change
     # max_version to avoid being struck by new Rs in rcheology!
     expect_identical(when_api_same("base::debugonce", search = search, report = "brief",
           max_version = "3.4.3", current_fun = dbo), "3.4.0")
@@ -178,8 +178,7 @@ test_that("when_api_same", {
   for (search in strategies) {
     info <- paste("Search strategy was:", search)
     expect_error(res <- when_api_same("clipr::write_clip", current_fun = wc, search = search,
-          report = "full"), NA, info = info)
-    res <- res[as.package_version(res$version) <= "0.4.0", ] # avoid probs when clipr updates
+          report = "full", max_version = "0.4.0"), NA, info = info)
     expect_s3_class(res, "data.frame") # no info arg :-(
     expect_identical(names(res), c("version", "date", "result"), info = info)
     # see below re clipr 0.1.0
@@ -211,7 +210,7 @@ test_that("when_fun_exists", {
   )
   for (search in strategies) {
     info <- paste("Search strategy was:", search)
-    expect_error(res <- when_fun_exists("clipr::dr_clipr", search = search, report = "full"), NA,
+    expect_error(res <- when_fun_exists("clipr::dr_clipr", search = search, report = "full", max_version = "0.4.1"), NA,
           info = info)
     expect_s3_class(res, "data.frame")
     res <- res[as.package_version(res$version) <= "0.4.0", ] # avoid probs when clipr updates

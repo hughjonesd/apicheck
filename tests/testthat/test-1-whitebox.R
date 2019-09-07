@@ -182,5 +182,6 @@ test_that("previous_version", {
 
 test_that("current_version", {
   # vioplot: last updated on CRAN in 2005 :-D
-  expect_equivalent(apicheck:::current_version("vioplot"), "0.2")
+  # Fuck. They updated it. Moving to coxrobust, last updated 2006.
+  expect_equivalent(apicheck:::current_version("coxrobust"), "1.0")
 })
