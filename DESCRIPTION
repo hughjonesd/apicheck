@@ -35,6 +35,6 @@ Encoding: UTF-8
 LazyData: true
 Remotes: 
     hughjonesd/rcheology,
-    r-lib/pkgapi
+    r-lib/itdepends
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 6.0.1

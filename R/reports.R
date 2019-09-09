@@ -203,11 +203,11 @@ package_report <- function (
 utils::globalVariables(c("to", "package", "fun"))
 
 package_callees <- function(path, include, exclude = character(0)) {
-  assert_package("pkgapi")
+  assert_package("itdepends")
 
-  fun_map <- pkgapi::map_package(path)
-  callees <- fun_map$calls %>% select(to)
-  callees[, c("package", "fun")] <- parse_fun(callees$to, single = FALSE)
+  callees <- itdepends::dep_usage_proj(path)
+  callees <- distinct(callees)
+  names(callees) <- c("package", "fun")
   if (! missing(include)) callees <- filter(callees, package %in% include)
   itself <- desc::desc_get("Package", path)
   # "NA" is dynamically created; "" is local:

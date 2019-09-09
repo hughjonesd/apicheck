@@ -269,7 +269,7 @@ test_that("compare_versions", {
 
 test_that("package_report", {
   skip_on_cran()
-  if (! requireNamespace("pkgapi", quietly = TRUE)) skip("pkgapi not installed")
+  if (! requireNamespace("itdepends", quietly = TRUE)) skip("pkgapi not installed")
   # produces invisible warnings, but seems to work
   expect_error(pr <- package_report("clipr-source", progress = FALSE), NA)
   expect_s3_class(pr, "data.frame")
