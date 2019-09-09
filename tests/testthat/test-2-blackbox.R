@@ -267,19 +267,23 @@ test_that("compare_versions", {
   expect_identical(vr[[1, 3]], "Added")
 })
 
+
 test_that("package_report", {
   skip_on_cran()
   if (! requireNamespace("itdepends", quietly = TRUE)) skip("pkgapi not installed")
   # produces invisible warnings, but seems to work
   expect_error(pr <- package_report("clipr-source", progress = FALSE), NA)
+  library(testthat)
   expect_s3_class(pr, "data.frame")
   expect_identical(names(pr), c("package", "version", "funs"))
   # leaves only utils
   expect_error(pr2 <- package_report("clipr-source", exclude = c("base", "rstudioapi"),
         progress = FALSE), NA)
+  library(testthat) # jeez
   expect_error(pr <- package_report("clipr-source", parallel = TRUE, exclude = "base"), NA)
 })
 
+library(testthat)  # who unloaded testthat??
 
 test_that("set_lib_dir", {
   expect_error(set_lib_dir("nonexistent", create = FALSE), "not exist")
