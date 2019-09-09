@@ -206,8 +206,10 @@ package_callees <- function(path, include, exclude = character(0)) {
   assert_package("itdepends")
 
   callees <- itdepends::dep_usage_proj(path)
-  callees <- distinct(callees)
   names(callees) <- c("package", "fun")
+  callees <- distinct(callees)
+  callees <- filter(callees, ! is.na(package))
+
   if (! missing(include)) callees <- filter(callees, package %in% include)
   itself <- desc::desc_get("Package", path)
   # "NA" is dynamically created; "" is local:
