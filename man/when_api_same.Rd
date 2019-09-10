@@ -47,8 +47,6 @@ Otherwise, a data frame of versions with a full results column.
 \description{
 \code{when_api_same} reports package versions where the API of a function was the same as now (or
 the same as \code{current_fun}).
-
-\code{when_fun_exists} reports package versions where a function exists.
 }
 \details{
 "Same API" means having the same function arguments, as reported by \code{\link[=formals]{formals()}}.

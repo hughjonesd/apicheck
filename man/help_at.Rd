@@ -4,8 +4,8 @@
 \alias{help_at}
 \title{Get help for a function at a package version}
 \usage{
-help_at(fun, version = version_at_date(package, date), package, date = NULL,
-  quiet = TRUE, ...)
+help_at(fun, version = version_at_date(package, date), package,
+  date = NULL, quiet = TRUE, ...)
 }
 \arguments{
 \item{fun}{Function name as a character string. \code{fun} can be an S3 method; S4 methods aren't yet supported.}

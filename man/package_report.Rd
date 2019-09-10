@@ -35,8 +35,7 @@ A data frame with three rows:
 }
 }
 \description{
-\code{package_report} lists all external function calls from a source package
-using \code{\link[pkgapi:map_package]{pkgapi::map_package()}}.
+\code{package_report} lists all external function calls from a source package.
 It then checks backward-compatibility of each call with previous versions.
 }
 \section{Parallelism}{

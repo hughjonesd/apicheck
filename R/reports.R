@@ -113,8 +113,7 @@ utils::globalVariables(c("lapply_fun", "cl"))
 
 #' Report on backwards compatibility of a source package
 #'
-#' `package_report` lists all external function calls from a source package
-#' using [pkgapi::map_package()].
+#' `package_report` lists all external function calls from a source package.
 #' It then checks backward-compatibility of each call with previous versions.
 #'
 #' @param path Path to the root of an R source package.

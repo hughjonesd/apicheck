@@ -31,7 +31,7 @@ It is designed to help you work out minimum version requirements for packages me
 install.packages("remotes") 
 # You'll need these:
 remotes::install_github("hughjonesd/rcheology")
-remotes::install_github("r-lib/pkgapi")
+remotes::install_github("r-lib/itdepends")
 
 remotes::install_github("hughjonesd/apicheck")
 ```
